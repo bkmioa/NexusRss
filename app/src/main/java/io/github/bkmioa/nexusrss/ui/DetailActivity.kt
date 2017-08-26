@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.support.v7.app.ActionBar
 import android.text.format.Formatter
 import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.GlideImageGetter
-import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.model.Item
 import kotlinx.android.synthetic.main.activity_detail.*
 import okhttp3.*
@@ -39,7 +38,9 @@ class DetailActivity : BaseActivity() {
         supportActionBar?.title = item.title
         supportActionBar?.subtitle = item.subTitle
 
-        textView.setHtml(item.description, GlideImageGetter(textView, Settings.BASE_URL, true))
+        textView.post {
+            textView.setHtml(item.description, GlideImageGetter(textView, Settings.BASE_URL, true))
+        }
 
         textViewInfo.text = "Category :\t${item.category}" + "\n" +
                 "Size:\t${Formatter.formatShortFileSize(this, item.enclosure?.length!!)}" + "\n" +
@@ -49,7 +50,7 @@ class DetailActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add("下载")
+        menu.add(R.string.remote_download)
                 .setOnMenuItemClickListener {
                     download()
                     true
@@ -60,9 +61,10 @@ class DetailActivity : BaseActivity() {
     private fun download() {
         val client = OkHttpClient.Builder().build()
         val body = FormBody.Builder()
-                .addEncoded("url", item.enclosure?.url)
+                .addEncoded("url", item.enclosure?.url + "&passkey=" + Settings.PASS_KEY)
                 .build()
         val request = Request.Builder()
+                .url(Settings.DOWNLOAD_URL)
                 .post(body)
                 .build()
         client.newCall(request)
@@ -84,13 +86,4 @@ class DetailActivity : BaseActivity() {
 
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
 }

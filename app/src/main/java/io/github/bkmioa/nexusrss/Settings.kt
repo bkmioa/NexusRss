@@ -6,6 +6,8 @@ import io.github.bkmioa.nexusrss.model.Tab
 
 class Settings {
     companion object : KotprefModel() {
+        override val kotprefName = BuildConfig.APPLICATION_ID + "_preferences"
+
         const val BASE_URL = "https://tp.m-team.cc"
 
         private val TAB_MOVIE = Tab("MOVIE",
@@ -33,8 +35,11 @@ class Settings {
                         Option.CATEGORY[12],
                         Option.CATEGORY[13]
                 ), 3)
-        val PAGE_SIZE = 20
-        //        val tabs by GsonPref<List<Tab>>(List<Tab>::class, listOf(TAB_MOVIE), "tabs")
+        val PAGE_SIZE by intPref(20, "pageSize")
+
         val tabs = arrayListOf(TAB_MOVIE, TAB_TV, TAB_ANIME, TAB_MUSIC)
+
+        val PASS_KEY by stringPref(key = "passkey")
+        val DOWNLOAD_URL by stringPref(key = "downloadUrl")
     }
 }

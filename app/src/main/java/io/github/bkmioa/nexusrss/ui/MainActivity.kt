@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.FragmentPagerAdapter
+import android.view.Menu
+import android.view.MenuItem
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
-import io.github.bkmioa.nexusrss.Settings
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -51,6 +53,22 @@ class MainActivity : BaseActivity() {
             }
 
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(SettingActivity.createIntent(this))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
     }
 
     override fun finish() {
