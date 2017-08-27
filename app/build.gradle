@@ -14,10 +14,21 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+        release {
+            storeFile file(project.BKMI_STORE_FILE_PATH)
+            storePassword project.BKMI_STORE_PASSWORD
+            keyAlias project.BKMI_KEY_ALIAS
+            keyPassword project.BKMI_KEY_PASSWORD
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
