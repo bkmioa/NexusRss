@@ -4,7 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import io.github.bkmioa.nexusrss.Settings
 
-data class Option constructor(val key: String, val des: String, var img: String? = null) : Parcelable {
+class Option constructor(val key: String, val des: String, var img: String? = null) : Parcelable {
+
     constructor(source: Parcel) : this(
             source.readString(),
             source.readString(),
@@ -17,6 +18,21 @@ data class Option constructor(val key: String, val des: String, var img: String?
         writeString(key)
         writeString(des)
         writeString(img)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Option
+
+        if (key != other.key) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return key.hashCode()
     }
 
     companion object {
@@ -110,4 +126,5 @@ data class Option constructor(val key: String, val des: String, var img: String?
             override fun newArray(size: Int): Array<Option?> = arrayOfNulls(size)
         }
     }
+
 }

@@ -2,24 +2,32 @@ package io.github.bkmioa.nexusrss.ui
 
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import android.widget.CompoundButton
+import com.airbnb.epoxy.EpoxyController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseFragment
-import io.github.bkmioa.nexusrss.base.GlideApp
 import io.github.bkmioa.nexusrss.model.Option
+import io.github.bkmioa.nexusrss.ui.viewModel.OptionGroupViewModel
+import io.github.bkmioa.nexusrss.ui.viewModel.OptionGroupViewModel_
+import io.github.bkmioa.nexusrss.ui.viewModel.OptionViewModel
+import io.github.bkmioa.nexusrss.ui.viewModel.OptionViewModel_
 import kotlinx.android.synthetic.main.fragment_option.*
 
-class OptionFragment : BaseFragment() {
+class OptionFragment : BaseFragment(),
+        OptionViewModel.OnOptionCheckedListener,
+        OptionGroupViewModel.OnGroupCheckedListener {
     companion object {
         lateinit var instance: OptionFragment
     }
 
-    private val data: MutableList<Option> = ArrayList()
-    val selected: MutableSet<String> = HashSet()
+
+    private val optionController = OptionController()
+
+    private val selected: MutableSet<Option> = HashSet()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         instance = this
@@ -32,46 +40,75 @@ class OptionFragment : BaseFragment() {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        data.addAll(Option.CATEGORY)
-        data.addAll(Option.RESOLUTION)
-        data.addAll(Option.CODE)
-        data.addAll(Option.TEAM)
-        data.addAll(Option.PROCESS)
+        recyclerView.adapter = optionController.adapter
 
-        recyclerView.adapter = Adapter()
-        recyclerView.layoutManager = GridLayoutManager(activity, 3)
+        val gridLayoutManager = GridLayoutManager(activity, 3)
+        gridLayoutManager.spanSizeLookup = optionController.spanSizeLookup
+        optionController.spanCount = gridLayoutManager.spanCount
+
+        recyclerView.layoutManager = gridLayoutManager
+
+        optionController.requestModelBuild()
     }
 
-    inner class Adapter : RecyclerView.Adapter<OptionViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionViewHolder {
-            return OptionViewHolder(parent)
+    override fun onChecked(option: Option, isChecked: Boolean) {
+        if (isChecked) selected.add(option) else selected.remove(option)
+    }
+
+    override fun onGroupChecked(options: Array<Option>, isChecked: Boolean) {
+        if (isChecked) {
+            selected.addAll(options)
+        } else {
+            selected.removeAll(options)
         }
+        optionController.requestModelBuild()
+    }
 
-        override fun getItemCount(): Int = data.size
+    private fun isAllChecked(options: Array<Option>): Boolean {
+        return selected.containsAll(options.toSet())
+    }
 
-        override fun onBindViewHolder(holder: OptionViewHolder, position: Int) {
-            val option = data[position]
-
-            with(holder) {
-                checkBox.text = option.des
-                if (option.img != null) {
-                    checkBox.text = null
-                    imageView.visibility = View.VISIBLE
-                    GlideApp.with(this@OptionFragment)
-                            .load(option.img)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .into(imageView)
-                } else {
-                    imageView.visibility = View.GONE
-                }
-                itemView.setOnClickListener { checkBox.performClick() }
-                checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) selected.add(option.key) else selected.remove(option.key)
-                }
-
-                checkBox.isChecked = selected.contains(option.key)
+    inner class OptionController : EpoxyController() {
+        override fun buildModels() {
+            add(OptionGroupViewModel_("類型", isAllChecked(Option.CATEGORY), Option.CATEGORY)
+                    .onGroupCheckedListener(this@OptionFragment))
+            Option.CATEGORY.forEach {
+                add(OptionViewModel_(it, selected.contains(it))
+                        .onOptionCheckedListener(this@OptionFragment))
             }
+
+            add(OptionGroupViewModel_("解析度", isAllChecked(Option.RESOLUTION), Option.RESOLUTION)
+                    .onGroupCheckedListener(this@OptionFragment))
+            Option.RESOLUTION.forEach {
+                add(OptionViewModel_(it, selected.contains(it))
+                        .onOptionCheckedListener(this@OptionFragment))
+            }
+
+            add(OptionGroupViewModel_("編碼", isAllChecked(Option.CODE), Option.CODE)
+                    .onGroupCheckedListener(this@OptionFragment))
+            Option.CODE.forEach {
+                add(OptionViewModel_(it, selected.contains(it))
+                        .onOptionCheckedListener(this@OptionFragment))
+            }
+
+            add(OptionGroupViewModel_("處理", isAllChecked(Option.PROCESS), Option.PROCESS)
+                    .onGroupCheckedListener(this@OptionFragment))
+            Option.PROCESS.forEach {
+                add(OptionViewModel_(it, selected.contains(it))
+                        .onOptionCheckedListener(this@OptionFragment))
+            }
+
+            add(OptionGroupViewModel_("製作組", isAllChecked(Option.TEAM), Option.TEAM)
+                    .onGroupCheckedListener(this@OptionFragment))
+            Option.TEAM.forEach {
+                add(OptionViewModel_(it, selected.contains(it))
+                        .onOptionCheckedListener(this@OptionFragment))
+            }
+
+
         }
 
+
     }
+
 }
