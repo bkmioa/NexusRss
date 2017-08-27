@@ -8,10 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.airbnb.epoxy.EpoxyController
+import dagger.android.support.DaggerFragment
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseFragment
 import io.github.bkmioa.nexusrss.common.Scrollable
+import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.repository.Service
@@ -23,18 +25,15 @@ import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_list.*
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.inject.Inject
 
 
-class ListFragment : BaseFragment(), Scrollable {
+class ListFragment : BaseFragment(), Scrollable, Injectable {
+
+    @Inject lateinit internal var service: Service
 
     private val data: MutableList<Item> = ArrayList()
-    private lateinit var service: Service
     private var page: Int = 0
     private val listController = ListController()
     private lateinit var options: Array<Option>
@@ -101,22 +100,6 @@ class ListFragment : BaseFragment(), Scrollable {
                 }
             }
         })
-
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BASIC
-
-        val client = OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build()
-
-        val retrofit = Retrofit.Builder()
-                .baseUrl(Settings.BASE_URL)
-                .client(client)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(SimpleXmlConverterFactory.createNonStrict())
-                .build()
-
-        service = retrofit.create(Service::class.java)
 
     }
 

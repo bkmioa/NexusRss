@@ -10,10 +10,11 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
+import io.github.bkmioa.nexusrss.di.Injectable
 import kotlinx.android.synthetic.main.activity_main.*
 
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), Injectable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

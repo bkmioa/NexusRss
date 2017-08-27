@@ -11,12 +11,19 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.GlideImageGetter
+import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.repository.Service
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail.*
 import okhttp3.*
 import java.io.IOException
+import javax.inject.Inject
 
-class DetailActivity : BaseActivity() {
+class DetailActivity : BaseActivity(), Injectable {
     companion object {
         fun createIntent(context: Context, item: Item): Intent {
             val intent = Intent(context, DetailActivity::class.java)
@@ -24,6 +31,9 @@ class DetailActivity : BaseActivity() {
             return intent
         }
     }
+
+    @Inject internal lateinit
+    var service: Service
 
     lateinit var item: Item
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,31 +69,27 @@ class DetailActivity : BaseActivity() {
     }
 
     private fun download() {
-        val client = OkHttpClient.Builder().build()
-        val body = FormBody.Builder()
-                .addEncoded("url", item.enclosure?.url + "&passkey=" + Settings.PASS_KEY)
-                .build()
-        val request = Request.Builder()
-                .url(Settings.DOWNLOAD_URL)
-                .post(body)
-                .build()
-        client.newCall(request)
-                .enqueue(object : Callback {
-                    override fun onFailure(call: Call?, e: IOException?) {
-                        runOnUiThread {
-                            Toast.makeText(application, "添加失败", Toast.LENGTH_SHORT).show()
-                        }
+        val torrentUrl = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
+        service.remoteDownload(Settings.DOWNLOAD_URL, torrentUrl)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : Observer<ResponseBody> {
+                    override fun onComplete() {
+
                     }
 
-                    override fun onResponse(call: Call?, response: Response?) {
-                        runOnUiThread {
-                            Toast.makeText(application, response?.body()?.string() + "添加成功", Toast.LENGTH_SHORT).show()
-                        }
+                    override fun onSubscribe(d: Disposable) {
+                    }
+
+                    override fun onError(e: Throwable) {
+                        Toast.makeText(application, "添加失败", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onNext(response: ResponseBody) {
+                        Toast.makeText(application, response.string() + "\n添加成功", Toast.LENGTH_SHORT).show()
                     }
 
                 })
-
-
     }
 
 }
