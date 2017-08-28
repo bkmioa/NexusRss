@@ -14,13 +14,14 @@ class App : DaggerApplication() {
         return DaggerAppComponent.builder().create(this)
     }
 
-    @Inject
-    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+    @Inject internal lateinit
+    var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
 
     override fun onCreate() {
         super.onCreate()
 
         Kotpref.init(this)
+
     }
 
 }

@@ -1,19 +1,22 @@
 package io.github.bkmioa.nexusrss.viewmodel
 
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
 import io.github.bkmioa.nexusrss.App
-import io.github.bkmioa.nexusrss.Settings
+import io.github.bkmioa.nexusrss.base.BaseViewModel
+import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.model.Tab
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MainViewModel @Inject constructor(app: App) : AndroidViewModel(app) {
+class MainViewModel @Inject constructor(app: App) : BaseViewModel(app) {
 
-    val tabs = MutableLiveData<Array<Tab>>()
+    @Inject
+    lateinit var appDatabase: AppDatabase
 
-    fun requestRefresh() {
-        tabs.value = Settings.tabs.toTypedArray()
+    private val appDao by lazy {
+        appDatabase.appDao()
     }
+
+    fun tabs() = appDao.getAllTab()
+
 }

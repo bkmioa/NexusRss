@@ -13,7 +13,7 @@ import kotterknife.bindView
 @EpoxyModelClass(layout = R.layout.option_group)
 abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
                                     @EpoxyAttribute @JvmField val allChecked: Boolean,
-                                    val options: Array<Option>)
+                                    private val options: Array<Option>)
     : EpoxyModelWithHolder<OptionGroupViewModel.ViewHolder>() {
 
     @EpoxyAttribute(hash = false)
@@ -26,17 +26,13 @@ abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
     override fun bind(holder: ViewHolder) {
         super.bind(holder)
         with(holder) {
+            checkBox.setOnCheckedChangeListener(null)
             textView.text = name
             checkBox.isChecked = allChecked
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 onGroupCheckedListener.onGroupChecked(options, isChecked)
             }
         }
-    }
-
-    override fun unbind(holder: ViewHolder) {
-        super.unbind(holder)
-        holder.checkBox.setOnCheckedChangeListener(null)
     }
 
     override fun getSpanSize(totalSpanCount: Int, position: Int, itemCount: Int): Int {

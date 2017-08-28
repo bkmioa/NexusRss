@@ -43,11 +43,11 @@ abstract class OptionViewModel(
             }
 
             itemView.setOnClickListener { checkBox.performClick() }
+            checkBox.setOnCheckedChangeListener(null)
+            checkBox.isChecked = selected
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 onOptionCheckedListener.onChecked(option, isChecked)
             }
-
-            checkBox.isChecked = selected
         }
     }
 

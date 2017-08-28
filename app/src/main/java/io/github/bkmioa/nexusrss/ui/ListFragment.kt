@@ -8,14 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.airbnb.epoxy.EpoxyController
-import dagger.android.support.DaggerFragment
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseFragment
 import io.github.bkmioa.nexusrss.common.Scrollable
 import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.repository.Service
 import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
@@ -36,15 +34,15 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     private val data: MutableList<Item> = ArrayList()
     private var page: Int = 0
     private val listController = ListController()
-    private lateinit var options: Array<Option>
+    private lateinit var options: Array<String>
     private val isLoading = AtomicBoolean(false)
     private val isLoadingMore = AtomicBoolean(false)
 
     companion object {
-        fun newInstance(options: Array<Option>): ListFragment {
+        fun newInstance(options: Array<String>): ListFragment {
             val fragment = ListFragment()
             val args = Bundle()
-            args.putParcelableArray("options", options)
+            args.putStringArray("options", options)
             fragment.arguments = args
             return fragment
         }
@@ -66,7 +64,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        options = arguments.getParcelableArray("options") as Array<Option>
+        options = arguments.getStringArray("options")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -124,7 +122,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         val startIndex = page * Settings.PAGE_SIZE
 
         val queryMap = HashMap<String, String>()
-        options.forEach { queryMap[it.key] = "1" }
+        options.forEach { queryMap[it] = "1" }
 
         service.queryList(queryMap, startIndex, Settings.PAGE_SIZE)
                 .subscribeOn(Schedulers.io())

@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 
 class MainActivity : BaseActivity(), Injectable {
+
     @Inject lateinit internal
     var mainViewModel: MainViewModel
 
@@ -39,7 +40,7 @@ class MainActivity : BaseActivity(), Injectable {
 
             override fun getPageTitle(position: Int) = tabs[position].title
 
-            override fun getItemId(position: Int) = tabs[position].hashCode().toLong()
+            override fun getItemId(position: Int) = tabs[position].id!!.toLong()
 
             override fun getItem(position: Int): Fragment {
                 val tab = tabs[position]
@@ -48,15 +49,23 @@ class MainActivity : BaseActivity(), Injectable {
                 return fragment
             }
 
-            override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
-                super.destroyItem(container, position, `object`)
-                mappingFragment.remove(tabs[position])
+            override fun destroyItem(container: ViewGroup?, position: Int, any: Any?) {
+                super.destroyItem(container, position, any)
+                val iterator = mappingFragment.iterator()
+                while (iterator.hasNext()) {
+                    if (iterator.next() === any) {
+                        iterator.remove()
+                    }
+                }
             }
 
             override fun getItemPosition(o: Any): Int {
-                mappingFragment.map {
-                    if (it.value === o) {
-                        return tabs.indexOf(it.key)
+                mappingFragment.forEach {
+                    if (it.value == o) {
+                        val position = tabs.indexOf(it.key)
+                        if (position != -1) {
+                            return position
+                        }
                     }
                 }
                 return PagerAdapter.POSITION_NONE
@@ -77,13 +86,15 @@ class MainActivity : BaseActivity(), Injectable {
 
         })
 
-        mainViewModel.tabs.observe(this, Observer<Array<Tab>> {
+        mainViewModel.tabs().observe(this, Observer<Array<Tab>> {
+            val list = it!!.filter { it.isShow }
+
             tabs.clear()
-            tabs.addAll(it!!.toList())
+            tabs.addAll(list.sorted())
+
             buildTabs()
         })
 
-        mainViewModel.requestRefresh()
     }
 
     private fun buildTabs() {
@@ -98,7 +109,24 @@ class MainActivity : BaseActivity(), Injectable {
             if (!tabLayout.shouldDelayChildPressedState()) {
                 tabLayout.tabMode = TabLayout.MODE_FIXED
             }
+
+            //add long click listener
+            val viewGroup = tabLayout.getChildAt(0) as ViewGroup
+            for (i in 0 until viewGroup.childCount) {
+                viewGroup.getChildAt(i).setOnLongClickListener {
+                    onTabLongClicked(i)
+                    true
+                }
+            }
         }
+
+
+    }
+
+    private fun onTabLongClicked(position: Int) {
+        //todo edit tab
+//        val intent = TabEditActivity.createIntent(this, tabs[position])
+//        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -106,15 +134,16 @@ class MainActivity : BaseActivity(), Injectable {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                startActivity(SettingActivity.createIntent(this))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_settings -> {
+            startActivity(SettingActivity.createIntent(this))
+            true
         }
-
+        R.id.action_tabs -> {
+            startActivity(TabListActivity.createIntent(this))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun finish() {

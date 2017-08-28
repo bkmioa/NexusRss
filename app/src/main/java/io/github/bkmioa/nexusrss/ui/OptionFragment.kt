@@ -5,11 +5,11 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import com.airbnb.epoxy.EpoxyController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseFragment
 import io.github.bkmioa.nexusrss.model.Option
+import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.ui.viewModel.OptionGroupViewModel
 import io.github.bkmioa.nexusrss.ui.viewModel.OptionGroupViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.OptionViewModel
@@ -20,17 +20,27 @@ class OptionFragment : BaseFragment(),
         OptionViewModel.OnOptionCheckedListener,
         OptionGroupViewModel.OnGroupCheckedListener {
     companion object {
-        lateinit var instance: OptionFragment
+        fun newInstance(tab: Tab?): OptionFragment {
+            val fragment = OptionFragment()
+            val args = Bundle()
+            args.putParcelable("tab", tab)
+            fragment.arguments = args
+            return fragment
+        }
     }
-
 
     private val optionController = OptionController()
 
-    private val selected: MutableSet<Option> = HashSet()
+    val selected: MutableSet<String> = HashSet()
+
+    private var tab: Tab? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        instance = this
+        tab = arguments.getParcelable("tab")
+        if (tab != null) {
+            selected.addAll(tab!!.options)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -42,7 +52,7 @@ class OptionFragment : BaseFragment(),
 
         recyclerView.adapter = optionController.adapter
 
-        val gridLayoutManager = GridLayoutManager(activity, 3)
+        val gridLayoutManager = GridLayoutManager(activity, 4)
         gridLayoutManager.spanSizeLookup = optionController.spanSizeLookup
         optionController.spanCount = gridLayoutManager.spanCount
 
@@ -52,20 +62,21 @@ class OptionFragment : BaseFragment(),
     }
 
     override fun onChecked(option: Option, isChecked: Boolean) {
-        if (isChecked) selected.add(option) else selected.remove(option)
+        if (isChecked) selected.add(option.key) else selected.remove(option.key)
+        optionController.requestModelBuild()
     }
 
     override fun onGroupChecked(options: Array<Option>, isChecked: Boolean) {
         if (isChecked) {
-            selected.addAll(options)
+            selected.addAll(options.map { it.key })
         } else {
-            selected.removeAll(options)
+            selected.removeAll(options.map { it.key })
         }
         optionController.requestModelBuild()
     }
 
     private fun isAllChecked(options: Array<Option>): Boolean {
-        return selected.containsAll(options.toSet())
+        return selected.containsAll(options.map { it.key })
     }
 
     inner class OptionController : EpoxyController() {
@@ -73,35 +84,35 @@ class OptionFragment : BaseFragment(),
             add(OptionGroupViewModel_("類型", isAllChecked(Option.CATEGORY), Option.CATEGORY)
                     .onGroupCheckedListener(this@OptionFragment))
             Option.CATEGORY.forEach {
-                add(OptionViewModel_(it, selected.contains(it))
+                add(OptionViewModel_(it, selected.contains(it.key))
                         .onOptionCheckedListener(this@OptionFragment))
             }
 
             add(OptionGroupViewModel_("解析度", isAllChecked(Option.RESOLUTION), Option.RESOLUTION)
                     .onGroupCheckedListener(this@OptionFragment))
             Option.RESOLUTION.forEach {
-                add(OptionViewModel_(it, selected.contains(it))
+                add(OptionViewModel_(it, selected.contains(it.key))
                         .onOptionCheckedListener(this@OptionFragment))
             }
 
             add(OptionGroupViewModel_("編碼", isAllChecked(Option.CODE), Option.CODE)
                     .onGroupCheckedListener(this@OptionFragment))
             Option.CODE.forEach {
-                add(OptionViewModel_(it, selected.contains(it))
+                add(OptionViewModel_(it, selected.contains(it.key))
                         .onOptionCheckedListener(this@OptionFragment))
             }
 
             add(OptionGroupViewModel_("處理", isAllChecked(Option.PROCESS), Option.PROCESS)
                     .onGroupCheckedListener(this@OptionFragment))
             Option.PROCESS.forEach {
-                add(OptionViewModel_(it, selected.contains(it))
+                add(OptionViewModel_(it, selected.contains(it.key))
                         .onOptionCheckedListener(this@OptionFragment))
             }
 
             add(OptionGroupViewModel_("製作組", isAllChecked(Option.TEAM), Option.TEAM)
                     .onGroupCheckedListener(this@OptionFragment))
             Option.TEAM.forEach {
-                add(OptionViewModel_(it, selected.contains(it))
+                add(OptionViewModel_(it, selected.contains(it.key))
                         .onOptionCheckedListener(this@OptionFragment))
             }
 
