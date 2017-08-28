@@ -1,44 +1,69 @@
 package io.github.bkmioa.nexusrss.ui
 
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.PagerAdapter
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import io.github.bkmioa.nexusrss.R
-import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
 import io.github.bkmioa.nexusrss.di.Injectable
+import io.github.bkmioa.nexusrss.model.Tab
+import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import javax.inject.Inject
 
 
 class MainActivity : BaseActivity(), Injectable {
+    @Inject lateinit internal
+    var mainViewModel: MainViewModel
+
+    val tabs = ArrayList<Tab>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
 
-
-        val tabs = Settings.tabs
-        viewPager.offscreenPageLimit = tabs.size - 1
-        tabs.forEach { tabLayout.newTab() }
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+            private val mappingFragment = WeakHashMap<Tab, ListFragment>()
+
             override fun getCount() = tabs.size
 
-            override fun getItem(position: Int) = ListFragment.newInstance(tabs[position].options)
-            override fun getPageTitle(position: Int): CharSequence {
-                return tabs[position].title
+            override fun getPageTitle(position: Int) = tabs[position].title
+
+            override fun getItemId(position: Int) = tabs[position].hashCode().toLong()
+
+            override fun getItem(position: Int): Fragment {
+                val tab = tabs[position]
+                val fragment = ListFragment.newInstance(tab.options)
+                mappingFragment.put(tab, fragment)
+                return fragment
             }
-        }
-        tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
-        tabLayout.post {
-            if (!tabLayout.shouldDelayChildPressedState()) {
-                tabLayout.tabMode = TabLayout.MODE_FIXED
+
+            override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
+                super.destroyItem(container, position, `object`)
+                mappingFragment.remove(tabs[position])
             }
+
+            override fun getItemPosition(o: Any): Int {
+                mappingFragment.map {
+                    if (it.value === o) {
+                        return tabs.indexOf(it.key)
+                    }
+                }
+                return PagerAdapter.POSITION_NONE
+            }
+
         }
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab) {
                 val item = viewPager.adapter.instantiateItem(viewPager, tab.position)
@@ -47,13 +72,33 @@ class MainActivity : BaseActivity(), Injectable {
                 }
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabSelected(tab: TabLayout.Tab?) {}
 
         })
+
+        mainViewModel.tabs.observe(this, Observer<Array<Tab>> {
+            tabs.clear()
+            tabs.addAll(it!!.toList())
+            buildTabs()
+        })
+
+        mainViewModel.requestRefresh()
+    }
+
+    private fun buildTabs() {
+        tabLayout.removeAllTabs()
+        tabs.forEach { tabLayout.newTab() }
+
+        viewPager.adapter.notifyDataSetChanged()
+        viewPager.offscreenPageLimit = tabs.size - 1
+
+        tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
+        tabLayout.post {
+            if (!tabLayout.shouldDelayChildPressedState()) {
+                tabLayout.tabMode = TabLayout.MODE_FIXED
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

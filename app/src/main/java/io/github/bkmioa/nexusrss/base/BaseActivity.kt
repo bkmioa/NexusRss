@@ -1,5 +1,7 @@
 package io.github.bkmioa.nexusrss.base
 
+import android.arch.lifecycle.LifecycleRegistry
+import android.arch.lifecycle.LifecycleRegistryOwner
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -12,7 +14,9 @@ import io.github.bkmioa.nexusrss.di.Injectable
 import javax.inject.Inject
 
 open class BaseActivity : AppCompatActivity(),
-        HasFragmentInjector, HasSupportFragmentInjector {
+        HasFragmentInjector, HasSupportFragmentInjector, LifecycleRegistryOwner {
+
+    private val mRegistry by lazy { LifecycleRegistry(this) }
 
     @Inject lateinit internal
     var supportFragmentInjector: DispatchingAndroidInjector<Fragment>
@@ -24,6 +28,8 @@ open class BaseActivity : AppCompatActivity(),
     var frameworkFragmentInjector: DispatchingAndroidInjector<android.app.Fragment>
 
     override fun supportFragmentInjector() = supportFragmentInjector
+
+    override fun getLifecycle() = mRegistry
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (this is Injectable) {
