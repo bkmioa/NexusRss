@@ -8,7 +8,6 @@ import io.github.bkmioa.nexusrss.model.Tab
 
 @Database(version = AppDatabase.DB_VERSION,
         entities = arrayOf(
-                Option::class,
                 Tab::class
         ))
 @TypeConverters(StringArrayConverter::class)
