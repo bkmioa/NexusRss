@@ -9,9 +9,10 @@ class Settings {
 
         const val BASE_URL = "https://tp.m-team.cc"
 
-        val PAGE_SIZE by intPref(20, "pageSize")
-        val PASS_KEY by stringPref(key = "passkey")
-        val DOWNLOAD_URL by stringPref(key = "downloadUrl")
+        var PAGE_SIZE by intPref(20, "pageSize")
+        var PASS_KEY by stringPref(key = "passkey")
+        var REMOTE_URL by stringPref(key = "remoteUrl")
+        var REMOTE_USERNAME by stringPref(key = "remoteUsername")
+        var REMOTE_PASSWORD by stringPref(key = "remotePassword")
     }
-
 }

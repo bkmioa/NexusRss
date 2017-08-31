@@ -6,27 +6,40 @@ import android.arch.persistence.room.RoomDatabase
 import dagger.Module
 import dagger.Provides
 import io.github.bkmioa.nexusrss.App
+import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.db.AppDatabase
+import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
 import io.github.bkmioa.nexusrss.repository.Service
+import io.github.bkmioa.nexusrss.repository.UTorrentService
+import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+import java.net.CookieManager
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 class AppModule {
+    companion object {
+        const val RSS = "rss"
+        const val U_TORRENT = "uTorrent"
+    }
+
     @Singleton
     @Provides
-    fun provideService(retrofit: Retrofit): Service {
+    fun provideService(@Named(RSS) retrofit: Retrofit): Service {
         return retrofit.create(Service::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideRetrofit(httpclient: OkHttpClient): Retrofit {
+    @Named(RSS)
+    fun provideRssRetrofit(@Named(RSS) httpclient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(Settings.BASE_URL)
                 .client(httpclient)
@@ -35,16 +48,56 @@ class AppModule {
                 .build()
     }
 
+    @Singleton
+    @Provides
+    @Named(RSS)
+    fun provideRssHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build()
+    }
 
     @Singleton
     @Provides
-    fun provideHttpClient(): OkHttpClient {
-        val logging = HttpLoggingInterceptor()
-        logging.level = HttpLoggingInterceptor.Level.BASIC
+    fun provideUTorrentService(@Named(U_TORRENT) retrofit: Retrofit): UTorrentService {
+        return retrofit.create(UTorrentService::class.java)
+    }
 
-        return OkHttpClient.Builder()
-                .addInterceptor(logging)
+
+    @Provides
+    @Named(U_TORRENT)
+    fun provideUTorrentRetrofit(@Named(U_TORRENT) httpclient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+                .baseUrl(Settings.REMOTE_URL)
+                .client(httpclient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
+    }
+
+    @Provides
+    @Named(U_TORRENT)
+    fun provideUTorrentHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .cookieJar(JavaNetCookieJar(CookieManager()))
+                .authenticator { _, response ->
+                    response.request().newBuilder()
+                            .header("Authorization",
+                                    Credentials.basic(Settings.REMOTE_USERNAME, Settings.REMOTE_PASSWORD))
+                            .build()
+                }
+                .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+        val logging = HttpLoggingInterceptor()
+        if (BuildConfig.DEBUG) {
+            logging.level = HttpLoggingInterceptor.Level.BODY
+        }
+        return logging
     }
 
     @Singleton

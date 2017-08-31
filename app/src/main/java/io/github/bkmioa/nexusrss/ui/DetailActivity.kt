@@ -13,14 +13,14 @@ import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.GlideImageGetter
 import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.repository.Service
+import io.github.bkmioa.nexusrss.repository.UTorrentService
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail.*
-import okhttp3.*
-import java.io.IOException
+import okhttp3.ResponseBody
+import java.net.URLEncoder
 import javax.inject.Inject
 
 class DetailActivity : BaseActivity(), Injectable {
@@ -33,7 +33,7 @@ class DetailActivity : BaseActivity(), Injectable {
     }
 
     @Inject internal lateinit
-    var service: Service
+    var service: UTorrentService
 
     lateinit var item: Item
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +70,14 @@ class DetailActivity : BaseActivity(), Injectable {
 
     private fun download() {
         val torrentUrl = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
-        service.remoteDownload(Settings.DOWNLOAD_URL, torrentUrl)
+        service.token()
+                .flatMap {
+                    val html = it.string()
+                    val token = Regex("<div id='token' style='display:none;'>([^<>]+)</div>")
+                            .find(html)!!.groupValues[1]
+
+                    return@flatMap service.addUrl(token, URLEncoder.encode(torrentUrl))
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : Observer<ResponseBody> {
@@ -82,11 +89,12 @@ class DetailActivity : BaseActivity(), Injectable {
                     }
 
                     override fun onError(e: Throwable) {
-                        Toast.makeText(application, "添加失败", Toast.LENGTH_SHORT).show()
+                        e.printStackTrace()
+                        Toast.makeText(application, R.string.add_failure, Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onNext(response: ResponseBody) {
-                        Toast.makeText(application, response.string() + "\n添加成功", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(application,  R.string.add_success, Toast.LENGTH_SHORT).show()
                     }
 
                 })

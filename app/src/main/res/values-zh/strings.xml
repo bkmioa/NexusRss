@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">NexusRss</string>
-    <string name="action_settings">设置</string>
+    <string name="action_settings">下载设置</string>
     <string name="action_tabs">首页</string>
     <string name="remote_download">远程下载</string>
     <string name="pass_key">密匙（Pass Key）</string>
-    <string name="remote_download_url">远程下载地址</string>
+    <string name="remote_url">远程地址</string>
+    <string name="add_failure">添加失败</string>
+    <string name="add_success">添加成功</string>
 </resources>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.github.bkmioa.nexusrss">
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.github.bkmioa.nexusrss"
+    >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -12,7 +14,8 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        >
         <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,11 +24,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.DetailActivity" />
-        <activity android:name=".ui.SettingActivity" />
+        <activity
+            android:name=".ui.SettingActivity"
+            android:windowSoftInputMode="stateHidden"
+            />
         <activity android:name=".ui.TabListActivity" />
         <activity
             android:name=".ui.TabEditActivity"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"
+            />
     </application>
 
 </manifest>

@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">NexusRss</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Download Settings</string>
     <string name="action_tabs">Tabs</string>
     <string name="remote_download">Remote Download</string>
     <string name="pass_key">Pass Key</string>
-    <string name="remote_download_url">Remote Download Url</string>
+    <string name="remote_url">Remote Url</string>
+    <string name="remote_username">Username</string>
+    <string name="remote_password">Password</string>
+    <string name="add_failure">add failure</string>
+    <string name="add_success">add success</string>
 </resources>
