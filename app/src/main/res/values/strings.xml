@@ -9,4 +9,5 @@
     <string name="remote_password">Password</string>
     <string name="add_failure">add failure</string>
     <string name="add_success">add success</string>
+    <string name="need_download_setting">Download Settings not configured</string>
 </resources>

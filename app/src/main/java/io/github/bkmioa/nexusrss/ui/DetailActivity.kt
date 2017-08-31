@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.ActionBar
+import android.text.TextUtils
 import android.text.format.Formatter
 import android.view.Menu
 import android.widget.Toast
@@ -69,6 +70,12 @@ class DetailActivity : BaseActivity(), Injectable {
     }
 
     private fun download() {
+        if (TextUtils.isEmpty(Settings.PASS_KEY) ||
+                TextUtils.isEmpty(Settings.REMOTE_URL) ||
+                TextUtils.isEmpty(Settings.REMOTE_USERNAME) ||
+                TextUtils.isEmpty(Settings.REMOTE_PASSWORD)) {
+            Toast.makeText(application, R.string.need_download_setting, Toast.LENGTH_SHORT).show()
+        }
         val torrentUrl = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
         service.token()
                 .flatMap {
@@ -94,7 +101,7 @@ class DetailActivity : BaseActivity(), Injectable {
                     }
 
                     override fun onNext(response: ResponseBody) {
-                        Toast.makeText(application,  R.string.add_success, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(application, R.string.add_success, Toast.LENGTH_SHORT).show()
                     }
 
                 })

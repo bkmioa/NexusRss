@@ -7,4 +7,5 @@
     <string name="remote_url">远程地址</string>
     <string name="add_failure">添加失败</string>
     <string name="add_success">添加成功</string>
+    <string name="need_download_setting">下载设置未配置</string>
 </resources>
