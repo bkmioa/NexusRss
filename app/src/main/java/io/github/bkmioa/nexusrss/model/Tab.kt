@@ -27,8 +27,6 @@ data class Tab(
 
         if (id != other.id) return false
         if (!Arrays.equals(options, other.options)) return false
-        if (isShow != other.isShow) return false
-
         return true
     }
 
