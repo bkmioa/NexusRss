@@ -3,12 +3,17 @@ package io.github.bkmioa.nexusrss.di
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
+import android.support.annotation.NonNull
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import io.github.bkmioa.nexusrss.App
 import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.db.AppDatabase
+import io.github.bkmioa.nexusrss.repository.GithubService
 import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
 import io.github.bkmioa.nexusrss.repository.Service
 import io.github.bkmioa.nexusrss.repository.UTorrentService
@@ -28,13 +33,13 @@ class AppModule {
     companion object {
         const val RSS = "rss"
         const val U_TORRENT = "uTorrent"
+        const val GITHUB = "github"
     }
 
     @Singleton
     @Provides
-    fun provideService(@Named(RSS) retrofit: Retrofit): Service {
-        return retrofit.create(Service::class.java)
-    }
+    fun provideService(@Named(RSS) retrofit: Retrofit) =
+            retrofit.create(Service::class.java)
 
     @Singleton
     @Provides
@@ -59,9 +64,8 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideUTorrentService(@Named(U_TORRENT) retrofit: Retrofit): UTorrentService {
-        return retrofit.create(UTorrentService::class.java)
-    }
+    fun provideUTorrentService(@Named(U_TORRENT) retrofit: Retrofit) =
+            retrofit.create(UTorrentService::class.java)
 
 
     @Provides
@@ -89,6 +93,26 @@ class AppModule {
                 }
                 .build()
     }
+
+    @Provides
+    @Named(GITHUB)
+    fun provideGithubRetrofit(@Named(RSS) httpclient: OkHttpClient): Retrofit {
+        val gson = GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create()
+
+        return Retrofit.Builder()
+                .baseUrl("https://api.github.com")
+                .client(httpclient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideGithubService(@Named(GITHUB) retrofit: Retrofit) =
+            retrofit.create(GithubService::class.java)
 
     @Singleton
     @Provides

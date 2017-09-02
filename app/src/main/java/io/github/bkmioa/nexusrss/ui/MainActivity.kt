@@ -1,21 +1,29 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.arch.lifecycle.Observer
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.PagerAdapter
+import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
 import io.github.bkmioa.nexusrss.di.Injectable
+import io.github.bkmioa.nexusrss.model.Release
 import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
+import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 import javax.inject.Inject
@@ -143,7 +151,48 @@ class MainActivity : BaseActivity(), Injectable {
             startActivity(TabListActivity.createIntent(this))
             true
         }
+        R.id.action_checking_version -> {
+            checkingVersion()
+            true
+        }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    private fun checkingVersion() {
+        mainViewModel.checkNewVersion()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(object : SingleObserver<Array<Release>> {
+                    override fun onSubscribe(d: Disposable) {
+                    }
+
+                    override fun onError(e: Throwable) {
+                    }
+
+                    override fun onSuccess(t: Array<Release>) {
+                        if (!t.isEmpty()) {
+                            val release = t.first()
+                            if (release.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}") {
+                                hasNewVersion(release)
+                            }
+                        }
+                    }
+
+                })
+    }
+
+    private fun hasNewVersion(release: Release) {
+        AlertDialog.Builder(this)
+                .setTitle(release.name)
+                .setMessage(release.body)
+                .setPositiveButton("下载", { _, _ ->
+                    mainViewModel.downloadNewVersion(release)
+                })
+                .setNegativeButton("取消", { _, _ ->
+
+                })
+                .show()
+
     }
 
     override fun finish() {
