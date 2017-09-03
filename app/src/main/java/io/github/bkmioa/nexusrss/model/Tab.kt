@@ -7,28 +7,13 @@ import android.os.Parcelable
 import java.util.*
 
 @Entity(tableName = Tab.TABLE_NAME)
-data class Tab(
-        var title: String,
-        var options: Array<String>,
-        var order: Int,
-        var isShow: Boolean = true)
-    : Parcelable, Comparable<Tab> {
+data class Tab(var title: String,
+               var options: Array<String>,
+               var order: Int = 0,
+               var isShow: Boolean = true) : Parcelable, Comparable<Tab> {
 
     @PrimaryKey(autoGenerate = true)
     var id: Long? = null
-
-    override fun hashCode(): Int = id?.hashCode() ?: 0
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Tab
-
-        if (id != other.id) return false
-        if (!Arrays.equals(options, other.options)) return false
-        return true
-    }
 
     override fun compareTo(other: Tab) = this.order.compareTo(other.order)
 
@@ -36,8 +21,9 @@ data class Tab(
             source.readString(),
             source.createStringArray(),
             source.readInt(),
-            1 == source.readInt()
-    )
+            source.readInt() == 1) {
+        id = source.readValue(Long::class.java.classLoader) as Long?
+    }
 
     override fun describeContents() = 0
 
@@ -46,6 +32,27 @@ data class Tab(
         writeStringArray(options)
         writeInt(order)
         writeInt((if (isShow) 1 else 0))
+        writeValue(id)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Tab
+
+        if (id != other.id) return false
+        if (title != other.title) return false
+        if (!Arrays.equals(options, other.options)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = title.hashCode()
+        result = 31 * result + Arrays.hashCode(options)
+        result = 31 * result + (id?.hashCode() ?: 0)
+        return result
     }
 
     companion object {

@@ -1,7 +1,6 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.arch.lifecycle.Observer
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -48,7 +47,7 @@ class MainActivity : BaseActivity(), Injectable {
 
             override fun getPageTitle(position: Int) = tabs[position].title
 
-            override fun getItemId(position: Int) = tabs[position].id!!.toLong()
+            override fun getItemId(position: Int) = tabs[position].hashCode().toLong()
 
             override fun getItem(position: Int): Fragment {
                 val tab = tabs[position]

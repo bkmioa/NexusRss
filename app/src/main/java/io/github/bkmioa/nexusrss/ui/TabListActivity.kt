@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_tab_list.*
 import javax.inject.Inject
 
 class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibilityChangeListener {
+
     @Inject internal lateinit
     var tabListViewModel: TabListViewModel
 
@@ -33,6 +34,7 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
 
     companion object {
         const val REQUEST_CODE_ADD = 0x1
+        const val REQUEST_CODE_EDIT = 0x2
         fun createIntent(context: Context) = Intent(context, TabListActivity::class.java)
     }
 
@@ -85,7 +87,6 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
                     }
                 })
 
-
         tabListViewModel.tabs().observe(this, Observer<Array<Tab>> {
             tabs.clear()
             tabs.addAll(it!!.sorted())
@@ -108,10 +109,18 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_ADD && resultCode == Activity.RESULT_OK) {
-            val tab: Tab = data?.getParcelableExtra("tab")!!
-            tab.order = tabs.last().order + 1
-            tabListViewModel.addTab(tab)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_CODE_ADD -> {
+                    val tab: Tab = data?.getParcelableExtra("tab")!!
+                    tab.order = tabs.last().order + 1
+                    tabListViewModel.addTab(tab)
+                }
+                REQUEST_CODE_EDIT -> {
+                    val tab: Tab = data?.getParcelableExtra("tab")!!
+                    tabListViewModel.update(tab)
+                }
+            }
         }
     }
 
@@ -123,6 +132,11 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
     override fun onVisibilityChange(tab: Tab, isChecked: Boolean) {
         tab.isShow = isChecked
         tabListViewModel.update(tab)
+
+    }
+
+    private fun onItemClick(tab: Tab) {
+        startActivityForResult(TabEditActivity.createIntent(this, tab), REQUEST_CODE_EDIT)
     }
 
     inner class ListController : EpoxyController() {
@@ -130,6 +144,9 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
             tabs.map {
                 TabItemViewModel_(it)
                         .onTabVisibilityChangeListener(this@TabListActivity)
+                        .onClickListener { model, _, _, _ ->
+                            onItemClick(model.tab())
+                        }
                         .addTo(this)
             }
         }

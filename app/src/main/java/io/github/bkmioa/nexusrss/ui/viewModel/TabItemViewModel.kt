@@ -1,6 +1,7 @@
 package io.github.bkmioa.nexusrss.ui.viewModel
 
 import android.support.v7.widget.SwitchCompat
+import android.view.View
 import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
@@ -17,6 +18,9 @@ abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
     @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
     internal lateinit var onTabVisibilityChangeListener: OnTabVisibilityChangeListener
 
+    @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
+    internal lateinit var onClickListener: View.OnClickListener
+
     init {
         id(tab.hashCode())
     }
@@ -30,6 +34,7 @@ abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
             switchVisibility.setOnCheckedChangeListener { _, isChecked ->
                 onTabVisibilityChangeListener.onVisibilityChange(tab, isChecked)
             }
+            textViewTitle.setOnClickListener(onClickListener)
         }
     }
 
@@ -41,4 +46,5 @@ abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
     interface OnTabVisibilityChangeListener {
         fun onVisibilityChange(tab: Tab, isChecked: Boolean)
     }
+
 }

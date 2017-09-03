@@ -47,7 +47,14 @@ class TabEditActivity : BaseActivity() {
                 return@setOnClickListener
             }
             val options = fragment!!.selected.toTypedArray()
-            val tab = Tab(editTextTitle.text.toString(), options, 0)
+            val tab: Tab
+            if (this.tab == null) {
+                tab = Tab(editTextTitle.text.toString(), options)
+            } else {
+                tab = this.tab!!
+                tab.title = editTextTitle.text.toString()
+                tab.options = options
+            }
 
             val intent = Intent()
             intent.putExtra("tab", tab)
