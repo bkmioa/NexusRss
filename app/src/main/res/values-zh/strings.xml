@@ -11,4 +11,5 @@
     <string name="add_success">添加成功</string>
     <string name="need_download_setting">下载设置未配置</string>
     <string name="action_checking_version">检查版本</string>
+    <string name="action_search">搜索</string>
 </resources>

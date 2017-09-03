@@ -34,18 +34,24 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     private val data: MutableList<Item> = ArrayList()
     private var page: Int = 0
     private val listController = ListController()
-    private lateinit var options: Array<String>
+
+    private var options: Array<String>? = null
+    private var queryText: String? = null
+    private var withSearch = false
+
     private val isLoading = AtomicBoolean(false)
     private val isLoadingMore = AtomicBoolean(false)
 
     companion object {
-        fun newInstance(options: Array<String>): ListFragment {
+        fun newInstance(options: Array<String>? = null, withSearch: Boolean = false): ListFragment {
             val fragment = ListFragment()
             val args = Bundle()
-            args.putStringArray("options", options)
+            options?.let { args.putStringArray("options", options) }
+            args.putBoolean("withSearch", withSearch)
             fragment.arguments = args
             return fragment
         }
+
     }
 
     override fun scrollToTop() {
@@ -65,6 +71,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         options = arguments.getStringArray("options")
+        withSearch = arguments.getBoolean("withSearch")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -105,6 +112,11 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         query(true)
     }
 
+    fun query(queryText: String?) {
+        this.queryText = queryText
+        refresh()
+    }
+
     private fun query(update: Boolean) {
         if (isLoading.get()) return
 
@@ -122,9 +134,9 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         val startIndex = page * Settings.PAGE_SIZE
 
         val queryMap = HashMap<String, String>()
-        options.forEach { queryMap[it] = "1" }
+        options?.forEach { queryMap[it] = "1" }
 
-        service.queryList(queryMap, startIndex, Settings.PAGE_SIZE)
+        service.queryList(queryMap, startIndex, Settings.PAGE_SIZE, queryText)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.items.filter { it.enclosure != null } }
@@ -176,7 +188,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     }
 
     private fun tryInitRefresh() {
-        if (swipeRefreshLayout != null && !isLoading.get()
+        if (!withSearch && swipeRefreshLayout != null && !isLoading.get()
                 && userVisibleHint && data.size == 0) {
             refresh()
         }

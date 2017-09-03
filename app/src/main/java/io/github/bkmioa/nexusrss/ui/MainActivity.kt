@@ -5,9 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -33,7 +36,9 @@ class MainActivity : BaseActivity(), Injectable {
     @Inject lateinit internal
     var mainViewModel: MainViewModel
 
-    val tabs = ArrayList<Tab>()
+    private val tabs = ArrayList<Tab>()
+
+    private var searchFragment: ListFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -138,7 +143,60 @@ class MainActivity : BaseActivity(), Injectable {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        val menuSearch = menu.findItem(R.id.action_search)
+        MenuItemCompat.setOnActionExpandListener(menuSearch, object : MenuItemCompat.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                addSearchFragment()
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                removeSearchFragment()
+                return true
+            }
+
+        })
+        val searchView = menuSearch.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                onQueryText(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean = false
+
+        })
         return true
+    }
+
+    private fun removeSearchFragment() {
+        supportFragmentManager.popBackStack("search", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        searchFragment = null
+    }
+
+    private fun addSearchFragment() {
+        searchFragment = supportFragmentManager.findFragmentByTag("search") as? ListFragment
+        if (searchFragment == null) {
+            searchFragment = ListFragment.newInstance(withSearch = true)
+        }
+        var added = false
+        for (i in 0 until supportFragmentManager.backStackEntryCount) {
+            val entry = supportFragmentManager.getBackStackEntryAt(i)
+            if (entry.name == "search") {
+                added = true
+                break
+            }
+        }
+        if (!added) {
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.container, searchFragment, "search")
+                    .addToBackStack("search")
+                    .commit()
+        }
+    }
+
+    private fun onQueryText(query: String?) {
+        searchFragment?.query(query)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

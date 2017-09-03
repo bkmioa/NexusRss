@@ -9,8 +9,9 @@ interface Service {
     @GET("torrentrss.php?https=1&ismalldescr=1")
     fun queryList(@QueryMap queryMap: Map<String, String>,
                   @Query("startindex") startIndex: Int,
-                  @Query("rows") pageSize: Int)
-            : Observable<Rss>
+                  @Query("rows") pageSize: Int,
+                  @Query("search", encoded = true) queryText: String? = null
+    ): Observable<Rss>
 
 
     @POST
