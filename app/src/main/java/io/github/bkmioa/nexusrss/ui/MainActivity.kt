@@ -1,6 +1,8 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -33,7 +35,10 @@ import javax.inject.Inject
 
 class MainActivity : BaseActivity(), Injectable {
 
-    @Inject lateinit internal
+    @Inject internal
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    lateinit private
     var mainViewModel: MainViewModel
 
     private val tabs = ArrayList<Tab>()
@@ -44,6 +49,8 @@ class MainActivity : BaseActivity(), Injectable {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
+
+        mainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
 
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             private val mappingFragment = WeakHashMap<Tab, ListFragment>()

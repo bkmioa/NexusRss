@@ -1,5 +1,7 @@
 package io.github.bkmioa.nexusrss.ui
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -20,6 +22,7 @@ import io.github.bkmioa.nexusrss.model.LoadingState
 import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
+import io.github.bkmioa.nexusrss.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_list.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -39,7 +42,9 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     private val isLoadingMore = AtomicBoolean(false)
 
     @Inject lateinit
-    internal var listViewModel: RssListViewModel
+    internal var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var listViewModel: RssListViewModel
 
     companion object {
         fun newInstance(options: Array<String>? = null, withSearch: Boolean = false): ListFragment {
@@ -71,6 +76,8 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         super.onCreate(savedInstanceState)
         options = arguments.getStringArray("options")
         withSearch = arguments.getBoolean("withSearch")
+
+        listViewModel = ViewModelProviders.of(this, viewModelFactory).get(RssListViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

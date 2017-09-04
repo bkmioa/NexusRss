@@ -8,10 +8,10 @@ import javax.inject.Singleton
 
 @Singleton
 class ViewModelFactory : ViewModelProvider.Factory {
-    private val creators: Map<Class<out ViewModel>, Provider<out ViewModel>>
+    private val creators: Map<Class<out ViewModel>, Provider<ViewModel>>
 
     @Inject
-    constructor(creators: Map<Class<out ViewModel>, Provider<out ViewModel>>) {
+    constructor(creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>) {
         this.creators = creators
     }
 

@@ -1,7 +1,7 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.app.Activity
-import android.arch.lifecycle.Observer
+import android.arch.lifecycle.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,8 +25,10 @@ import javax.inject.Inject
 
 class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibilityChangeListener {
 
-    @Inject internal lateinit
-    var tabListViewModel: TabListViewModel
+    @Inject internal
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private lateinit var tabListViewModel: TabListViewModel
 
     private val tabs: MutableList<Tab> = ArrayList()
 
@@ -44,6 +46,8 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
 
         setSupportActionBar(toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
+
+        tabListViewModel = ViewModelProviders.of(this, viewModelFactory).get(TabListViewModel::class.java)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = listController.adapter
