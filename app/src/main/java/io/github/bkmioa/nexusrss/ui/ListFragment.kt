@@ -13,15 +13,13 @@ import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseFragment
 import io.github.bkmioa.nexusrss.common.Scrollable
 import io.github.bkmioa.nexusrss.di.Injectable
+import io.github.bkmioa.nexusrss.dp2px
 import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.repository.Service
+import io.github.bkmioa.nexusrss.model.ListData
+import io.github.bkmioa.nexusrss.model.LoadingState
 import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.annotations.NonNull
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -29,18 +27,19 @@ import javax.inject.Inject
 
 class ListFragment : BaseFragment(), Scrollable, Injectable {
 
-    @Inject lateinit internal var service: Service
 
     private val data: MutableList<Item> = ArrayList()
-    private var page: Int = 0
+
     private val listController = ListController()
 
     private var options: Array<String>? = null
     private var queryText: String? = null
     private var withSearch = false
 
-    private val isLoading = AtomicBoolean(false)
     private val isLoadingMore = AtomicBoolean(false)
+
+    @Inject lateinit
+    internal var listViewModel: RssListViewModel
 
     companion object {
         fun newInstance(options: Array<String>? = null, withSearch: Boolean = false): ListFragment {
@@ -88,7 +87,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             override fun getItemOffsets(outRect: Rect, view: View?, parent: RecyclerView, state: RecyclerView.State?) {
                 val position = recyclerView.getChildAdapterPosition(view)
                 if (position != recyclerView.adapter.itemCount - 1) {
-                    outRect.bottom = 60
+                    outRect.bottom = activity.dp2px(10)
                 }
             }
         })
@@ -100,12 +99,29 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (!isLoading.get() && !recyclerView.canScrollVertically(1)) {
+                if (!recyclerView.canScrollVertically(1)) {
                     query(false)
                 }
             }
         })
 
+        listViewModel.loadingState.observe(this, android.arch.lifecycle.Observer<LoadingState> {
+            swipeRefreshLayout.isRefreshing = it!!.loading && !it.loadMore
+
+            if (isLoadingMore.get() != it.loadMore) {
+                isLoadingMore.set(it.loading)
+                listController.requestModelBuild()
+            }
+        })
+
+        listViewModel.listData.observe(this, android.arch.lifecycle.Observer<ListData<Item>> {
+            if (!it!!.loadMore) {
+                data.clear()
+            }
+            data.addAll(it.data)
+
+            listController.requestModelBuild()
+        })
     }
 
     private fun refresh() {
@@ -118,63 +134,8 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     }
 
     private fun query(update: Boolean) {
-        if (isLoading.get()) return
+        listViewModel.query(options, queryText, update)
 
-        isLoading.set(true)
-
-        if (update) {
-            page = 0
-            swipeRefreshLayout.isRefreshing = true
-        } else {
-            page++
-            isLoadingMore.set(true)
-            listController.requestModelBuild()
-        }
-
-        val startIndex = page * Settings.PAGE_SIZE
-
-        val queryMap = HashMap<String, String>()
-        options?.forEach { queryMap[it] = "1" }
-
-        service.queryList(queryMap, startIndex, Settings.PAGE_SIZE, queryText)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map { it.items.filter { it.enclosure != null } }
-                .subscribeWith(object : Observer<List<Item>> {
-                    override fun onSubscribe(@NonNull d: Disposable) {
-
-                    }
-
-                    override fun onNext(@NonNull list: List<Item>) {
-                        if (update) {
-                            data.clear()
-                        }
-                        data.addAll(list)
-                    }
-
-                    override fun onError(@NonNull e: Throwable) {
-                        e.printStackTrace()
-                        isLoading.set(false)
-                        if (!update) {
-                            page--
-                            isLoadingMore.set(false)
-                        } else {
-                            swipeRefreshLayout.isRefreshing = false
-                        }
-                        listController.requestModelBuild()
-                    }
-
-                    override fun onComplete() {
-                        isLoading.set(false)
-                        if (update) {
-                            swipeRefreshLayout.isRefreshing = false
-                        } else {
-                            isLoadingMore.set(false)
-                        }
-                        listController.requestModelBuild()
-                    }
-
-                })
     }
 
     override fun onResume() {
@@ -188,8 +149,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     }
 
     private fun tryInitRefresh() {
-        if (!withSearch && swipeRefreshLayout != null && !isLoading.get()
-                && userVisibleHint && data.size == 0) {
+        if (!withSearch && swipeRefreshLayout != null && userVisibleHint && data.size == 0) {
             refresh()
         }
     }

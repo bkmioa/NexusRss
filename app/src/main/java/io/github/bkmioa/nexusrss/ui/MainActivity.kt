@@ -189,6 +189,7 @@ class MainActivity : BaseActivity(), Injectable {
         }
         if (!added) {
             supportFragmentManager.beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
                     .add(R.id.container, searchFragment, "search")
                     .addToBackStack("search")
                     .commit()

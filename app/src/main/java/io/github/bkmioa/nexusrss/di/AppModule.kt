@@ -1,5 +1,6 @@
 package io.github.bkmioa.nexusrss.di
 
+import android.app.Application
 import android.arch.persistence.db.SupportSQLiteDatabase
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
@@ -33,6 +34,10 @@ class AppModule {
         const val U_TORRENT = "uTorrent"
         const val GITHUB = "github"
     }
+
+    @Singleton
+    @Provides
+    fun provideApplication(app: App): Application = app
 
     @Singleton
     @Provides

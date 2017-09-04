@@ -6,6 +6,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
+import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
 import io.github.bkmioa.nexusrss.viewmodel.TabListViewModel
 import io.github.bkmioa.nexusrss.viewmodel.ViewModelFactory
 
@@ -21,6 +22,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(TabListViewModel::class)
     abstract fun bindTabListViewModel(tabListViewModel: TabListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(RssListViewModel::class)
+    abstract fun bindRssListViewModel(rssListViewModel: RssListViewModel): ViewModel
 
 
     @Binds
