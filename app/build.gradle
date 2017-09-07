@@ -10,8 +10,8 @@ android {
         applicationId "io.github.bkmioa.nexusrss"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 3
-        versionName "1.0.0-alpha3"
+        versionCode 4
+        versionName "1.0.0-alpha4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
