@@ -43,6 +43,8 @@ class MainActivity : BaseActivity(), Injectable {
 
     private val tabs = ArrayList<Tab>()
 
+    private lateinit var searchView: SearchView
+
     private var searchFragment: ListFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,7 +165,7 @@ class MainActivity : BaseActivity(), Injectable {
             }
 
         })
-        val searchView = menuSearch.actionView as SearchView
+        searchView = menuSearch.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 onQueryText(query)
@@ -204,6 +206,7 @@ class MainActivity : BaseActivity(), Injectable {
     }
 
     private fun onQueryText(query: String?) {
+        searchView.clearFocus()
         searchFragment?.query(query)
     }
 
