@@ -31,8 +31,8 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
         super.bind(holder)
 
         with(holder) {
-            textViewTitle.text = item.title
-            textViewSubTitle.text = item.subTitle
+            textViewTitle.text = item.subTitle ?: item.title
+            textViewSubTitle.text = if (item.subTitle == null) null else item.title
 
             GlideApp.with(imageView.context)
                     .load(item.imageUrl)

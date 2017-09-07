@@ -46,8 +46,8 @@ class DetailActivity : BaseActivity(), Injectable {
         item = intent.getSerializableExtra("item") as Item
 
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
-        supportActionBar?.title = item.title
-        supportActionBar?.subtitle = item.subTitle
+        supportActionBar?.title = item.subTitle ?: item.title
+        supportActionBar?.subtitle = if (item.subTitle == null) null else item.title
 
         textView.post {
             textView.setHtml(item.description, GlideImageGetter(textView, Settings.BASE_URL, true))
