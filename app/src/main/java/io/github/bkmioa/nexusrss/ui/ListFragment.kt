@@ -1,15 +1,17 @@
 package io.github.bkmioa.nexusrss.ui
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Rect
 import android.os.Bundle
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.airbnb.epoxy.EpoxyController
+import com.airbnb.epoxy.EpoxyAdapter
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseFragment
@@ -22,7 +24,6 @@ import io.github.bkmioa.nexusrss.model.LoadingState
 import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
-import io.github.bkmioa.nexusrss.viewmodel.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_list.*
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -30,10 +31,7 @@ import javax.inject.Inject
 
 class ListFragment : BaseFragment(), Scrollable, Injectable {
 
-
-    private val data: MutableList<Item> = ArrayList()
-
-    private val listController = ListController()
+    private val listAdapter = ListAdapter()
 
     private var options: Array<String>? = null
     private var queryText: String? = null
@@ -87,15 +85,33 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        listController.setFilterDuplicates(true)
-        recyclerView.adapter = listController.adapter
+        val gridLayoutManager = GridLayoutManager(activity, 1)
+        listAdapter.spanCount = gridLayoutManager.spanCount
+        gridLayoutManager.spanSizeLookup = listAdapter.spanSizeLookup
+
+        recyclerView.layoutManager = gridLayoutManager
+        recyclerView.adapter = listAdapter
         recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(outRect: Rect, view: View?, parent: RecyclerView, state: RecyclerView.State?) {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
                 val position = recyclerView.getChildAdapterPosition(view)
                 if (position != recyclerView.adapter.itemCount - 1) {
                     outRect.bottom = activity.dp2px(10)
                 }
+//
+//                val params = view.layoutParams as GridLayoutManager.LayoutParams
+//
+//                if (params.spanSize == 1) {
+//                    outRect.bottom = activity.dp2px(8)
+//
+//                    if (params.spanIndex == 0) {
+//                        outRect.left = activity.dp2px(8)
+//                        outRect.right = activity.dp2px(4)
+//                    }
+//                    if (params.spanIndex == 1) {
+//                        outRect.left = activity.dp2px(4)
+//                        outRect.right = activity.dp2px(8)
+//                    }
+//                }
             }
         })
 
@@ -112,22 +128,17 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             }
         })
 
-        listViewModel.loadingState.observe(this, android.arch.lifecycle.Observer<LoadingState> {
+        listViewModel.loadingState.observe(this, Observer<LoadingState> {
             swipeRefreshLayout.isRefreshing = it!!.loading && !it.loadMore
 
             if (isLoadingMore.get() != it.loadMore) {
                 isLoadingMore.set(it.loading)
-                listController.requestModelBuild()
+                listAdapter.loadMore(it.loadMore)
             }
         })
 
-        listViewModel.listData.observe(this, android.arch.lifecycle.Observer<ListData<Item>> {
-            if (!it!!.loadMore) {
-                data.clear()
-            }
-            data.addAll(it.data)
-
-            listController.requestModelBuild()
+        listViewModel.listData.observe(this, Observer<ListData<Item>> {
+            listAdapter.buildModels(it!!.data, !it.loadMore)
         })
     }
 
@@ -156,27 +167,40 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     }
 
     private fun tryInitRefresh() {
-        if (!withSearch && swipeRefreshLayout != null && userVisibleHint && data.size == 0) {
+        if (!withSearch && swipeRefreshLayout != null && userVisibleHint && listAdapter.isEmpty) {
             refresh()
         }
     }
 
-    inner class ListController : EpoxyController() {
+    inner class ListAdapter : EpoxyAdapter() {
+        private val loadMoreViewModel = LoadMoreViewModel_()
 
-        override fun buildModels() {
-            data.forEach {
-                add(ItemViewModel_(it)
+        fun buildModels(data: Array<Item>, refresh: Boolean) {
+            if (refresh) {
+                removeAllModels()
+            }
+            val list = data.map {
+                ItemViewModel_(it)
                         .onClickListener({ _ ->
                             val intent = DetailActivity.createIntent(activity, it)
                             startActivity(intent)
-                        }))
+                        })
             }
-            LoadMoreViewModel_().addIf(isLoadingMore.get(), this)
-            if (isLoadingMore.get()) {
+            addModels(list)
+        }
+
+        fun loadMore(loadMore: Boolean) {
+            if (loadMore) {
                 recyclerView.post {
+                    addModel(loadMoreViewModel)
+                    recyclerView.invalidateItemDecorations()
                     recyclerView.smoothScrollToPosition(recyclerView.adapter.itemCount - 1)
                 }
+            } else {
+                removeModel(loadMoreViewModel)
             }
+
+
         }
 
     }

@@ -32,10 +32,8 @@ class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
 
         if (update) {
             page = 0
-            loadingState.value = LoadingState()
         } else {
             page++
-            loadingState.value = LoadingState(loadMore = true)
         }
 
         val startIndex = page * Settings.PAGE_SIZE
@@ -49,7 +47,11 @@ class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
                 .map { it.items.filter { it.enclosure != null } }
                 .subscribeWith(object : Observer<List<Item>> {
                     override fun onSubscribe(@NonNull d: Disposable) {
-
+                        if (update) {
+                            loadingState.value = LoadingState()
+                        } else {
+                            loadingState.value = LoadingState(loadMore = true)
+                        }
                     }
 
                     override fun onNext(@NonNull list: List<Item>) {
