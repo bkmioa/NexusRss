@@ -21,6 +21,7 @@ class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
 
     private var page: Int = 0
     private val isLoading = AtomicBoolean(false)
+    private val noMore = AtomicBoolean(false)
 
     val loadingState = MutableLiveData<LoadingState>()
     val listData = MutableLiveData<ListData<Item>>()
@@ -28,10 +29,13 @@ class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
     fun query(options: Array<String>? = null, queryText: String? = null, update: Boolean = true) {
         if (isLoading.get()) return
 
+        if (noMore.get() && !update) return
+
         isLoading.set(true)
 
         if (update) {
             page = 0
+            noMore.set(false)
         } else {
             page++
         }
@@ -55,7 +59,11 @@ class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
                     }
 
                     override fun onNext(@NonNull list: List<Item>) {
-                        listData.value = ListData(list.toTypedArray(), !update)
+                        if (!list.isEmpty() || update) {
+                            listData.value = ListData(list.toTypedArray(), !update)
+                        } else {
+                            noMore.set(true)
+                        }
                     }
 
                     override fun onError(@NonNull e: Throwable) {
