@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="toolbarStyle">@style/toolbarStyle</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="toolbarStyle" parent="@style/Widget.AppCompat.Toolbar">
