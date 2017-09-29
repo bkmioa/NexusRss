@@ -1,6 +1,7 @@
 package io.github.bkmioa.nexusrss
 
 import android.app.Activity
+import com.aitangba.swipeback.ActivityLifecycleHelper
 import com.chibatching.kotpref.Kotpref
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -22,6 +23,7 @@ class App : DaggerApplication() {
 
         Kotpref.init(this)
 
+        registerActivityLifecycleCallbacks(ActivityLifecycleHelper.build())
     }
 
 }

@@ -86,9 +86,9 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //glide
-    compile 'com.github.bumptech.glide:glide:4.0.0'
-    kapt 'com.github.bumptech.glide:compiler:4.0.0'
-    compile 'com.github.bumptech.glide:okhttp3-integration:4.0.0@aar'
+    compile 'com.github.bumptech.glide:glide:4.1.1'
+    kapt 'com.github.bumptech.glide:compiler:4.1.1'
+    compile 'com.github.bumptech.glide:okhttp3-integration:4.1.1@aar'
 
     compile 'com.yayandroid:ParallaxRecyclerView:1.1'
     compile 'org.sufficientlysecure:html-textview:3.4'
@@ -101,6 +101,8 @@ dependencies {
     compile "com.chibatching.kotpref:kotpref:2.1.2"
     compile "com.chibatching.kotpref:gson-support:2.1.2"
     compile 'com.google.code.gson:gson:2.8.1'
+
+    compile 'com.aitangba:swipeback:1.0.2'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
