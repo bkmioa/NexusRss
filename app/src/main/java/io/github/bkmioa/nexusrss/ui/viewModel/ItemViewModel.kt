@@ -1,6 +1,7 @@
 package io.github.bkmioa.nexusrss.ui.viewModel
 
 import android.graphics.drawable.Drawable
+import android.text.format.Formatter
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -31,8 +32,10 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
         super.bind(holder)
 
         with(holder) {
+            val size = Formatter.formatShortFileSize(itemView.context, item.enclosure?.length!!)
+
             textViewTitle.text = item.subTitle ?: item.title
-            textViewSubTitle.text = if (item.subTitle == null) null else item.title
+            textViewSubTitle.text = "[$size] ${if (item.subTitle == null) "" else item.title}"
 
             GlideApp.with(imageView.context)
                     .load(item.imageUrl)
