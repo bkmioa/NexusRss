@@ -72,7 +72,7 @@ class MainActivity : BaseActivity(), Injectable {
                 return fragment
             }
 
-            override fun destroyItem(container: ViewGroup?, position: Int, any: Any?) {
+            override fun destroyItem(container: ViewGroup, position: Int, any: Any) {
                 super.destroyItem(container, position, any)
                 val iterator = mappingFragment.iterator()
                 while (iterator.hasNext()) {
@@ -98,7 +98,7 @@ class MainActivity : BaseActivity(), Injectable {
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab) {
-                val item = viewPager.adapter.instantiateItem(viewPager, tab.position)
+                val item = viewPager.adapter!!.instantiateItem(viewPager, tab.position)
                 if (item is Scrollable) {
                     item.scrollToTop()
                 }
@@ -124,7 +124,7 @@ class MainActivity : BaseActivity(), Injectable {
         tabLayout.removeAllTabs()
         tabs.forEach { tabLayout.newTab() }
 
-        viewPager.adapter.notifyDataSetChanged()
+        viewPager.adapter!!.notifyDataSetChanged()
         viewPager.offscreenPageLimit = tabs.size - 1
 
         tabLayout.tabMode = TabLayout.MODE_SCROLLABLE

@@ -72,8 +72,8 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        options = arguments.getStringArray("options")
-        withSearch = arguments.getBoolean("withSearch")
+        options = arguments!!.getStringArray("options")
+        withSearch = arguments!!.getBoolean("withSearch")
 
         listViewModel = ViewModelProviders.of(this, viewModelFactory).get(RssListViewModel::class.java)
     }
@@ -82,7 +82,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val gridLayoutManager = GridLayoutManager(activity, 1)
@@ -95,7 +95,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
                 val position = recyclerView.getChildAdapterPosition(view)
                 if (position != recyclerView.adapter.itemCount - 1) {
-                    outRect.bottom = activity.dp2px(10)
+                    outRect.bottom = activity!!.dp2px(10)
                 }
 //
 //                val params = view.layoutParams as GridLayoutManager.LayoutParams
@@ -182,7 +182,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             val list = data.map {
                 ItemViewModel_(it)
                         .onClickListener({ _ ->
-                            val intent = DetailActivity.createIntent(activity, it)
+                            val intent = DetailActivity.createIntent(activity!!, it)
                             startActivity(intent)
                         })
             }

@@ -37,7 +37,7 @@ class OptionFragment : BaseFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tab = arguments.getParcelable("tab")
+        tab = arguments!!.getParcelable("tab")
         if (tab != null) {
             selected.addAll(tab!!.options)
         }
@@ -47,7 +47,7 @@ class OptionFragment : BaseFragment(),
         return inflater.inflate(R.layout.fragment_option, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView.adapter = optionController.adapter

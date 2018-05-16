@@ -4,12 +4,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "io.github.bkmioa.nexusrss"
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 8
         versionName "1.0.0-alpha8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -34,80 +34,83 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //support
-    compile "com.android.support:appcompat-v7:$support_version"
-    compile "com.android.support:recyclerview-v7:$support_version"
-    compile "com.android.support:preference-v14:$support_version"
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "com.android.support:preference-v14:$support_version"
 
     //dagger2
-    compile "com.google.dagger:dagger:$dagger2_version"
+    implementation "com.google.dagger:dagger:$dagger2_version"
     kapt "com.google.dagger:dagger-compiler:$dagger2_version"
-    compile "com.google.dagger:dagger-android:$dagger2_version"
-    compile "com.google.dagger:dagger-android-support:$dagger2_version"
+    implementation "com.google.dagger:dagger-android:$dagger2_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger2_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger2_version"
 
     //lifecycle
-    compile("android.arch.lifecycle:runtime:$android_arch_version") {
+    implementation("android.arch.lifecycle:runtime:$android_lifecycle_version") {
         exclude group: 'com.android.support'
     }
-    compile("android.arch.lifecycle:extensions:$android_arch_version") {
+    implementation("android.arch.lifecycle:extensions:$android_lifecycle_version") {
         exclude group: 'com.android.support'
     }
-    kapt "android.arch.lifecycle:compiler:$android_arch_version"
+    kapt "android.arch.lifecycle:compiler:$android_lifecycle_version"
 
     //room
-    compile("android.arch.persistence.room:runtime:$android_arch_version") {
+    implementation("android.arch.persistence.room:runtime:$android_room_version") {
         exclude group: 'com.android.support'
     }
-    compile("android.arch.persistence.room:rxjava2:$android_arch_version") {
+    implementation("android.arch.persistence.room:rxjava2:$android_room_version") {
         exclude group: 'com.android.support'
     }
-    kapt "android.arch.persistence.room:compiler:$android_arch_version"
+    kapt "android.arch.persistence.room:compiler:$android_room_version"
 
     //rx
-    compile 'io.reactivex.rxjava2:rxjava:2.1.3'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     //okhttp
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
 
     //retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    compile('com.squareup.retrofit2:converter-simplexml:2.3.0') {
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation('com.squareup.retrofit2:converter-simplexml:2.3.0') {
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
         exclude group: 'xpp3', module: 'xpp3'
     }
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
     //glide
-    compile 'com.github.bumptech.glide:glide:4.1.1'
+    implementation 'com.github.bumptech.glide:glide:4.1.1'
     kapt 'com.github.bumptech.glide:compiler:4.1.1'
-    compile 'com.github.bumptech.glide:okhttp3-integration:4.1.1@aar'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.1.1@aar'
 
-    compile 'com.yayandroid:ParallaxRecyclerView:1.1'
-    compile 'org.sufficientlysecure:html-textview:3.4'
+    implementation 'com.yayandroid:ParallaxRecyclerView:1.1'
+    implementation 'org.sufficientlysecure:html-textview:3.4'
 
     //epoxy
-    compile 'com.airbnb.android:epoxy:2.3.0'
-    kapt 'com.airbnb.android:epoxy-processor:2.3.0'
+    implementation ('com.airbnb.android:epoxy:2.7.3'){
+        exclude group: 'com.android.support'
+    }
+    kapt 'com.airbnb.android:epoxy-processor:2.7.3'
 
     //kotpref
-    compile "com.chibatching.kotpref:kotpref:2.1.2"
-    compile "com.chibatching.kotpref:gson-support:2.1.2"
-    compile 'com.google.code.gson:gson:2.8.1'
+    implementation "com.chibatching.kotpref:kotpref:2.2.0"
+    implementation "com.chibatching.kotpref:gson-support:2.1.2"
+    implementation 'com.google.code.gson:gson:2.8.2'
 
-    compile 'com.aitangba:swipeback:1.0.2'
+    implementation 'com.aitangba:swipeback:1.0.2'
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestCompile 'com.google.code.findbugs:jsr305:3.0.1'
-    testCompile 'junit:junit:4.12'
+    androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.1'
+    testImplementation 'junit:junit:4.12'
 }
 
