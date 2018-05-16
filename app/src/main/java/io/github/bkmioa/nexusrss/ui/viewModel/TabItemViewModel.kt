@@ -34,7 +34,7 @@ abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
             switchVisibility.setOnCheckedChangeListener { _, isChecked ->
                 onTabVisibilityChangeListener.onVisibilityChange(tab, isChecked)
             }
-            textViewTitle.setOnClickListener(onClickListener)
+            itemView.setOnClickListener(onClickListener)
         }
     }
 

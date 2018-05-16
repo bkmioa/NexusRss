@@ -39,8 +39,8 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
 
     private val isLoadingMore = AtomicBoolean(false)
 
-    @Inject lateinit
-    internal var viewModelFactory: ViewModelProvider.Factory
+    @Inject
+    internal lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var listViewModel: RssListViewModel
 
@@ -114,6 +114,8 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
 //                }
             }
         })
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
 
         swipeRefreshLayout.setOnRefreshListener {
             refresh()
