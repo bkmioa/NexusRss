@@ -37,7 +37,7 @@ class TabEditActivity : BaseActivity() {
         }
 
         optionFragment = supportFragmentManager.findFragmentByTag("options") as? OptionFragment
-                ?: OptionFragment.newInstance(tab)
+                ?: OptionFragment.newInstance(tab?.options)
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.optionContainer, optionFragment, "options")

@@ -9,6 +9,7 @@ import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v7.app.AlertDialog
@@ -29,13 +30,15 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_tab_edit.view.*
 import java.util.*
 import javax.inject.Inject
 
 
 class MainActivity : BaseActivity(), Injectable {
 
-    @Inject internal
+    @Inject
+    internal
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     lateinit private
@@ -46,6 +49,8 @@ class MainActivity : BaseActivity(), Injectable {
     private lateinit var searchView: SearchView
 
     private var searchFragment: ListFragment? = null
+    private var searchFilterFragment: OptionFragment? = null
+    private var searchFilter: Array<String>? = null
 
     override fun supportSlideBack() = false
 
@@ -154,15 +159,32 @@ class MainActivity : BaseActivity(), Injectable {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        val searchFilterMenu = menu.findItem(R.id.action_search_filter)
+        searchFilterMenu.setOnMenuItemClickListener {
+            if (searchFilterFragment?.isVisible == true) {
+                searchFilter = searchFilterFragment?.selected?.toTypedArray()
+                removeSearchFilterFragment()
+                searchFilterMenu.setIcon(R.drawable.ic_menu_filter)
+            } else {
+                addSearchFilterFragment()
+                searchFilterMenu.setIcon(R.drawable.ic_menu_done)
+            }
+            true
+        }
         val menuSearch = menu.findItem(R.id.action_search)
         MenuItemCompat.setOnActionExpandListener(menuSearch, object : MenuItemCompat.OnActionExpandListener {
             override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                searchFilterMenu.isVisible = true
                 addSearchFragment()
                 return true
             }
 
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                searchFilterMenu.isVisible = false
                 removeSearchFragment()
+                removeSearchFilterFragment()
+                searchFilterMenu.setIcon(R.drawable.ic_menu_filter)
+                searchFilter = null
                 return true
             }
 
@@ -180,6 +202,24 @@ class MainActivity : BaseActivity(), Injectable {
         return true
     }
 
+    private fun removeSearchFilterFragment() {
+        supportFragmentManager.popBackStack("search_filter", FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        searchFilterFragment = null
+    }
+
+    private fun addSearchFilterFragment() {
+        searchFilterFragment = supportFragmentManager.findFragmentByTag("search_filter") as? OptionFragment
+                ?: OptionFragment.newInstance(searchFilter)
+
+        if (!searchFilterFragment!!.isVisible) {
+            supportFragmentManager.beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
+                    .add(R.id.container, searchFilterFragment, "search_filter")
+                    .addToBackStack("search_filter")
+                    .commit()
+        }
+    }
+
     private fun removeSearchFragment() {
         supportFragmentManager.popBackStack("search", FragmentManager.POP_BACK_STACK_INCLUSIVE)
         searchFragment = null
@@ -187,18 +227,9 @@ class MainActivity : BaseActivity(), Injectable {
 
     private fun addSearchFragment() {
         searchFragment = supportFragmentManager.findFragmentByTag("search") as? ListFragment
-        if (searchFragment == null) {
-            searchFragment = ListFragment.newInstance(withSearch = true)
-        }
-        var added = false
-        for (i in 0 until supportFragmentManager.backStackEntryCount) {
-            val entry = supportFragmentManager.getBackStackEntryAt(i)
-            if (entry.name == "search") {
-                added = true
-                break
-            }
-        }
-        if (!added) {
+                ?: ListFragment.newInstance(withSearch = true)
+
+        if (!searchFragment!!.isVisible) {
             supportFragmentManager.beginTransaction()
                     .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
                     .add(R.id.container, searchFragment, "search")
@@ -209,7 +240,7 @@ class MainActivity : BaseActivity(), Injectable {
 
     private fun onQueryText(query: String?) {
         searchView.clearFocus()
-        searchFragment?.query(query)
+        searchFragment?.query(query, searchFilter)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

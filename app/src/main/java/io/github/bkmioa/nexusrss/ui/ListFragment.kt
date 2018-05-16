@@ -148,8 +148,9 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         query(true)
     }
 
-    fun query(queryText: String?) {
+    fun query(queryText: String?, options: Array<String>? = null) {
         this.queryText = queryText
+        this.options = options
         refresh()
     }
 

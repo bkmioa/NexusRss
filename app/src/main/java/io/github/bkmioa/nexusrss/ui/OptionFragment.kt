@@ -20,10 +20,10 @@ class OptionFragment : BaseFragment(),
         OptionViewModel.OnOptionCheckedListener,
         OptionGroupViewModel.OnGroupCheckedListener {
     companion object {
-        fun newInstance(tab: Tab?): OptionFragment {
+        fun newInstance(initSelected: Array<String>? = null): OptionFragment {
             val fragment = OptionFragment()
             val args = Bundle()
-            args.putParcelable("tab", tab)
+            args.putStringArray("init_selected", initSelected)
             fragment.arguments = args
             return fragment
         }
@@ -33,13 +33,11 @@ class OptionFragment : BaseFragment(),
 
     val selected: MutableSet<String> = HashSet()
 
-    private var tab: Tab? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tab = arguments!!.getParcelable("tab")
-        if (tab != null) {
-            selected.addAll(tab!!.options)
+        val initSelected = arguments!!.getStringArray("init_selected")
+        if (initSelected != null) {
+            selected.addAll(initSelected.toSet())
         }
     }
 
