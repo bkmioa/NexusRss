@@ -12,7 +12,7 @@
         style="?toolbarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/action_settings"
+        app:title="@string/tab_options"
         />
 
     <EditText
@@ -28,12 +28,5 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        />
-
-    <Button
-        android:id="@+id/buttonOk"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="OK"
         />
 </LinearLayout>

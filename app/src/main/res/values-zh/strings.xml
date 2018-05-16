@@ -12,4 +12,5 @@
     <string name="need_download_setting">下载设置未配置</string>
     <string name="action_checking_version">检查版本</string>
     <string name="action_search">搜索</string>
+    <string name="tab_options">选项</string>
 </resources>

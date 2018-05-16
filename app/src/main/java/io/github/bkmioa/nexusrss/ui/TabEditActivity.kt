@@ -5,12 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.ActionBar
+import android.view.Menu
+import android.view.MenuItem
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.model.Tab
 import kotlinx.android.synthetic.main.activity_tab_edit.*
 
 class TabEditActivity : BaseActivity() {
+    private lateinit var optionFragment: OptionFragment
 
     companion object {
         fun createIntent(context: Context, tab: Tab? = null): Intent {
@@ -33,33 +36,43 @@ class TabEditActivity : BaseActivity() {
             editTextTitle.setText(tab!!.title)
         }
 
-        var fragment = supportFragmentManager.findFragmentByTag("options") as? OptionFragment
-        if (fragment == null) {
-            fragment = OptionFragment.newInstance(tab)
-        }
+        optionFragment = supportFragmentManager.findFragmentByTag("options") as? OptionFragment
+                ?: OptionFragment.newInstance(tab)
+
         supportFragmentManager.beginTransaction()
-                .replace(R.id.optionContainer, fragment, "options")
+                .replace(R.id.optionContainer, optionFragment, "options")
                 .commit()
+    }
 
-        buttonOk.setOnClickListener {
-            if (editTextTitle.text.isEmpty()) {
-                editTextTitle.setError("empty!!")
-                return@setOnClickListener
-            }
-            val options = fragment!!.selected.toTypedArray()
-            val tab: Tab
-            if (this.tab == null) {
-                tab = Tab(editTextTitle.text.toString(), options)
-            } else {
-                tab = this.tab!!
-                tab.title = editTextTitle.text.toString()
-                tab.options = options
-            }
-
-            val intent = Intent()
-            intent.putExtra("tab", tab)
-            setResult(Activity.RESULT_OK, intent)
-            finish()
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val menuDone = menu.add("Done")
+        menuDone.setIcon(R.drawable.ic_menu_done)
+        menuDone.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        menuDone.setOnMenuItemClickListener {
+            done()
+            true
         }
+        return true
+    }
+
+    private fun done() {
+        if (editTextTitle.text.isEmpty()) {
+            editTextTitle.setError("empty!!")
+            return
+        }
+        val options = optionFragment.selected.toTypedArray()
+        val tab: Tab
+        if (this.tab == null) {
+            tab = Tab(editTextTitle.text.toString(), options)
+        } else {
+            tab = this.tab!!
+            tab.title = editTextTitle.text.toString()
+            tab.options = options
+        }
+
+        val intent = Intent()
+        intent.putExtra("tab", tab)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

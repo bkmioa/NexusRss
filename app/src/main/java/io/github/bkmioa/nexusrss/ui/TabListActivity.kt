@@ -103,6 +103,7 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val item = menu.add("Add")
+        item.setIcon(R.drawable.ic_menu_add)
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         item.setOnMenuItemClickListener {
             startActivityForResult(TabEditActivity.createIntent(this), REQUEST_CODE_ADD)
