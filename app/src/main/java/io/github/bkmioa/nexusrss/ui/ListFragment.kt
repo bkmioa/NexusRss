@@ -85,7 +85,10 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val gridLayoutManager = GridLayoutManager(activity, 1)
+        val activity = activity!!
+
+        val spanCount = 2
+        val gridLayoutManager = GridLayoutManager(activity, spanCount)
         listAdapter.spanCount = gridLayoutManager.spanCount
         gridLayoutManager.spanSizeLookup = listAdapter.spanSizeLookup
 
@@ -95,23 +98,28 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
                 val position = recyclerView.getChildAdapterPosition(view)
                 if (position != recyclerView.adapter.itemCount - 1) {
-                    outRect.bottom = activity!!.dp2px(10)
+                    outRect.bottom = activity.dp2px(10)
                 }
-//
-//                val params = view.layoutParams as GridLayoutManager.LayoutParams
-//
-//                if (params.spanSize == 1) {
-//                    outRect.bottom = activity.dp2px(8)
-//
-//                    if (params.spanIndex == 0) {
-//                        outRect.left = activity.dp2px(8)
-//                        outRect.right = activity.dp2px(4)
-//                    }
-//                    if (params.spanIndex == 1) {
-//                        outRect.left = activity.dp2px(4)
-//                        outRect.right = activity.dp2px(8)
-//                    }
-//                }
+
+                val params = view.layoutParams as GridLayoutManager.LayoutParams
+
+                if (spanCount > 1 && params.spanSize == 1) {
+                    outRect.bottom = activity.dp2px(8)
+                    when {
+                        params.spanIndex == 0 -> {
+                            outRect.left = activity.dp2px(8)
+                            outRect.right = activity.dp2px(4)
+                        }
+                        params.spanIndex == spanCount - 1 -> {
+                            outRect.left = activity.dp2px(4)
+                            outRect.right = activity.dp2px(8)
+                        }
+                        else -> {
+                            outRect.left = activity.dp2px(4)
+                            outRect.right = activity.dp2px(4)
+                        }
+                    }
+                }
             }
         })
 
