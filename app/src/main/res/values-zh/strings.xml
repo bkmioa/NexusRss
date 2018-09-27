@@ -17,4 +17,10 @@
     <string name="tab_label">名称</string>
     <string name="tab_deleted">已删除</string>
     <string name="undo_action">撤销</string>
+    <string name="list_style">列表样式</string>
+    <string-array name="list_columns">
+        <item>单列</item>
+        <item>双列</item>
+        <item>三列</item>
+    </string-array>
 </resources>

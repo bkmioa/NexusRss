@@ -37,7 +37,7 @@ class TabEditActivity : BaseActivity() {
         }
 
         optionFragment = supportFragmentManager.findFragmentByTag("options") as? OptionFragment
-                ?: OptionFragment.newInstance(tab?.options)
+                ?: OptionFragment.newInstance(tab?.options, true, tab?.columnCount ?: 1)
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.optionContainer, optionFragment, "options")
@@ -61,13 +61,15 @@ class TabEditActivity : BaseActivity() {
             return
         }
         val options = optionFragment.selected.toTypedArray()
+        val columnCount = optionFragment.columnCount
         val tab: Tab
         if (this.tab == null) {
-            tab = Tab(editTextTitle.text.toString(), options)
+            tab = Tab(editTextTitle.text.toString(), options, columnCount)
         } else {
-            tab = this.tab!!
+            tab = this.tab ?: return
             tab.title = editTextTitle.text.toString()
             tab.options = options
+            tab.columnCount = columnCount
         }
 
         val intent = Intent()

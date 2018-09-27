@@ -36,6 +36,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     private var options: Array<String>? = null
     private var queryText: String? = null
     private var withSearch = false
+    private var columnCount = 1
 
     private val isLoadingMore = AtomicBoolean(false)
 
@@ -45,11 +46,12 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     private lateinit var listViewModel: RssListViewModel
 
     companion object {
-        fun newInstance(options: Array<String>? = null, withSearch: Boolean = false): ListFragment {
+        fun newInstance(options: Array<String>? = null, withSearch: Boolean = false, columnCount: Int = 1): ListFragment {
             val fragment = ListFragment()
             val args = Bundle()
             options?.let { args.putStringArray("options", options) }
             args.putBoolean("withSearch", withSearch)
+            args.putInt("columnCount", columnCount)
             fragment.arguments = args
             return fragment
         }
@@ -59,7 +61,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     override fun scrollToTop() {
         if (recyclerView.canScrollVertically(-1)) {
             if ((recyclerView.layoutManager as LinearLayoutManager)
-                    .findFirstVisibleItemPosition() < Settings.PAGE_SIZE) {
+                            .findFirstVisibleItemPosition() < Settings.PAGE_SIZE) {
                 recyclerView.smoothScrollToPosition(0)
             } else {
                 recyclerView.scrollToPosition(0)
@@ -72,9 +74,11 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        options = arguments!!.getStringArray("options")
-        withSearch = arguments!!.getBoolean("withSearch")
-
+        arguments?.apply {
+            options = getStringArray("options")
+            withSearch = getBoolean("withSearch", false)
+            columnCount = getInt("columnCount", 1)
+        }
         listViewModel = ViewModelProviders.of(this, viewModelFactory).get(RssListViewModel::class.java)
     }
 
@@ -85,39 +89,37 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val activity = activity!!
+        val context = activity!!
 
-        val spanCount = 2
-        val gridLayoutManager = GridLayoutManager(activity, spanCount)
+        val gridLayoutManager = GridLayoutManager(context, columnCount)
         listAdapter.spanCount = gridLayoutManager.spanCount
         gridLayoutManager.spanSizeLookup = listAdapter.spanSizeLookup
 
         recyclerView.layoutManager = gridLayoutManager
         recyclerView.adapter = listAdapter
+
+        val dp4 = context.dp2px(4)
+        if (columnCount > 1) {
+            recyclerView.setPadding(0, dp4, 0, 0)
+        }
         recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
                 val position = recyclerView.getChildAdapterPosition(view)
-                if (position != recyclerView.adapter.itemCount - 1) {
-                    outRect.bottom = activity.dp2px(10)
-                }
-
+                val count = recyclerView.adapter.itemCount - 1
                 val params = view.layoutParams as GridLayoutManager.LayoutParams
-
-                if (spanCount > 1 && params.spanSize == 1) {
-                    outRect.bottom = activity.dp2px(8)
-                    when {
-                        params.spanIndex == 0 -> {
-                            outRect.left = activity.dp2px(8)
-                            outRect.right = activity.dp2px(4)
-                        }
-                        params.spanIndex == spanCount - 1 -> {
-                            outRect.left = activity.dp2px(4)
-                            outRect.right = activity.dp2px(8)
-                        }
-                        else -> {
-                            outRect.left = activity.dp2px(4)
-                            outRect.right = activity.dp2px(4)
-                        }
+                val spanSize = params.spanSize
+                val spanIndex = params.spanIndex
+                if (columnCount == 1) {
+                    if (position != count) {
+                        outRect.bottom = context.dp2px(10)
+                    }
+                } else {
+                    if (spanSize == 1) {
+                        outRect.set(dp4, dp4, dp4, dp4)
+                        if (spanIndex == 0) outRect.left = 2 * dp4
+                        if (spanIndex == columnCount - 1) outRect.right = 2 * dp4
+                    } else {
+                        outRect.top = 2 * dp4
                     }
                 }
             }
@@ -192,10 +194,10 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             }
             val list = data.map {
                 ItemViewModel_(it)
-                        .onClickListener({ _ ->
+                        .onClickListener { _ ->
                             val intent = DetailActivity.createIntent(activity!!, it)
                             startActivity(intent)
-                        })
+                        }
             }
             addModels(list)
         }

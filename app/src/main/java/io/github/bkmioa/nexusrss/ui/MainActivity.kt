@@ -72,7 +72,7 @@ class MainActivity : BaseActivity(), Injectable {
 
             override fun getItem(position: Int): Fragment {
                 val tab = tabs[position]
-                val fragment = ListFragment.newInstance(tab.options)
+                val fragment = ListFragment.newInstance(tab.options, false, tab.columnCount)
                 mappingFragment.put(tab, fragment)
                 return fragment
             }
