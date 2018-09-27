@@ -15,4 +15,6 @@
     <string name="search_filter">Filters</string>
     <string name="tab_options">Options</string>
     <string name="tab_label">Label</string>
+    <string name="tab_deleted">Deleted</string>
+    <string name="undo_action">UNDO</string>
 </resources>

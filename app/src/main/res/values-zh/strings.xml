@@ -15,4 +15,6 @@
     <string name="search_filter">筛选</string>
     <string name="tab_options">选项</string>
     <string name="tab_label">名称</string>
+    <string name="tab_deleted">已删除</string>
+    <string name="undo_action">撤销</string>
 </resources>

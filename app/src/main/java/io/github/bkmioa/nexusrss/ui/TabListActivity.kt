@@ -5,6 +5,7 @@ import android.arch.lifecycle.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.ActionBar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
@@ -87,7 +88,15 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
                 .withTarget(TabItemViewModel::class.java)
                 .andCallbacks(object : EpoxyTouchHelper.SwipeCallbacks<TabItemViewModel>() {
                     override fun onSwipeCompleted(model: TabItemViewModel, itemView: View, position: Int, direction: Int) {
-                        tabListViewModel.removeTab(tabs.removeAt(position))
+                        val tab = tabs.removeAt(position)
+                        tabListViewModel.removeTab(tab)
+
+                        Snackbar.make(findViewById(android.R.id.content), R.string.tab_deleted, Snackbar.LENGTH_INDEFINITE)
+                                .setAction(R.string.undo_action) {
+                                    tabs.add(position, tab)
+                                    tabListViewModel.addTab(tab)
+                                }
+                                .show()
                     }
                 })
 
