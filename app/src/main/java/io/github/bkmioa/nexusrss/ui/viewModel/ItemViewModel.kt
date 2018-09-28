@@ -1,6 +1,5 @@
 package io.github.bkmioa.nexusrss.ui.viewModel
 
-import android.graphics.drawable.Drawable
 import android.text.format.Formatter
 import android.view.View
 import android.widget.ImageView
@@ -8,11 +7,7 @@ import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
 import io.github.bkmioa.nexusrss.base.GlideApp
@@ -32,7 +27,7 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
         super.bind(holder)
 
         with(holder) {
-            val size = Formatter.formatShortFileSize(itemView.context, item.enclosure?.length!!)
+            val size = Formatter.formatShortFileSize(itemView.context, item.enclosure?.length ?: 0)
 
             textViewTitle.text = item.subTitle ?: item.title
             textViewSubTitle.text = "[$size] ${if (item.subTitle == null) "" else item.title}"
@@ -42,17 +37,6 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
                     .placeholder(R.drawable.place_holder)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .centerCrop()
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-                            return false
-                        }
-
-                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-//                            backgroundImage.reuse()
-                            return false
-                        }
-
-                    })
                     .into(imageView)
 
             itemView.setOnClickListener(onClickListener)

@@ -8,12 +8,12 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "io.github.bkmioa.nexusrss"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 9
         versionName "1.0.0-alpha9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -73,41 +73,40 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:$android_room_version"
 
     //rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.17'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
 
     //okhttp
-    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
 
     //retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
-    implementation('com.squareup.retrofit2:converter-simplexml:2.3.0') {
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation('com.squareup.retrofit2:converter-simplexml:2.4.0') {
         exclude group: 'stax', module: 'stax-api'
         exclude group: 'stax', module: 'stax'
         exclude group: 'xpp3', module: 'xpp3'
     }
-    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     //glide
     implementation 'com.github.bumptech.glide:glide:4.1.1'
     kapt 'com.github.bumptech.glide:compiler:4.1.1'
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.1.1@aar'
 
-    implementation 'com.yayandroid:ParallaxRecyclerView:1.1'
     implementation 'org.sufficientlysecure:html-textview:3.4'
 
     //epoxy
-    implementation ('com.airbnb.android:epoxy:2.7.3'){
+    implementation ('com.airbnb.android:epoxy:2.14.0'){
         exclude group: 'com.android.support'
     }
-    kapt 'com.airbnb.android:epoxy-processor:2.7.3'
+    kapt 'com.airbnb.android:epoxy-processor:2.14.0'
 
     //kotpref
     implementation "com.chibatching.kotpref:kotpref:2.2.0"
     implementation "com.chibatching.kotpref:gson-support:2.1.2"
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     implementation 'com.aitangba:swipeback:1.0.2'
 

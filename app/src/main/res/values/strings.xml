@@ -18,6 +18,8 @@
     <string name="tab_deleted">Deleted</string>
     <string name="undo_action">UNDO</string>
     <string name="list_style">List Style</string>
+    <string name="download">Download</string>
+    <string name="cancel">Cancel</string>
     <string-array name="list_columns">
         <item>Single Column</item>
         <item>Double Column</item>

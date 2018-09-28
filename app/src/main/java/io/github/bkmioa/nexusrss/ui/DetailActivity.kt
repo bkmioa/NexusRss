@@ -1,5 +1,6 @@
 package io.github.bkmioa.nexusrss.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -33,7 +34,8 @@ class DetailActivity : BaseActivity(), Injectable {
         }
     }
 
-    @Inject internal lateinit
+    @Inject
+    internal lateinit
     var service: UTorrentService
 
     lateinit var item: Item
@@ -54,7 +56,8 @@ class DetailActivity : BaseActivity(), Injectable {
         }
 
         textViewInfo.text = "Category :\t${item.category}" + "\n" +
-                "Size:\t${Formatter.formatShortFileSize(this, item.enclosure?.length!!)}" + "\n" +
+                "Size:\t${Formatter.formatShortFileSize(this, item.enclosure?.length
+                        ?: 0)}" + "\n" +
                 "Author:\t${item.author}" + "\n" +
                 "PubDate:\t${item.pubDate}" + "\n"
 
@@ -69,6 +72,7 @@ class DetailActivity : BaseActivity(), Injectable {
         return super.onCreateOptionsMenu(menu)
     }
 
+    @SuppressLint("CheckResult")
     private fun download() {
         if (TextUtils.isEmpty(Settings.PASS_KEY) ||
                 TextUtils.isEmpty(Settings.REMOTE_URL) ||
@@ -81,7 +85,7 @@ class DetailActivity : BaseActivity(), Injectable {
                 .flatMap {
                     val html = it.string()
                     val token = Regex("<div id='token' style='display:none;'>([^<>]+)</div>")
-                            .find(html)!!.groupValues[1]
+                            .find(html)?.groupValues?.getOrNull(1) ?: throw IllegalStateException()
 
                     return@flatMap service.addUrl(token, URLEncoder.encode(torrentUrl))
                 }

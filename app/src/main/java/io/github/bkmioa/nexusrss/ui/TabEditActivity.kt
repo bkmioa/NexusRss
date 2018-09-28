@@ -32,8 +32,9 @@ class TabEditActivity : BaseActivity() {
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
         tab = intent.getParcelableExtra("tab")
-        if (tab != null) {
-            editTextTitle.setText(tab!!.title)
+
+        tab?.apply {
+            editTextTitle.setText(title)
         }
 
         optionFragment = supportFragmentManager.findFragmentByTag("options") as? OptionFragment
@@ -56,18 +57,20 @@ class TabEditActivity : BaseActivity() {
     }
 
     private fun done() {
-        if (editTextTitle.text.isEmpty()) {
-            editTextTitle.setError("empty!!")
+        val editable = editTextTitle.text ?: throw IllegalStateException()
+
+        if (editable.isEmpty()) {
+            editTextTitle.error = "empty!!"
             return
         }
         val options = optionFragment.selected.toTypedArray()
         val columnCount = optionFragment.columnCount
         val tab: Tab
         if (this.tab == null) {
-            tab = Tab(editTextTitle.text.toString(), options, columnCount)
+            tab = Tab(editable.toString(), options, columnCount)
         } else {
             tab = this.tab ?: return
-            tab.title = editTextTitle.text.toString()
+            tab.title = editable.toString()
             tab.options = options
             tab.columnCount = columnCount
         }

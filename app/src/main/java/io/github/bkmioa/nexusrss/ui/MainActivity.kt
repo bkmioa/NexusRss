@@ -1,5 +1,6 @@
 package io.github.bkmioa.nexusrss.ui
 
+import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
@@ -103,7 +104,7 @@ class MainActivity : BaseActivity(), Injectable {
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab) {
-                val item = viewPager.adapter!!.instantiateItem(viewPager, tab.position)
+                val item = viewPager.adapter?.instantiateItem(viewPager, tab.position)
                 if (item is Scrollable) {
                     item.scrollToTop()
                 }
@@ -115,7 +116,7 @@ class MainActivity : BaseActivity(), Injectable {
         })
 
         mainViewModel.tabs().observe(this, Observer<Array<Tab>> {
-            val list = it!!.filter { it.isShow }
+            val list = it?.filter { it.isShow } ?: throw IllegalStateException()
 
             tabs.clear()
             tabs.addAll(list.sorted())
@@ -129,7 +130,7 @@ class MainActivity : BaseActivity(), Injectable {
         tabLayout.removeAllTabs()
         tabs.forEach { tabLayout.newTab() }
 
-        viewPager.adapter!!.notifyDataSetChanged()
+        viewPager.adapter?.notifyDataSetChanged()
         viewPager.offscreenPageLimit = tabs.size - 1
 
         tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
@@ -211,10 +212,12 @@ class MainActivity : BaseActivity(), Injectable {
         searchFilterFragment = supportFragmentManager.findFragmentByTag("search_filter") as? OptionFragment
                 ?: OptionFragment.newInstance(searchFilter)
 
-        if (!searchFilterFragment!!.isVisible) {
+        val fragment = searchFilterFragment ?: throw IllegalStateException()
+
+        if (!fragment.isVisible) {
             supportFragmentManager.beginTransaction()
                     .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
-                    .add(R.id.container, searchFilterFragment, "search_filter")
+                    .add(R.id.container, fragment, "search_filter")
                     .addToBackStack("search_filter")
                     .commit()
         }
@@ -229,10 +232,12 @@ class MainActivity : BaseActivity(), Injectable {
         searchFragment = supportFragmentManager.findFragmentByTag("search") as? ListFragment
                 ?: ListFragment.newInstance(withSearch = true)
 
-        if (!searchFragment!!.isVisible) {
+        val fragment = searchFragment ?: throw IllegalStateException()
+
+        if (!fragment.isVisible) {
             supportFragmentManager.beginTransaction()
                     .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
-                    .add(R.id.container, searchFragment, "search")
+                    .add(R.id.container, fragment, "search")
                     .addToBackStack("search")
                     .commit()
         }
@@ -259,6 +264,7 @@ class MainActivity : BaseActivity(), Injectable {
         else -> super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("CheckResult")
     private fun checkingVersion() {
         mainViewModel.checkNewVersion()
                 .subscribeOn(Schedulers.io())
@@ -286,12 +292,12 @@ class MainActivity : BaseActivity(), Injectable {
         AlertDialog.Builder(this)
                 .setTitle(release.name)
                 .setMessage(release.body)
-                .setPositiveButton("下载", { _, _ ->
+                .setPositiveButton(R.string.download) { _, _ ->
                     mainViewModel.downloadNewVersion(release)
-                })
-                .setNegativeButton("取消", { _, _ ->
+                }
+                .setNegativeButton(R.string.cancel) { _, _ ->
 
-                })
+                }
                 .show()
 
     }

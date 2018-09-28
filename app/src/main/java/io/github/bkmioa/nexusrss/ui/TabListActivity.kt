@@ -26,7 +26,8 @@ import javax.inject.Inject
 
 class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibilityChangeListener {
 
-    @Inject internal
+    @Inject
+    internal
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var tabListViewModel: TabListViewModel
@@ -101,8 +102,10 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
                 })
 
         tabListViewModel.tabs().observe(this, Observer<Array<Tab>> {
+            it ?: throw IllegalStateException()
+
             tabs.clear()
-            tabs.addAll(it!!.sorted())
+            tabs.addAll(it.sorted())
 
             listController.requestModelBuild()
         })
@@ -126,12 +129,12 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 REQUEST_CODE_ADD -> {
-                    val tab: Tab = data?.getParcelableExtra("tab")!!
+                    val tab: Tab = data?.getParcelableExtra("tab") ?: throw IllegalStateException()
                     tab.order = tabs.last().order + 1
                     tabListViewModel.addTab(tab)
                 }
                 REQUEST_CODE_EDIT -> {
-                    val tab: Tab = data?.getParcelableExtra("tab")!!
+                    val tab: Tab = data?.getParcelableExtra("tab") ?: throw IllegalStateException()
                     tabListViewModel.update(tab)
                 }
             }

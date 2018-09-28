@@ -88,9 +88,7 @@ class GlideImageGetter(private val container: TextView,
 
         override fun draw(canvas: Canvas) {
             // override the draw to facilitate refresh function later
-            if (drawable != null) {
-                drawable!!.draw(canvas)
-            }
+            drawable?.draw(canvas)
         }
     }
 }

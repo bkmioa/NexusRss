@@ -1,13 +1,8 @@
 package io.github.bkmioa.nexusrss.base
 
-import android.arch.lifecycle.LifecycleRegistry
-import android.arch.lifecycle.LifecycleRegistryOwner
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
-import android.view.View
 import com.aitangba.swipeback.SwipeBackActivity
 import dagger.android.AndroidInjection
 import dagger.android.DispatchingAndroidInjector
@@ -17,22 +12,20 @@ import io.github.bkmioa.nexusrss.di.Injectable
 import javax.inject.Inject
 
 open class BaseActivity : SwipeBackActivity(),
-        HasFragmentInjector, HasSupportFragmentInjector, LifecycleRegistryOwner {
+        HasFragmentInjector, HasSupportFragmentInjector {
 
-    private val mRegistry by lazy { LifecycleRegistry(this) }
-
-    @Inject lateinit internal
+    @Inject
+    internal lateinit
     var supportFragmentInjector: DispatchingAndroidInjector<Fragment>
 
     override fun fragmentInjector() = frameworkFragmentInjector
 
 
-    @Inject lateinit internal
+    @Inject
+    internal lateinit
     var frameworkFragmentInjector: DispatchingAndroidInjector<android.app.Fragment>
 
     override fun supportFragmentInjector() = supportFragmentInjector
-
-    override fun getLifecycle() = mRegistry
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (this is Injectable) {

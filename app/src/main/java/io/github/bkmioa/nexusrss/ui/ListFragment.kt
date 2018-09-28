@@ -89,7 +89,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val context = activity!!
+        val context = activity?: throw IllegalStateException()
 
         val gridLayoutManager = GridLayoutManager(context, columnCount)
         listAdapter.spanCount = gridLayoutManager.spanCount
@@ -103,9 +103,9 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             recyclerView.setPadding(0, dp4, 0, 0)
         }
         recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State?) {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 val position = recyclerView.getChildAdapterPosition(view)
-                val count = recyclerView.adapter.itemCount - 1
+                val count = listAdapter.itemCount - 1
                 val params = view.layoutParams as GridLayoutManager.LayoutParams
                 val spanSize = params.spanSize
                 val spanIndex = params.spanIndex
@@ -141,7 +141,9 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         })
 
         listViewModel.loadingState.observe(this, Observer<LoadingState> {
-            swipeRefreshLayout.isRefreshing = it!!.loading && !it.loadMore
+            it ?: throw IllegalStateException()
+
+            swipeRefreshLayout.isRefreshing = it.loading && !it.loadMore
 
             if (isLoadingMore.get() != it.loadMore) {
                 isLoadingMore.set(it.loading)
@@ -150,7 +152,9 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
         })
 
         listViewModel.listData.observe(this, Observer<ListData<Item>> {
-            listAdapter.buildModels(it!!.data, !it.loadMore)
+            it ?: throw IllegalStateException()
+
+            listAdapter.buildModels(it.data, !it.loadMore)
         })
     }
 
@@ -207,7 +211,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
                 recyclerView.post {
                     addModel(loadMoreViewModel)
                     recyclerView.invalidateItemDecorations()
-                    recyclerView.smoothScrollToPosition(recyclerView.adapter.itemCount - 1)
+                    recyclerView.smoothScrollToPosition(listAdapter.itemCount - 1)
                 }
             } else {
                 removeModel(loadMoreViewModel)
