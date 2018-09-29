@@ -55,7 +55,7 @@ class OptionFragment : BaseFragment(),
             }
             withListStyle = getBoolean(KEY_WITH_LIST_STYLE, false)
 
-            columnCount = getInt(KEY_INIT_SELECTED, 1)
+            columnCount = getInt(KEY_INIT_COLUMN_COUNT, 1)
         }
 
     }
