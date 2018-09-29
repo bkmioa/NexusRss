@@ -188,6 +188,7 @@ class MainActivity : BaseActivity(), Injectable {
 
         })
         searchView = menuSearch.actionView as SearchView
+        searchView.isFocusable = false
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 onQueryText(query)
