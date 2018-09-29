@@ -15,9 +15,12 @@ import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.SearchView
+import android.text.Html
+import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import android.widget.TextView
 import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
@@ -277,18 +280,29 @@ class MainActivity : BaseActivity(), Injectable {
     }
 
     private fun hasNewVersion(release: Release) {
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
                 .setTitle(release.name)
-                .setMessage(release.body)
+                .setMessage(Html.fromHtml(release.body))
                 .setPositiveButton(R.string.download) { _, _ ->
-                    val url = release.assets.firstOrNull()
-                            ?.takeIf { it.contentType == Release.Asset.TYPE_APK }
-                            ?.browserDownloadUrl ?: release.htmlUrl
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    goDownloadApk(release)
                 }
                 .setNegativeButton(R.string.cancel, null)
-                .show()
+                .create()
 
+        dialog.setOnShowListener {
+            dialog.findViewById<TextView>(android.R.id.message)
+                    ?.movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        dialog.show()
+
+    }
+
+    private fun goDownloadApk(release: Release) {
+        val url = release.assets.firstOrNull()
+                ?.takeIf { it.contentType == Release.Asset.TYPE_APK }
+                ?.browserDownloadUrl ?: release.htmlUrl
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 
     override fun finish() {
