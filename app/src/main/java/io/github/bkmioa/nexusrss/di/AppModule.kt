@@ -136,11 +136,11 @@ class AppModule {
                 .addCallback(object : RoomDatabase.Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        db.execSQL("INSERT INTO tab (title,options,`order`,isShow) VALUES\n" +
-                                "('MOVIE','cat401,cat419,cat420,cat421,cat439',0,1),\n" +
-                                "('TV','cat403,cat402,cat435,cat438',1,1),\n" +
-                                "('ANIME','cat405',2,1),\n" +
-                                "('MUSIC','cat406,cat408,cat434',3,1)")
+                        db.execSQL("INSERT INTO tab (title,options,`order`,isShow,columnCount) VALUES\n" +
+                                "('MOVIE','cat401,cat419,cat420,cat421,cat439',0,1,1),\n" +
+                                "('TV','cat403,cat402,cat435,cat438',1,1,2),\n" +
+                                "('ANIME','cat405',2,1,1),\n" +
+                                "('MUSIC','cat406,cat408,cat434',3,1,1)")
                     }
                 })
                 .addMigrations(object : Migration(1, 2) {
