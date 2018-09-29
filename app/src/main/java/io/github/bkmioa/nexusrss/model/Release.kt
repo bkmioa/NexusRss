@@ -6,6 +6,7 @@ class Release {
     var id: Int = 0
     lateinit var name: String
     lateinit var body: String
+    lateinit var htmlUrl: String
     lateinit var assetsUrl: String
     var prerelease: Boolean = false
     lateinit var publishedAt: Date

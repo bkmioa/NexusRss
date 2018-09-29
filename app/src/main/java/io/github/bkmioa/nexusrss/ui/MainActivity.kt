@@ -5,12 +5,12 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v7.app.AlertDialog
@@ -26,12 +26,9 @@ import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Release
 import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
-import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_tab_edit.view.*
 import java.util.*
 import javax.inject.Inject
 
@@ -42,7 +39,7 @@ class MainActivity : BaseActivity(), Injectable {
     internal
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    lateinit private
+    private lateinit
     var mainViewModel: MainViewModel
 
     private val tabs = ArrayList<Tab>()
@@ -269,23 +266,13 @@ class MainActivity : BaseActivity(), Injectable {
         mainViewModel.checkNewVersion()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : SingleObserver<Array<Release>> {
-                    override fun onSubscribe(d: Disposable) {
-                    }
+                .subscribe(::checkNewVersion, Throwable::printStackTrace)
+    }
 
-                    override fun onError(e: Throwable) {
-                    }
-
-                    override fun onSuccess(t: Array<Release>) {
-                        if (!t.isEmpty()) {
-                            val release = t.first()
-                            if (release.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}") {
-                                hasNewVersion(release)
-                            }
-                        }
-                    }
-
-                })
+    private fun checkNewVersion(release: Array<Release>?) {
+        release?.firstOrNull()
+                ?.takeIf { it.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}" }
+                ?.apply(::hasNewVersion)
     }
 
     private fun hasNewVersion(release: Release) {
@@ -293,11 +280,12 @@ class MainActivity : BaseActivity(), Injectable {
                 .setTitle(release.name)
                 .setMessage(release.body)
                 .setPositiveButton(R.string.download) { _, _ ->
-                    mainViewModel.downloadNewVersion(release)
+                    val url = release.assets.firstOrNull()
+                            ?.takeIf { it.contentType == Release.Asset.TYPE_APK }
+                            ?.browserDownloadUrl ?: release.htmlUrl
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 }
-                .setNegativeButton(R.string.cancel) { _, _ ->
-
-                }
+                .setNegativeButton(R.string.cancel, null)
                 .show()
 
     }
