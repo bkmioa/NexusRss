@@ -1,8 +1,10 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.annotation.SuppressLint
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.ActionBar
 import android.text.TextUtils
@@ -24,6 +26,12 @@ import kotlinx.android.synthetic.main.activity_detail.*
 import okhttp3.ResponseBody
 import java.net.URLEncoder
 import javax.inject.Inject
+import android.content.Context.CLIPBOARD_SERVICE
+import android.support.v4.content.ContextCompat.getSystemService
+import android.content.ClipData
+import android.support.design.widget.Snackbar
+import android.view.Window
+
 
 class DetailActivity : BaseActivity(), Injectable {
     companion object {
@@ -69,7 +77,42 @@ class DetailActivity : BaseActivity(), Injectable {
                     download()
                     true
                 }
+        menu.add(R.string.copy_link)
+                .setOnMenuItemClickListener {
+                    copyLink()
+                    true
+                }
+        menu.add(R.string.open_link)
+                .setOnMenuItemClickListener {
+                    openLink()
+                    true
+                }
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun openLink() {
+        val link = item.link
+        Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                .run(::startActivity)
+    }
+
+    private fun getTorrentUrl() = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
+
+    private fun copyLink() {
+        if (TextUtils.isEmpty(Settings.PASS_KEY) ){
+            Snackbar.make(findViewById(Window.ID_ANDROID_CONTENT), R.string.need_pass_key, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.go_download_setting) {
+                        startActivity(Intent(this@DetailActivity, SettingActivity::class.java))
+                    }
+                    .show()
+            return
+        }
+        val torrentUrl = getTorrentUrl()
+        (getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
+                ?.apply {
+                    primaryClip = ClipData.newPlainText(torrentUrl, torrentUrl)
+                    Toast.makeText(application, R.string.copy_done, Toast.LENGTH_SHORT).show()
+                }
     }
 
     @SuppressLint("CheckResult")
@@ -78,16 +121,20 @@ class DetailActivity : BaseActivity(), Injectable {
                 TextUtils.isEmpty(Settings.REMOTE_URL) ||
                 TextUtils.isEmpty(Settings.REMOTE_USERNAME) ||
                 TextUtils.isEmpty(Settings.REMOTE_PASSWORD)) {
-            Toast.makeText(application, R.string.need_download_setting, Toast.LENGTH_SHORT).show()
+            Snackbar.make(findViewById(Window.ID_ANDROID_CONTENT), R.string.need_download_setting, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.go_download_setting) {
+                        startActivity(Intent(this@DetailActivity, SettingActivity::class.java))
+                    }
+                    .show()
+            return
         }
-        val torrentUrl = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
         service.token()
                 .flatMap {
                     val html = it.string()
                     val token = Regex("<div id='token' style='display:none;'>([^<>]+)</div>")
                             .find(html)?.groupValues?.getOrNull(1) ?: throw IllegalStateException()
 
-                    return@flatMap service.addUrl(token, URLEncoder.encode(torrentUrl))
+                    return@flatMap service.addUrl(token, URLEncoder.encode(getTorrentUrl()))
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

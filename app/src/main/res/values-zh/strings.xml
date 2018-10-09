@@ -3,6 +3,8 @@
     <string name="action_settings">下载设置</string>
     <string name="action_tabs">首页</string>
     <string name="remote_download">远程下载</string>
+    <string name="copy_link">复制种子地址</string>
+    <string name="open_link">浏览器打开</string>
     <string name="pass_key">密匙（Pass Key）</string>
     <string name="remote_url">远程地址</string>
     <string name="remote_username">用户名</string>
@@ -10,6 +12,8 @@
     <string name="add_failure">添加失败</string>
     <string name="add_success">添加成功</string>
     <string name="need_download_setting">下载设置未配置</string>
+    <string name="need_pass_key">密匙（Pass Key）未配置</string>
+    <string name="go_download_setting">去配置</string>
     <string name="action_checking_version">检查版本</string>
     <string name="action_search">搜索</string>
     <string name="search_filter">筛选</string>
@@ -20,6 +24,7 @@
     <string name="list_style">列表样式</string>
     <string name="download">下载</string>
     <string name="cancel">取消</string>
+    <string name="copy_done">复制成功</string>
     <string-array name="list_columns">
         <item>单列</item>
         <item>双列</item>

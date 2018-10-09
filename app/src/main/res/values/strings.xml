@@ -3,6 +3,8 @@
     <string name="action_settings">Download Settings</string>
     <string name="action_tabs">Tabs</string>
     <string name="remote_download">Remote Download</string>
+    <string name="copy_link">Copy Torrent Link</string>
+    <string name="open_link">Open in Browser</string>
     <string name="pass_key">Pass Key</string>
     <string name="remote_url">Remote Url</string>
     <string name="remote_username">Username</string>
@@ -10,6 +12,8 @@
     <string name="add_failure">add failure</string>
     <string name="add_success">add success</string>
     <string name="need_download_setting">Download Settings not configured</string>
+    <string name="need_pass_key">Pass Key not configured</string>
+    <string name="go_download_setting">Setting</string>
     <string name="action_checking_version">Checking Version</string>
     <string name="action_search">Search</string>
     <string name="search_filter">Filters</string>
@@ -20,6 +24,7 @@
     <string name="list_style">List Style</string>
     <string name="download">Download</string>
     <string name="cancel">Cancel</string>
+    <string name="copy_done">Copy Success</string>
     <string-array name="list_columns">
         <item>Single Column</item>
         <item>Double Column</item>
