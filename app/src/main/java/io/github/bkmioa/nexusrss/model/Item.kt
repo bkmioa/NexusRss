@@ -8,6 +8,13 @@ import java.io.Serializable
 
 @Root(strict = false)
 class Item : Serializable {
+    companion object {
+        private val IGNORED_IMAGE_PATTERN = arrayOf(
+                "pic/trans\\.gif"
+                , "pic/smilies/"
+        ).joinToString("|").toRegex()
+    }
+
     @set:Element(name = "title", required = false)
     @get:Element(name = "title", required = false)
     var originTitle: String? = null
@@ -47,14 +54,17 @@ class Item : Serializable {
     @field:Element(required = false)
     lateinit var comments: String
 
-    var imageUrl: String? = null
-        get() {
-            var url = Regex("src=\"((https?)?[^\"]*)\"").find(description)?.groupValues?.get(1)
-            if (url != null && !url.startsWith("http")) {
-                url = Settings.BASE_URL + "/" + url
-            }
-            return url
+    val imageUrl: String? by lazy { resolveImageUrl() }
+
+    private fun resolveImageUrl(): String? {
+        var url = Regex("<img[^>]+src=\"([^\">]+)\"").findAll(description)
+                .map { it.groupValues[1] }
+                .find { !it.contains(IGNORED_IMAGE_PATTERN) }
+        if (url != null && !url.startsWith("http")) {
+            url = Settings.BASE_URL + "/" + url
         }
+        return url
+    }
 
     @Root
     class Data : Serializable {

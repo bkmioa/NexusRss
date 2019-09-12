@@ -49,6 +49,8 @@ class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.items.filter { it.enclosure != null } }
+                // pre resolve imageUrl
+                .doOnNext { it.forEach { it.imageUrl } }
                 .subscribeWith(object : Observer<List<Item>> {
                     override fun onSubscribe(@NonNull d: Disposable) {
                         if (update) {
