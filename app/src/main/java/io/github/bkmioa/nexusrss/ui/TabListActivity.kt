@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
 import io.github.bkmioa.nexusrss.R
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.activity_tab_list.*
 
 class TabListActivity : BaseActivity(), TabItemViewModel.OnTabVisibilityChangeListener {
 
-    private lateinit var tabListViewModel: TabListViewModel
+    private val tabListViewModel: TabListViewModel by viewModels()
 
     private val tabs: MutableList<Tab> = ArrayList()
 
@@ -42,8 +43,6 @@ class TabListActivity : BaseActivity(), TabItemViewModel.OnTabVisibilityChangeLi
 
         setSupportActionBar(toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
-
-        tabListViewModel = ViewModelProviders.of(this).get(TabListViewModel::class.java)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = listController.adapter

@@ -1,8 +1,6 @@
 package io.github.bkmioa.nexusrss.ui
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import android.graphics.Rect
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
@@ -11,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.airbnb.epoxy.EpoxyAdapter
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
@@ -24,7 +23,6 @@ import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
-import org.koin.android.ext.android.inject
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -39,7 +37,7 @@ class ListFragment : BaseFragment(), Scrollable {
 
     private val isLoadingMore = AtomicBoolean(false)
 
-    private lateinit var listViewModel: RssListViewModel
+    private val listViewModel: RssListViewModel by viewModels()
 
     companion object {
         fun newInstance(options: Array<String>? = null, withSearch: Boolean = false, columnCount: Int = 1): ListFragment {
@@ -75,7 +73,6 @@ class ListFragment : BaseFragment(), Scrollable {
             withSearch = getBoolean("withSearch", false)
             columnCount = getInt("columnCount", 1)
         }
-        listViewModel = ViewModelProviders.of(this).get(RssListViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -2,7 +2,6 @@ package io.github.bkmioa.nexusrss.ui
 
 import android.annotation.SuppressLint
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -20,6 +19,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.viewModels
 import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
@@ -35,7 +35,7 @@ import java.util.*
 
 class MainActivity : BaseActivity() {
 
-    private lateinit var mainViewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels()
 
     private val tabs = ArrayList<Tab>()
 
@@ -51,8 +51,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
-
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             private val mappingFragment = WeakHashMap<Tab, ListFragment>()
