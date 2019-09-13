@@ -18,8 +18,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         >
+
         <activity
             android:name=".ui.MainActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="stateAlwaysHidden"
             >
             <intent-filter>
@@ -27,6 +29,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts"
+                />
         </activity>
         <activity android:name=".ui.DetailActivity" />
         <activity
@@ -40,6 +46,7 @@
             />
         <activity
             android:name=".ui.SearchActivity"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateVisible"
             />
     </application>
