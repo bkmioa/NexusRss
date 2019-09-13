@@ -155,15 +155,18 @@ class ListFragment : BaseFragment(), Scrollable {
         query(true)
     }
 
-    fun query(queryText: String?, options: Array<String>? = null) {
+    fun query(queryText: String, options: Array<String>? = null) {
         this.queryText = queryText
         this.options = options
         refresh()
     }
 
     private fun query(update: Boolean) {
+        if (withSearch && queryText.isNullOrBlank()) {
+            swipeRefreshLayout.isRefreshing = false
+            return
+        }
         listViewModel.query(options, queryText, update)
-
     }
 
     override fun onResume() {

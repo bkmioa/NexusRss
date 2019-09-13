@@ -7,12 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import com.google.android.material.tabs.TabLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import androidx.core.view.MenuItemCompat
 import androidx.viewpager.widget.PagerAdapter
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SearchView
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.Menu
@@ -38,12 +35,6 @@ class MainActivity : BaseActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     private val tabs = ArrayList<Tab>()
-
-    private lateinit var searchView: SearchView
-
-    private var searchFragment: ListFragment? = null
-    private var searchFilterFragment: OptionFragment? = null
-    private var searchFilter: Array<String>? = null
 
     override fun supportSlideBack() = false
 
@@ -150,96 +141,14 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        val searchFilterMenu = menu.findItem(R.id.action_search_filter)
-        searchFilterMenu.setOnMenuItemClickListener {
-            if (searchFilterFragment?.isVisible == true) {
-                searchFilter = searchFilterFragment?.selected?.toTypedArray()
-                removeSearchFilterFragment()
-                searchFilterMenu.setIcon(R.drawable.ic_menu_filter)
-            } else {
-                addSearchFilterFragment()
-                searchFilterMenu.setIcon(R.drawable.ic_menu_done)
-            }
-            true
-        }
-        val menuSearch = menu.findItem(R.id.action_search)
-        MenuItemCompat.setOnActionExpandListener(menuSearch, object : MenuItemCompat.OnActionExpandListener {
-            override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
-                searchFilterMenu.isVisible = true
-                addSearchFragment()
-                return true
-            }
-
-            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
-                searchFilterMenu.isVisible = false
-                removeSearchFragment()
-                removeSearchFilterFragment()
-                searchFilterMenu.setIcon(R.drawable.ic_menu_filter)
-                searchFilter = null
-                return true
-            }
-
-        })
-        searchView = menuSearch.actionView as SearchView
-        searchView.isFocusable = false
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                onQueryText(query)
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean = false
-
-        })
         return true
     }
 
-    private fun removeSearchFilterFragment() {
-        supportFragmentManager.popBackStack("search_filter", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        searchFilterFragment = null
-    }
-
-    private fun addSearchFilterFragment() {
-        searchFilterFragment = supportFragmentManager.findFragmentByTag("search_filter") as? OptionFragment
-                ?: OptionFragment.newInstance(searchFilter)
-
-        val fragment = searchFilterFragment ?: throw IllegalStateException()
-
-        if (!fragment.isVisible) {
-            supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
-                    .add(R.id.container, fragment, "search_filter")
-                    .addToBackStack("search_filter")
-                    .commit()
-        }
-    }
-
-    private fun removeSearchFragment() {
-        supportFragmentManager.popBackStack("search", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        searchFragment = null
-    }
-
-    private fun addSearchFragment() {
-        searchFragment = supportFragmentManager.findFragmentByTag("search") as? ListFragment
-                ?: ListFragment.newInstance(withSearch = true)
-
-        val fragment = searchFragment ?: throw IllegalStateException()
-
-        if (!fragment.isVisible) {
-            supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_from_bottom, 0, 0, R.anim.slide_out_to_bottom)
-                    .add(R.id.container, fragment, "search")
-                    .addToBackStack("search")
-                    .commit()
-        }
-    }
-
-    private fun onQueryText(query: String?) {
-        searchView.clearFocus()
-        searchFragment?.query(query, searchFilter)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.action_search -> {
+            startActivity(SearchActivity.createIntent(this))
+            true
+        }
         R.id.action_settings -> {
             startActivity(SettingActivity.createIntent(this))
             true

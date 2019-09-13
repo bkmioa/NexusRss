@@ -6,14 +6,7 @@
         android:icon="@drawable/ic_search"
         android:orderInCategory="100"
         android:title="@string/action_search"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="always|collapseActionView" />
-    <item
-        android:id="@+id/action_search_filter"
-        android:icon="@drawable/ic_menu_filter"
-        app:showAsAction="always"
-        android:title="@string/search_filter"
-        android:visible="false" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/action_tabs"
         android:orderInCategory="100"
