@@ -12,6 +12,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
 import io.github.bkmioa.nexusrss.R
@@ -96,14 +99,28 @@ class TabListActivity : BaseActivity(), TabItemViewModel.OnTabVisibilityChangeLi
 
         tabListViewModel.tabs().observe(this, Observer<Array<Tab>> {
             it ?: throw IllegalStateException()
+            val newTabs = it.sorted()
 
             tabs.clear()
-            tabs.addAll(it.sorted())
+            tabs.addAll(newTabs)
 
             listController.requestModelBuild()
+
+            buildDynamicShortcut(newTabs)
         })
 
 
+    }
+
+    private fun buildDynamicShortcut(newTabs: List<Tab>) {
+        val shortcuts = newTabs.map { tab ->
+            ShortcutInfoCompat.Builder(this, tab.id.toString())
+                    .setIcon(IconCompat.createWithResource(this, R.drawable.ic_shortcut_home))
+                    .setShortLabel(tab.title)
+                    .setIntent(Intent(Intent.ACTION_VIEW))
+                    .build()
+        }
+        ShortcutManagerCompat.addDynamicShortcuts(this, shortcuts)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
