@@ -1,25 +1,22 @@
 package io.github.bkmioa.nexusrss
 
-import android.app.Activity
+import android.app.Application
 import com.aitangba.swipeback.ActivityLifecycleHelper
 import com.chibatching.kotpref.Kotpref
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.support.DaggerApplication
-import io.github.bkmioa.nexusrss.di.DaggerAppComponent
-import javax.inject.Inject
+import io.github.bkmioa.nexusrss.di.appModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 
-class App : DaggerApplication() {
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.builder().create(this)
-    }
-
-    @Inject internal lateinit
-    var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        startKoin {
+            androidContext(this@App)
+            modules(appModule)
+        }
 
         Kotpref.init(this)
 

@@ -16,7 +16,6 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseFragment
 import io.github.bkmioa.nexusrss.common.Scrollable
-import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.dp2px
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.ListData
@@ -25,11 +24,11 @@ import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
+import org.koin.android.ext.android.inject
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
 
 
-class ListFragment : BaseFragment(), Scrollable, Injectable {
+class ListFragment : BaseFragment(), Scrollable {
 
     private val listAdapter = ListAdapter()
 
@@ -39,9 +38,6 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
     private var columnCount = 1
 
     private val isLoadingMore = AtomicBoolean(false)
-
-    @Inject
-    internal lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var listViewModel: RssListViewModel
 
@@ -79,7 +75,7 @@ class ListFragment : BaseFragment(), Scrollable, Injectable {
             withSearch = getBoolean("withSearch", false)
             columnCount = getInt("columnCount", 1)
         }
-        listViewModel = ViewModelProviders.of(this, viewModelFactory).get(RssListViewModel::class.java)
+        listViewModel = ViewModelProviders.of(this).get(RssListViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

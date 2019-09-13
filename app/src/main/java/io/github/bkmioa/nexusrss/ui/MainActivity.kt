@@ -2,7 +2,6 @@ package io.github.bkmioa.nexusrss.ui
 
 import android.annotation.SuppressLint
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
@@ -25,7 +24,6 @@ import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
-import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Release
 import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
@@ -33,17 +31,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import javax.inject.Inject
 
 
-class MainActivity : BaseActivity(), Injectable {
+class MainActivity : BaseActivity() {
 
-    @Inject
-    internal
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private lateinit
-    var mainViewModel: MainViewModel
+    private lateinit var mainViewModel: MainViewModel
 
     private val tabs = ArrayList<Tab>()
 
@@ -60,7 +52,7 @@ class MainActivity : BaseActivity(), Injectable {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
 
-        mainViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 
         viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             private val mappingFragment = WeakHashMap<Tab, ListFragment>()

@@ -46,12 +46,8 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:$support_version"
     implementation "com.android.support:preference-v14:$support_version"
 
-    //dagger2
-    implementation "com.google.dagger:dagger:$dagger2_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger2_version"
-    implementation "com.google.dagger:dagger-android:$dagger2_version"
-    implementation "com.google.dagger:dagger-android-support:$dagger2_version"
-    kapt "com.google.dagger:dagger-android-processor:$dagger2_version"
+    // Koin
+    implementation "org.koin:koin-android:$koin_version"
 
     //lifecycle
     implementation("android.arch.lifecycle:runtime:$android_lifecycle_version") {

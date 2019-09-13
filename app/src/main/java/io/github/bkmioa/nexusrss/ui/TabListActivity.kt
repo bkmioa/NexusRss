@@ -15,20 +15,14 @@ import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyTouchHelper
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
-import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.dp2px
 import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.ui.viewModel.TabItemViewModel
 import io.github.bkmioa.nexusrss.ui.viewModel.TabItemViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.TabListViewModel
 import kotlinx.android.synthetic.main.activity_tab_list.*
-import javax.inject.Inject
 
-class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibilityChangeListener {
-
-    @Inject
-    internal
-    lateinit var viewModelFactory: ViewModelProvider.Factory
+class TabListActivity : BaseActivity(), TabItemViewModel.OnTabVisibilityChangeListener {
 
     private lateinit var tabListViewModel: TabListViewModel
 
@@ -49,7 +43,7 @@ class TabListActivity : BaseActivity(), Injectable, TabItemViewModel.OnTabVisibi
         setSupportActionBar(toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
-        tabListViewModel = ViewModelProviders.of(this, viewModelFactory).get(TabListViewModel::class.java)
+        tabListViewModel = ViewModelProviders.of(this).get(TabListViewModel::class.java)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = listController.adapter

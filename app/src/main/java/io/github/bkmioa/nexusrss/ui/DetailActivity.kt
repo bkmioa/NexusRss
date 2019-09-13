@@ -1,21 +1,23 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.ActionBar
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.view.Menu
+import android.view.Window
 import android.widget.Toast
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.GlideImageGetter
-import io.github.bkmioa.nexusrss.di.Injectable
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.repository.UTorrentService
 import io.reactivex.Observer
@@ -24,16 +26,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail.*
 import okhttp3.ResponseBody
+import org.koin.android.ext.android.inject
 import java.net.URLEncoder
-import javax.inject.Inject
-import android.content.Context.CLIPBOARD_SERVICE
-import android.support.v4.content.ContextCompat.getSystemService
-import android.content.ClipData
-import android.support.design.widget.Snackbar
-import android.view.Window
 
 
-class DetailActivity : BaseActivity(), Injectable {
+class DetailActivity : BaseActivity() {
     companion object {
         fun createIntent(context: Context, item: Item): Intent {
             val intent = Intent(context, DetailActivity::class.java)
@@ -42,9 +39,7 @@ class DetailActivity : BaseActivity(), Injectable {
         }
     }
 
-    @Inject
-    internal lateinit
-    var service: UTorrentService
+    private val service: UTorrentService by inject()
 
     lateinit var item: Item
     override fun onCreate(savedInstanceState: Bundle?) {

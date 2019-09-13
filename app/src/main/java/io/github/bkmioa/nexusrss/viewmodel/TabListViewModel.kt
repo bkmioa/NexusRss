@@ -1,14 +1,14 @@
 package io.github.bkmioa.nexusrss.viewmodel
 
-import io.github.bkmioa.nexusrss.App
+import android.app.Application
 import io.github.bkmioa.nexusrss.base.BaseViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.model.Tab
-import javax.inject.Inject
+import org.koin.core.inject
 
-class TabListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
+class TabListViewModel(app: Application) : BaseViewModel(app) {
 
-    @Inject lateinit var appDatabase: AppDatabase
+    private val appDatabase: AppDatabase by inject()
 
     private val appDao by lazy { appDatabase.appDao() }
 

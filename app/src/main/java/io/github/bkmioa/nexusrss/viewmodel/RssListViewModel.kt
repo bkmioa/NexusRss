@@ -1,7 +1,7 @@
 package io.github.bkmioa.nexusrss.viewmodel
 
+import android.app.Application
 import android.arch.lifecycle.MutableLiveData
-import io.github.bkmioa.nexusrss.App
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseViewModel
 import io.github.bkmioa.nexusrss.model.Item
@@ -13,11 +13,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.koin.core.inject
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.inject.Inject
 
-class RssListViewModel @Inject constructor(app: App) : BaseViewModel(app) {
-    @Inject lateinit internal var service: Service
+class RssListViewModel(app: Application) : BaseViewModel(app) {
+    private val service: Service by inject()
 
     private var page: Int = 0
     private val isLoading = AtomicBoolean(false)

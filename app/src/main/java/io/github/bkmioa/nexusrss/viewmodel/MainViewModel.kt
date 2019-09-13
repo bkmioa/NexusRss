@@ -1,21 +1,16 @@
 package io.github.bkmioa.nexusrss.viewmodel
 
-import io.github.bkmioa.nexusrss.App
+import android.app.Application
 import io.github.bkmioa.nexusrss.base.BaseViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.repository.GithubService
-import javax.inject.Inject
-import javax.inject.Singleton
+import org.koin.core.inject
 
+class MainViewModel(app: Application) : BaseViewModel(app) {
 
-@Singleton
-class MainViewModel @Inject constructor(app: App) : BaseViewModel(app) {
+    private val appDatabase: AppDatabase by inject()
 
-    @Inject
-    lateinit var appDatabase: AppDatabase
-
-    @Inject
-    lateinit var githubService: GithubService
+    private val githubService: GithubService by inject()
 
     private val appDao by lazy {
         appDatabase.appDao()
