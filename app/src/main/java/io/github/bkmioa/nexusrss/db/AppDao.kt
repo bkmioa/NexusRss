@@ -1,7 +1,7 @@
 package io.github.bkmioa.nexusrss.db
 
-import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.*
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import io.github.bkmioa.nexusrss.model.Tab
 import io.reactivex.Single
 

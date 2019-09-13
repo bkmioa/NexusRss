@@ -15,7 +15,7 @@ android {
         targetSdkVersion 28
         versionCode 12
         versionName "1.0.0-alpha_12"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         release {
@@ -41,35 +41,25 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //support
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
-    implementation "com.android.support:recyclerview-v7:$support_version"
-    implementation "com.android.support:preference-v14:$support_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
 
     // Koin
     implementation "org.koin:koin-android:$koin_version"
 
     //lifecycle
-    implementation("android.arch.lifecycle:runtime:$android_lifecycle_version") {
-        exclude group: 'com.android.support'
-    }
-    implementation("android.arch.lifecycle:extensions:$android_lifecycle_version") {
-        exclude group: 'com.android.support'
-    }
-    kapt "android.arch.lifecycle:compiler:$android_lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$android_lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-compiler:$android_lifecycle_version"
 
     //room
-    implementation("android.arch.persistence.room:runtime:$android_room_version") {
-        exclude group: 'com.android.support'
-    }
-    implementation("android.arch.persistence.room:rxjava2:$android_room_version") {
-        exclude group: 'com.android.support'
-    }
-    kapt "android.arch.persistence.room:compiler:$android_room_version"
+    implementation "androidx.room:room-runtime:$android_room_version"
+    implementation "androidx.room:room-rxjava2:$android_room_version"
+    kapt "androidx.room:room-compiler:$android_room_version"
 
     //rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     //okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.11.0'
@@ -93,7 +83,7 @@ dependencies {
     implementation 'org.sufficientlysecure:html-textview:3.4'
 
     //epoxy
-    implementation ('com.airbnb.android:epoxy:2.14.0'){
+    implementation('com.airbnb.android:epoxy:3.7.0') {
         exclude group: 'com.android.support'
     }
     kapt 'com.airbnb.android:epoxy-processor:2.14.0'
@@ -105,7 +95,7 @@ dependencies {
 
     implementation 'com.aitangba:swipeback:1.0.2'
 
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.1'

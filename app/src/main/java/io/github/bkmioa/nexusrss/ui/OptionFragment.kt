@@ -1,8 +1,8 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.os.Bundle
-import android.support.annotation.WorkerThread
-import android.support.v7.widget.GridLayoutManager
+import androidx.annotation.WorkerThread
+import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

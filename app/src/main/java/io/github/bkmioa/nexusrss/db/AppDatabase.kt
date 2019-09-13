@@ -1,8 +1,8 @@
 package io.github.bkmioa.nexusrss.db
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.RoomDatabase
-import android.arch.persistence.room.TypeConverters
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.model.Tab
 

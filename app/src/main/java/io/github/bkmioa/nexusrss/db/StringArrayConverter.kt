@@ -1,6 +1,6 @@
 package io.github.bkmioa.nexusrss.db
 
-import android.arch.persistence.room.TypeConverter
+import androidx.room.TypeConverter
 
 class StringArrayConverter {
     @TypeConverter

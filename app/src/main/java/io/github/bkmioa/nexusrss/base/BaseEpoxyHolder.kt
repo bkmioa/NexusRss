@@ -1,6 +1,6 @@
 package io.github.bkmioa.nexusrss.base
 
-import android.support.annotation.CallSuper
+import androidx.annotation.CallSuper
 import android.view.View
 import com.airbnb.epoxy.EpoxyHolder
 

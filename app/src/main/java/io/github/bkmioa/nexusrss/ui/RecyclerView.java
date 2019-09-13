@@ -1,13 +1,13 @@
 package io.github.bkmioa.nexusrss.ui;
 
 import android.content.Context;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v4.view.ViewConfigurationCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.core.view.ViewConfigurationCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
-public class RecyclerView extends android.support.v7.widget.RecyclerView {
+public class RecyclerView extends androidx.recyclerview.widget.RecyclerView {
     private static final int INVALID_POINTER = -1;
 
     private int mScrollPointerId = INVALID_POINTER;

@@ -1,10 +1,10 @@
 package io.github.bkmioa.nexusrss.di
 
 import android.app.Application
-import android.arch.persistence.db.SupportSQLiteDatabase
-import android.arch.persistence.room.Room
-import android.arch.persistence.room.RoomDatabase
-import android.arch.persistence.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import io.github.bkmioa.nexusrss.App
