@@ -21,7 +21,11 @@ class GlideImageGetter(private val container: TextView,
         val urlDrawable = UrlDrawable()
 
         val url = if (baseUrl != null) {
-            URI.create(baseUrl).resolve(source.trim()).toString()
+            try {
+                URI.create(baseUrl).resolve(source.trim()).toString()
+            } catch (e: Exception) {
+                source
+            }
         } else {
             source
         }
