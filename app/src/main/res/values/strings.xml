@@ -30,4 +30,5 @@
         <item>Double Column</item>
         <item>Triple Column</item>
     </string-array>
+    <string name="loading_error">Oops! Something went wrong…</string>
 </resources>

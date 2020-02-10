@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import com.airbnb.epoxy.EpoxyAdapter
 import io.github.bkmioa.nexusrss.R
@@ -141,6 +142,10 @@ class ListFragment : BaseFragment(), Scrollable {
             if (isLoadingMore.get() != it.loadMore) {
                 isLoadingMore.set(it.loading)
                 listAdapter.loadMore(it.loadMore)
+            }
+
+            if (it.error != null) {
+                Toast.makeText(context, R.string.loading_error, Toast.LENGTH_SHORT).show()
             }
         })
 

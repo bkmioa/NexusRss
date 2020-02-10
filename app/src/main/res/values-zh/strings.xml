@@ -30,4 +30,5 @@
         <item>双列</item>
         <item>三列</item>
     </string-array>
+    <string name="loading_error">Oops！出错了…</string>
 </resources>

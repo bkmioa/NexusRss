@@ -74,7 +74,7 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
                         if (!update) {
                             page--
                         }
-                        loadingState.value = LoadingState(false, false)
+                        loadingState.value = LoadingState(false, false, e)
                     }
 
                     override fun onComplete() {
