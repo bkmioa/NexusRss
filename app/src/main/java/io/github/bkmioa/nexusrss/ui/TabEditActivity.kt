@@ -60,7 +60,7 @@ class TabEditActivity : BaseActivity() {
         val editable = editTextTitle.text ?: throw IllegalStateException()
 
         if (editable.isEmpty()) {
-            editTextTitle.error = "empty!!"
+            editTextTitle.error = "item_empty!!"
             return
         }
         val options = optionFragment.selected.toTypedArray()

@@ -20,6 +20,8 @@ import io.github.bkmioa.nexusrss.dp2px
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.ListData
 import io.github.bkmioa.nexusrss.model.LoadingState
+import io.github.bkmioa.nexusrss.ui.viewModel.EmptyViewModel_
+import io.github.bkmioa.nexusrss.ui.viewModel.ErrorViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
@@ -145,7 +147,8 @@ class ListFragment : BaseFragment(), Scrollable {
             }
 
             if (it.error != null) {
-                Toast.makeText(context, R.string.loading_error, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.loading_error_toast, Toast.LENGTH_SHORT).show()
+                listAdapter.loadingError(it.error)
             }
         })
 
@@ -192,6 +195,8 @@ class ListFragment : BaseFragment(), Scrollable {
 
     inner class ListAdapter : EpoxyAdapter() {
         private val loadMoreViewModel = LoadMoreViewModel_()
+        private val emptyViewModel by lazy { EmptyViewModel_() }
+        private val errorViewModel by lazy { ErrorViewModel_() }
 
         fun buildModels(data: Array<Item>, refresh: Boolean) {
             if (refresh) {
@@ -204,7 +209,11 @@ class ListFragment : BaseFragment(), Scrollable {
                             startActivity(intent)
                         }
             }
-            addModels(list)
+            if (list.isEmpty()) {
+                addModel(emptyViewModel)
+            } else {
+                addModels(list)
+            }
         }
 
         fun loadMore(loadMore: Boolean) {
@@ -217,8 +226,12 @@ class ListFragment : BaseFragment(), Scrollable {
             } else {
                 removeModel(loadMoreViewModel)
             }
+        }
 
-
+        fun loadingError(error: Throwable) {
+            if(models.isEmpty()){
+                addModel(errorViewModel)
+            }
         }
 
     }

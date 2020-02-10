@@ -40,12 +40,13 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
             page++
         }
 
-        val startIndex = page * Settings.PAGE_SIZE
+        val pageSize = Settings.PAGE_SIZE
+        val startIndex = page * pageSize
 
         val queryMap = HashMap<String, String>()
         options?.forEach { queryMap[it] = "1" }
 
-        service.queryList(queryMap, startIndex, Settings.PAGE_SIZE, queryText)
+        service.queryList(queryMap, startIndex, pageSize, queryText)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.items.filter { it.enclosure != null } }
@@ -63,9 +64,8 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
                     override fun onNext(@NonNull list: List<Item>) {
                         if (!list.isEmpty() || update) {
                             listData.value = ListData(list.toTypedArray(), !update)
-                        } else {
-                            noMore.set(true)
                         }
+                        noMore.set(list.size < pageSize)
                     }
 
                     override fun onError(@NonNull e: Throwable) {
@@ -73,6 +73,8 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
                         isLoading.set(false)
                         if (!update) {
                             page--
+                        }else{
+                            noMore.set(true)
                         }
                         loadingState.value = LoadingState(false, false, e)
                     }

@@ -30,5 +30,7 @@
         <item>双列</item>
         <item>三列</item>
     </string-array>
-    <string name="loading_error">Oops！出错了…</string>
+    <string name="loading_error_toast">Oops！出错了…</string>
+    <string name="loading_error">加载失败</string>
+    <string name="no_data">没有数据</string>
 </resources>
