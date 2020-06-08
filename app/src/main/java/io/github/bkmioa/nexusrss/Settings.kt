@@ -7,7 +7,7 @@ class Settings {
 
         override val kotprefName = BuildConfig.APPLICATION_ID + "_preferences"
 
-        const val BASE_URL = "https://tp.m-team.cc"
+        const val BASE_URL = "https://pt.m-team.cc"
 
         var PAGE_SIZE by intPref(20, "pageSize")
         var PASS_KEY by stringPref(key = "passkey")
