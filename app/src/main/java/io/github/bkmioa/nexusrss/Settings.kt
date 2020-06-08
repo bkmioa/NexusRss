@@ -9,7 +9,7 @@ class Settings {
 
         const val BASE_URL = "https://pt.m-team.cc"
 
-        var PAGE_SIZE by intPref(20, "pageSize")
+        var PAGE_SIZE by intPref(50, "pageSize")
         var PASS_KEY by stringPref(key = "passkey")
         var REMOTE_URL by stringPref("http://localhost", key = "remoteUrl")
         var REMOTE_USERNAME by stringPref(key = "remoteUsername")
