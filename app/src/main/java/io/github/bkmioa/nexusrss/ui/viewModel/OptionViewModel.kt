@@ -11,7 +11,7 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
 import io.github.bkmioa.nexusrss.base.GlideApp
 import io.github.bkmioa.nexusrss.model.Option
-import kotterknife.bindView
+import kotlinx.android.synthetic.main.option_item.view.*
 
 @EpoxyModelClass(layout = R.layout.option_item)
 abstract class OptionViewModel(
@@ -52,8 +52,8 @@ abstract class OptionViewModel(
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val checkBox: CheckBox by bindView(R.id.checkBox)
-        val imageView: ImageView by bindView(R.id.imageView)
+        val checkBox: CheckBox by lazy { itemView.checkBox }
+        val imageView: ImageView by lazy { itemView.imageView }
     }
 
     interface OnOptionCheckedListener {

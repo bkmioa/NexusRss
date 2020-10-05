@@ -8,7 +8,7 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
 import io.github.bkmioa.nexusrss.model.Option
-import kotterknife.bindView
+import kotlinx.android.synthetic.main.option_group.view.*
 
 @EpoxyModelClass(layout = R.layout.option_group)
 abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
@@ -44,7 +44,7 @@ abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val textView: TextView by bindView(R.id.textViewName)
-        val checkBox: CheckBox by bindView(R.id.checkBox)
+        val textView: TextView by lazy { itemView.textViewName }
+        val checkBox: CheckBox by lazy { itemView.checkBox }
     }
 }

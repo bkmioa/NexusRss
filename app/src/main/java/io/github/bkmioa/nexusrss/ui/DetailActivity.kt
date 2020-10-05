@@ -105,7 +105,7 @@ class DetailActivity : BaseActivity() {
         val torrentUrl = getTorrentUrl()
         (getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
                 ?.apply {
-                    primaryClip = ClipData.newPlainText(torrentUrl, torrentUrl)
+                    setPrimaryClip(ClipData.newPlainText(torrentUrl, torrentUrl))
                     Toast.makeText(application, R.string.copy_done, Toast.LENGTH_SHORT).show()
                 }
     }

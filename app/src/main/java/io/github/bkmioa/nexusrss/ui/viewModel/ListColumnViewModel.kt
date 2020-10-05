@@ -9,7 +9,7 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
-import kotterknife.bindView
+import kotlinx.android.synthetic.main.item_list_column.view.*
 
 @EpoxyModelClass(layout = R.layout.item_list_column)
 abstract class ListColumnViewModel(@EpoxyAttribute @JvmField val initColumn: Int)
@@ -46,6 +46,6 @@ abstract class ListColumnViewModel(@EpoxyAttribute @JvmField val initColumn: Int
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val spinner: Spinner by bindView(R.id.spinner)
+        val spinner: Spinner by lazy { itemView.spinner }
     }
 }

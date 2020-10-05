@@ -12,7 +12,7 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
 import io.github.bkmioa.nexusrss.base.GlideApp
 import io.github.bkmioa.nexusrss.model.Item
-import kotterknife.bindView
+import kotlinx.android.synthetic.main.item_view.view.*
 
 @EpoxyModelClass(layout = R.layout.item_view)
 abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<ItemViewModel.ViewHolder>() {
@@ -44,9 +44,9 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val imageView: ImageView by bindView(R.id.imageView)
-        val textViewTitle: TextView by bindView(R.id.textViewTitle)
-        val textViewSubTitle: TextView by bindView(R.id.textViewSubTitle)
+        val imageView: ImageView by lazy { itemView.imageView }
+        val textViewTitle: TextView by lazy { itemView.textViewTitle }
+        val textViewSubTitle: TextView by lazy { itemView.textViewSubTitle }
 
     }
 }

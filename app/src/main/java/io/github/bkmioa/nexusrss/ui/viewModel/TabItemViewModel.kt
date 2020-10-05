@@ -9,7 +9,7 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
 import io.github.bkmioa.nexusrss.model.Tab
-import kotterknife.bindView
+import kotlinx.android.synthetic.main.tab_list_item.view.*
 
 @EpoxyModelClass(layout = R.layout.tab_list_item)
 abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
@@ -39,8 +39,8 @@ abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val textViewTitle: TextView by bindView(R.id.textViewTitle)
-        val switchVisibility: SwitchCompat by bindView(R.id.switchVisibility)
+        val textViewTitle: TextView by lazy { itemView.textViewTitle }
+        val switchVisibility: SwitchCompat by lazy { itemView.switchVisibility }
     }
 
     interface OnTabVisibilityChangeListener {
