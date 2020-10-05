@@ -10,8 +10,8 @@ data class Option constructor(
         var img: String? = null) : Parcelable {
 
     constructor(source: Parcel) : this(
-            source.readString(),
-            source.readString(),
+            source.readString()!!,
+            source.readString()!!,
             source.readString()
     )
 
