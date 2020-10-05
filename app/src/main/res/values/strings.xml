@@ -2,13 +2,16 @@
     <string name="app_name">M-Team</string>
     <string name="action_settings">Download Settings</string>
     <string name="action_tabs">Tabs</string>
-    <string name="remote_download">Remote Download</string>
+    <string name="remote_download">Download To …</string>
     <string name="copy_link">Copy Torrent Link</string>
     <string name="open_link">Open in Browser</string>
     <string name="pass_key">Pass Key</string>
+    <string name="remote_name">Name</string>
     <string name="remote_url">Remote Url</string>
     <string name="remote_username">Username</string>
     <string name="remote_password">Password</string>
+    <string name="remote_path">Download Path</string>
+    <string name="edit_can_not_empty">Can not empty</string>
     <string name="add_failure">add failure</string>
     <string name="add_success">add success</string>
     <string name="need_download_setting">Download Settings not configured</string>
@@ -33,4 +36,8 @@
     <string name="loading_error_toast">Oops! Something went wrong…</string>
     <string name="loading_error">LOADING ERROR</string>
     <string name="no_data">NO DATA LOADED</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="deleted">Deleted</string>
+    <string name="downloading">Downloading...</string>
 </resources>

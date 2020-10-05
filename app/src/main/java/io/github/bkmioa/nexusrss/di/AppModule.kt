@@ -1,21 +1,20 @@
 package io.github.bkmioa.nexusrss.di
 
 import android.app.Application
-import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import io.github.bkmioa.nexusrss.App
 import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.Settings
+import io.github.bkmioa.nexusrss.db.AppDao
 import io.github.bkmioa.nexusrss.db.AppDatabase
+import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.repository.GithubService
-import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
 import io.github.bkmioa.nexusrss.repository.Service
-import io.github.bkmioa.nexusrss.repository.UTorrentService
-import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
@@ -23,16 +22,16 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
-import java.net.CookieManager
 
 val appModule = module {
     single { get<Application>() as App }
     single { provideLoggingInterceptor() }
     single { provideCommonHttpClient(get()) }
     single { provideService(httpclient = get()) }
-    single { provideUTorrentService(get()) }
     single { provideGithubService(get()) }
     single { provideAppDatabase(get()) }
+    single { provideAppDao(get()) }
+    single { provideDownloadDao(get()) }
 }
 
 private fun provideService(httpclient: OkHttpClient): Service {
@@ -49,26 +48,6 @@ private fun provideCommonHttpClient(httpLoggingInterceptor: HttpLoggingIntercept
     return OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
             .build()
-}
-
-private fun provideUTorrentService(httpLoggingInterceptor: HttpLoggingInterceptor): UTorrentService {
-    val httpclient = OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .cookieJar(JavaNetCookieJar(CookieManager()))
-            .authenticator { _, response ->
-                response.request().newBuilder()
-                        .header("Authorization", Credentials.basic(Settings.REMOTE_USERNAME, Settings.REMOTE_PASSWORD))
-                        .build()
-            }
-            .build()
-
-    return Retrofit.Builder()
-            .baseUrl(Settings.REMOTE_URL)
-            .client(httpclient)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(UTorrentService::class.java)
 }
 
 private fun provideGithubService(httpclient: OkHttpClient): GithubService {
@@ -106,12 +85,11 @@ private fun provideAppDatabase(app: App): AppDatabase {
                             "('MUSIC','cat406,cat408,cat434',3,1,1)")
                 }
             })
-            .addMigrations(object : Migration(1, 2) {
-                override fun migrate(database: SupportSQLiteDatabase) {
-                    database.execSQL("ALTER TABLE TAB ADD COLUMN columnCount INT NOT NULL DEFAULT 1")
-                }
-
-            })
+            .addMigrations(*AppDatabase.migrations())
             .build()
 }
+
+private fun provideAppDao(database: AppDatabase): AppDao = database.appDao()
+
+private fun provideDownloadDao(database: AppDatabase): DownloadDao = database.downloadDao()
 

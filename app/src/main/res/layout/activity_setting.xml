@@ -17,7 +17,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
@@ -39,52 +39,12 @@
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            >
-
-            <EditText
-                android:id="@+id/editTextRemoteUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/remote_url"
-                android:inputType="text"
-                android:maxLines="1"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            >
-
-            <EditText
-                android:id="@+id/editTextUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/remote_username"
-                android:inputType="text"
-                android:maxLines="1"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            >
-
-            <EditText
-                android:id="@+id/editTextPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/remote_password"
-                android:inputType="textPassword"
-                android:maxLines="1"
-                />
-        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
+
+    <fragment
+        android:id="@+id/downloadNodeList"
+        class="io.github.bkmioa.nexusrss.download.ui.DownloadNodeListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 </LinearLayout>

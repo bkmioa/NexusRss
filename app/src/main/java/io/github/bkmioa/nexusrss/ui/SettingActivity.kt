@@ -3,9 +3,9 @@ package io.github.bkmioa.nexusrss.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.ActionBar
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.appcompat.app.ActionBar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
@@ -25,31 +25,12 @@ class SettingActivity : BaseActivity() {
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
         editTextPasskey.setText(Settings.PASS_KEY)
-        editTextRemoteUrl.setText(Settings.REMOTE_URL)
-        editTextUsername.setText(Settings.REMOTE_USERNAME)
-        editTextPassword.setText(Settings.REMOTE_PASSWORD)
 
         editTextPasskey.addTextChangedListener(object : OnTextChange() {
             override fun afterTextChanged(s: Editable) {
                 Settings.PASS_KEY = s.toString().trim()
             }
         })
-        editTextRemoteUrl.addTextChangedListener(object : OnTextChange() {
-            override fun afterTextChanged(s: Editable) {
-                Settings.REMOTE_URL = s.toString().trim()
-            }
-        })
-        editTextUsername.addTextChangedListener(object : OnTextChange() {
-            override fun afterTextChanged(s: Editable) {
-                Settings.REMOTE_USERNAME = s.toString().trim()
-            }
-        })
-        editTextPassword.addTextChangedListener(object : OnTextChange() {
-            override fun afterTextChanged(s: Editable) {
-                Settings.REMOTE_PASSWORD = s.toString().trim()
-            }
-        })
-
     }
 
     abstract class OnTextChange : TextWatcher {

@@ -30,14 +30,14 @@ data class Tab(
         if (id != other.id) return false
         if (title != other.title) return false
         if (columnCount != other.columnCount) return false
-        if (!Arrays.equals(options, other.options)) return false
+        if (!options.contentEquals(other.options)) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = title.hashCode()
-        result = 31 * result + Arrays.hashCode(options)
+        result = 31 * result + options.contentHashCode()
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + columnCount.hashCode()
         return result

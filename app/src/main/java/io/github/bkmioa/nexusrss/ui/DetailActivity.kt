@@ -1,33 +1,28 @@
 package io.github.bkmioa.nexusrss.ui
 
-import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.ActionBar
 import android.text.TextUtils
 import android.text.format.Formatter
 import android.view.Menu
 import android.view.Window
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
+import com.google.android.material.snackbar.Snackbar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.GlideImageGetter
+import io.github.bkmioa.nexusrss.db.DownloadDao
+import io.github.bkmioa.nexusrss.download.RemoteDownloader
+import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.repository.UTorrentService
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail.*
-import okhttp3.ResponseBody
 import org.koin.android.ext.android.inject
-import java.net.URLEncoder
 
 
 class DetailActivity : BaseActivity() {
@@ -39,9 +34,12 @@ class DetailActivity : BaseActivity() {
         }
     }
 
-    private val service: UTorrentService by inject()
-
     lateinit var item: Item
+
+    private val downloadDao: DownloadDao by inject()
+
+    private var downloadNodes: List<DownloadNodeModel> = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
@@ -59,98 +57,93 @@ class DetailActivity : BaseActivity() {
         }
 
         textViewInfo.text = "Category :\t${item.category}" + "\n" +
-                "Size:\t${Formatter.formatShortFileSize(this, item.enclosure?.length
-                        ?: 0)}" + "\n" +
+                "Size:\t${
+                    Formatter.formatShortFileSize(
+                        this, item.enclosure?.length
+                            ?: 0
+                    )
+                }" + "\n" +
                 "Author:\t${item.author}" + "\n" +
                 "PubDate:\t${item.pubDate}" + "\n"
 
+        downloadDao.getAllLiveData().observe(this){
+            downloadNodes = it
+            invalidateOptionsMenu()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(R.string.remote_download)
+        if (downloadNodes.isEmpty()) {
+            menu.add(R.string.remote_download)
                 .setOnMenuItemClickListener {
-                    download()
+                    goSetting()
                     true
                 }
+        } else {
+            val subMenu = menu.addSubMenu(R.string.remote_download)
+            downloadNodes.forEach { node ->
+                subMenu.add(node.name)
+                    .setOnMenuItemClickListener {
+                        downloadTo(node)
+                        true
+                    }
+            }
+        }
+
         menu.add(R.string.copy_link)
-                .setOnMenuItemClickListener {
-                    copyLink()
-                    true
-                }
+            .setOnMenuItemClickListener {
+                copyLink()
+                true
+            }
         menu.add(R.string.open_link)
-                .setOnMenuItemClickListener {
-                    openLink()
-                    true
-                }
+            .setOnMenuItemClickListener {
+                openLink()
+                true
+            }
         return super.onCreateOptionsMenu(menu)
     }
 
     private fun openLink() {
         val link = item.link
         Intent(Intent.ACTION_VIEW, Uri.parse(link))
-                .run(::startActivity)
+            .run(::startActivity)
     }
 
     private fun getTorrentUrl() = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
 
     private fun copyLink() {
-        if (TextUtils.isEmpty(Settings.PASS_KEY) ){
+        if (TextUtils.isEmpty(Settings.PASS_KEY)) {
             Snackbar.make(findViewById(Window.ID_ANDROID_CONTENT), R.string.need_pass_key, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.go_download_setting) {
-                        startActivity(Intent(this@DetailActivity, SettingActivity::class.java))
-                    }
-                    .show()
+                .setAction(R.string.go_download_setting) {
+                    startActivity(Intent(this@DetailActivity, SettingActivity::class.java))
+                }
+                .show()
             return
         }
         val torrentUrl = getTorrentUrl()
         (getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
-                ?.apply {
-                    setPrimaryClip(ClipData.newPlainText(torrentUrl, torrentUrl))
-                    Toast.makeText(application, R.string.copy_done, Toast.LENGTH_SHORT).show()
-                }
+            ?.apply {
+                setPrimaryClip(ClipData.newPlainText(torrentUrl, torrentUrl))
+                Toast.makeText(application, R.string.copy_done, Toast.LENGTH_SHORT).show()
+            }
     }
 
-    @SuppressLint("CheckResult")
-    private fun download() {
-        if (TextUtils.isEmpty(Settings.PASS_KEY) ||
-                TextUtils.isEmpty(Settings.REMOTE_URL) ||
-                TextUtils.isEmpty(Settings.REMOTE_USERNAME) ||
-                TextUtils.isEmpty(Settings.REMOTE_PASSWORD)) {
-            Snackbar.make(findViewById(Window.ID_ANDROID_CONTENT), R.string.need_download_setting, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.go_download_setting) {
-                        startActivity(Intent(this@DetailActivity, SettingActivity::class.java))
-                    }
-                    .show()
+    private fun downloadTo(node: DownloadNodeModel) {
+        if (TextUtils.isEmpty(Settings.PASS_KEY)) {
+            goSetting()
             return
         }
-        service.token()
-                .flatMap {
-                    val html = it.string()
-                    val token = Regex("<div id='token' style='display:none;'>([^<>]+)</div>")
-                            .find(html)?.groupValues?.getOrNull(1) ?: throw IllegalStateException()
 
-                    return@flatMap service.addUrl(token, URLEncoder.encode(getTorrentUrl()))
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : Observer<ResponseBody> {
-                    override fun onComplete() {
+        RemoteDownloader(this.applicationContext)
+            .download(node.toDownloadNode(), getTorrentUrl())
+    }
 
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                    }
-
-                    override fun onError(e: Throwable) {
-                        e.printStackTrace()
-                        Toast.makeText(application, R.string.add_failure, Toast.LENGTH_SHORT).show()
-                    }
-
-                    override fun onNext(response: ResponseBody) {
-                        Toast.makeText(application, R.string.add_success, Toast.LENGTH_SHORT).show()
-                    }
-
-                })
+    private fun goSetting() {
+        Snackbar.make(findViewById(Window.ID_ANDROID_CONTENT), R.string.need_download_setting, Snackbar.LENGTH_LONG)
+            .setAction(R.string.go_download_setting) {
+                startActivity(Intent(this@DetailActivity, SettingActivity::class.java))
+            }
+            .show()
     }
 
 }

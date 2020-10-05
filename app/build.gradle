@@ -70,6 +70,8 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$android_room_version"
     kapt "androidx.room:room-compiler:$android_room_version"
 
+    implementation "androidx.constraintlayout:constraintlayout:2.0.2"
+
     //rx
     implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'

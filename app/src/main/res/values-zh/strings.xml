@@ -2,13 +2,16 @@
     <string name="app_name">M-Team</string>
     <string name="action_settings">下载设置</string>
     <string name="action_tabs">首页</string>
-    <string name="remote_download">远程下载</string>
+    <string name="remote_download">下载到…</string>
     <string name="copy_link">复制种子地址</string>
     <string name="open_link">浏览器打开</string>
     <string name="pass_key">密匙（Pass Key）</string>
+    <string name="remote_name">名称</string>
     <string name="remote_url">远程地址</string>
     <string name="remote_username">用户名</string>
     <string name="remote_password">密码</string>
+    <string name="remote_path">下载路径</string>
+    <string name="edit_can_not_empty">不能为空</string>
     <string name="add_failure">添加失败</string>
     <string name="add_success">添加成功</string>
     <string name="need_download_setting">下载设置未配置</string>
@@ -33,4 +36,8 @@
     <string name="loading_error_toast">Oops！出错了…</string>
     <string name="loading_error">加载失败</string>
     <string name="no_data">没有数据</string>
+    <string name="action_delete">删除</string>
+    <string name="action_duplicate">拷贝</string>
+    <string name="deleted">已删除</string>
+    <string name="downloading">正在下载…</string>
 </resources>

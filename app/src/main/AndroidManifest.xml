@@ -48,6 +48,7 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateVisible"
             />
+        <activity android:name=".download.ui.DownloadEditActivity" />
     </application>
 
 </manifest>
