@@ -18,6 +18,7 @@ import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.GlideImageGetter
 import io.github.bkmioa.nexusrss.db.DownloadDao
+import io.github.bkmioa.nexusrss.download.DownloadTask
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
@@ -134,8 +135,7 @@ class DetailActivity : BaseActivity() {
             return
         }
 
-        RemoteDownloader(this.applicationContext)
-            .download(node.toDownloadNode(), getTorrentUrl())
+        RemoteDownloader.download(applicationContext,node.toDownloadNode(), getTorrentUrl())
     }
 
     private fun goSetting() {
