@@ -10,7 +10,8 @@ interface Service {
     fun queryList(@QueryMap queryMap: Map<String, String>,
                   @Query("startindex") startIndex: Int,
                   @Query("rows") pageSize: Int,
-                  @Query("search", encoded = true) queryText: String? = null
+                  @Query("search", encoded = true) queryText: String? = null,
+                  @Query("passkey") passkey: String? = null
     ): Observable<Rss>
 
 

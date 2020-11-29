@@ -46,7 +46,7 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
         val queryMap = HashMap<String, String>()
         options?.forEach { queryMap[it] = "1" }
 
-        service.queryList(queryMap, startIndex, pageSize, queryText)
+        service.queryList(queryMap, startIndex, pageSize, queryText, Settings.PASS_KEY)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map { it.items.filter { it.enclosure != null } }
