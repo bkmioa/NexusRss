@@ -1,12 +1,9 @@
 package io.github.bkmioa.nexusrss.download
 
 import androidx.annotation.Keep
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.annotations.SerializedName
 import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
-import io.reactivex.Completable
 import io.reactivex.Single
+import kotlinx.android.parcel.Parcelize
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,6 +17,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import java.net.CookieManager
 
+@Parcelize
 class TransmissionNode(
     override val host: String,
     override val userName: String,
