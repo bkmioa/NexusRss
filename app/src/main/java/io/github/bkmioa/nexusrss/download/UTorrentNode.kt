@@ -39,7 +39,7 @@ class UTorrentNode(
             //.addInterceptor(httpLoggingInterceptor)
             .cookieJar(JavaNetCookieJar(CookieManager()))
             .authenticator { _, response ->
-                response.request().newBuilder()
+                response.request.newBuilder()
                     .header("Authorization", Credentials.basic(userName, password))
                     .build()
             }
