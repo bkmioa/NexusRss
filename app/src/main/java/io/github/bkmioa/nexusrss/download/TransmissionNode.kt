@@ -43,7 +43,7 @@ class TransmissionNode(
             .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             .cookieJar(JavaNetCookieJar(CookieManager()))
             .authenticator { _, response ->
-                response.request().newBuilder()
+                response.request.newBuilder()
                     .header("Authorization", Credentials.basic(userName, password))
                     .build()
             }
