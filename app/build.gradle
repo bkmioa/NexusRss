@@ -65,9 +65,10 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-compiler:$android_lifecycle_version"
 
     //room
-    def android_room_version = '2.2.5'
+    def android_room_version = '2.3.0-beta02'
     implementation "androidx.room:room-runtime:$android_room_version"
     implementation "androidx.room:room-rxjava2:$android_room_version"
+    kapt "org.xerial:sqlite-jdbc:3.34.0"
     kapt "androidx.room:room-compiler:$android_room_version"
 
     implementation "androidx.constraintlayout:constraintlayout:2.0.2"
