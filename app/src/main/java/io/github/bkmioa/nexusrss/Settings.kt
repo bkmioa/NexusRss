@@ -7,8 +7,8 @@ class Settings {
 
         override val kotprefName = BuildConfig.APPLICATION_ID + "_preferences"
 
-        const val BASE_URL = "https://pt.m-team.cc"
-
+        const val BASE_URL = "https://kp.m-team.cc"
+        const val LOGIN_URL = "$BASE_URL/login.php"
         var PAGE_SIZE by intPref(50, "pageSize")
         var PASS_KEY by stringPref(key = "passkey")
         var REMOTE_URL by stringPref("http://localhost", key = "remoteUrl")

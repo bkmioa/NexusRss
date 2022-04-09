@@ -1,15 +1,9 @@
 package io.github.bkmioa.nexusrss.ui
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.Observer
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.tabs.TabLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.viewpager.widget.PagerAdapter
-import androidx.appcompat.app.AlertDialog
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.Menu
@@ -17,10 +11,17 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.Observer
+import androidx.viewpager.widget.PagerAdapter
+import com.google.android.material.tabs.TabLayout
 import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
+import io.github.bkmioa.nexusrss.login.LoginActivity
 import io.github.bkmioa.nexusrss.model.Release
 import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
@@ -147,6 +148,10 @@ class MainActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_search -> {
             startActivity(SearchActivity.createIntent(this))
+            true
+        }
+        R.id.action_login -> {
+            startActivity(LoginActivity.createIntent(this))
             true
         }
         R.id.action_settings -> {

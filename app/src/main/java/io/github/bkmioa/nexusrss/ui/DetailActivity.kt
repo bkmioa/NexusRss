@@ -7,18 +7,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
-import android.text.format.Formatter
 import android.view.Menu
 import android.view.Window
+import android.webkit.WebChromeClient
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import com.google.android.material.snackbar.Snackbar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
-import io.github.bkmioa.nexusrss.common.GlideImageGetter
+import io.github.bkmioa.nexusrss.databinding.ActivityDetailBinding
 import io.github.bkmioa.nexusrss.db.DownloadDao
-import io.github.bkmioa.nexusrss.download.DownloadTask
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
@@ -41,9 +41,13 @@ class DetailActivity : BaseActivity() {
 
     private var downloadNodes: List<DownloadNodeModel> = emptyList()
 
+    private lateinit var binding: ActivityDetailBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detail)
+        binding = ActivityDetailBinding.inflate(layoutInflater)
+
+        setContentView(binding.root)
 
         setSupportActionBar(toolBar)
 
@@ -53,21 +57,21 @@ class DetailActivity : BaseActivity() {
         supportActionBar?.title = item.subTitle ?: item.title
         supportActionBar?.subtitle = if (item.subTitle == null) null else item.title
 
-        textView.post {
-            textView.setHtml(item.description, GlideImageGetter(textView, Settings.BASE_URL, true))
+        binding.webView.webViewClient = WebViewClient()
+        binding.webView.webChromeClient = WebChromeClient()
+        binding.webView.settings.apply {
+            javaScriptEnabled = true
+            useWideViewPort = true
+            loadWithOverviewMode = true
+            builtInZoomControls = true
+            displayZoomControls = false
+        }
+        item.link?.let {
+            val additionalHttpHeaders = mapOf("x-requested-with" to "WebView")
+            binding.webView.loadUrl(it, additionalHttpHeaders)
         }
 
-        textViewInfo.text = "Category :\t${item.category}" + "\n" +
-                "Size:\t${
-                    Formatter.formatShortFileSize(
-                        this, item.enclosure?.length
-                            ?: 0
-                    )
-                }" + "\n" +
-                "Author:\t${item.author}" + "\n" +
-                "PubDate:\t${item.pubDate}" + "\n"
-
-        downloadDao.getAllLiveData().observe(this){
+        downloadDao.getAllLiveData().observe(this) {
             downloadNodes = it
             invalidateOptionsMenu()
         }
@@ -110,7 +114,7 @@ class DetailActivity : BaseActivity() {
             .run(::startActivity)
     }
 
-    private fun getTorrentUrl() = item.enclosure?.url + "&passkey=" + Settings.PASS_KEY
+    private fun getTorrentUrl() = item.torrentUrl
 
     private fun copyLink() {
         if (TextUtils.isEmpty(Settings.PASS_KEY)) {
@@ -135,7 +139,9 @@ class DetailActivity : BaseActivity() {
             return
         }
 
-        RemoteDownloader.download(applicationContext,node.toDownloadNode(), getTorrentUrl())
+        val torrentUrl = getTorrentUrl() ?: return
+        
+        RemoteDownloader.download(applicationContext, node.toDownloadNode(), torrentUrl)
     }
 
     private fun goSetting() {

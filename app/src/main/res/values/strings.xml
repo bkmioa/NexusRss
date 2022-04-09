@@ -19,6 +19,7 @@
     <string name="go_download_setting">Setting</string>
     <string name="action_checking_version">Checking Version</string>
     <string name="action_search">Search</string>
+    <string name="action_login">Sign In</string>
     <string name="search_filter">Filters</string>
     <string name="tab_options">Options</string>
     <string name="tab_label">Label</string>

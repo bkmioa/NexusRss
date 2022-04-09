@@ -46,12 +46,10 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
         val queryMap = HashMap<String, String>()
         options?.forEach { queryMap[it] = "1" }
 
-        service.queryList(queryMap, startIndex, pageSize, queryText, Settings.PASS_KEY)
+        service.queryList(queryMap, queryText, page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map { it.items.filter { it.enclosure != null } }
                 // pre resolve imageUrl
-                .doOnNext { it.forEach { it.imageUrl } }
                 .subscribeWith(object : Observer<List<Item>> {
                     override fun onSubscribe(@NonNull d: Disposable) {
                         if (update) {

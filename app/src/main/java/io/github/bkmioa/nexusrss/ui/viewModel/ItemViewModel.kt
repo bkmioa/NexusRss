@@ -27,10 +27,8 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
         super.bind(holder)
 
         with(holder) {
-            val size = Formatter.formatShortFileSize(itemView.context, item.enclosure?.length ?: 0)
-
             textViewTitle.text = item.subTitle ?: item.title
-            textViewSubTitle.text = "[$size] ${if (item.subTitle == null) "" else item.title}"
+            textViewSubTitle.text = "[${item.sizeText}] ${if (item.subTitle == null) "" else item.title}"
 
             GlideApp.with(imageView.context)
                     .load(item.imageUrl)

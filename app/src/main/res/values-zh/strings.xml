@@ -18,6 +18,7 @@
     <string name="need_pass_key">密匙（Pass Key）未配置</string>
     <string name="go_download_setting">去配置</string>
     <string name="action_checking_version">检查版本</string>
+    <string name="action_login">登录</string>
     <string name="action_search">搜索</string>
     <string name="search_filter">筛选</string>
     <string name="tab_options">选项</string>
