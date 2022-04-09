@@ -8,11 +8,11 @@ androidExtensions {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "io.github.bkmioa.nexusrss"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 13
         versionName "1.0.0-alpha_13"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -48,33 +48,33 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //support
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    implementation "androidx.fragment:fragment-ktx:1.2.5"
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
 
     // Koin
     def koin_version = '2.0.1'
     implementation "org.koin:koin-android:$koin_version"
 
     //lifecycle
-    def android_lifecycle_version = '2.2.0'
-    implementation "androidx.lifecycle:lifecycle-extensions:$android_lifecycle_version"
-    kapt "androidx.lifecycle:lifecycle-compiler:$android_lifecycle_version"
+    def lifecycle_version = '2.4.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
     //room
-    def android_room_version = '2.3.0-beta02'
+    def android_room_version = '2.4.2'
     implementation "androidx.room:room-runtime:$android_room_version"
     implementation "androidx.room:room-rxjava2:$android_room_version"
-    kapt "org.xerial:sqlite-jdbc:3.34.0"
     kapt "androidx.room:room-compiler:$android_room_version"
 
-    implementation "androidx.constraintlayout:constraintlayout:2.0.2"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
 
     //rx
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.12'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.18'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     //okhttp
@@ -108,13 +108,13 @@ dependencies {
     //kotpref
     implementation "com.chibatching.kotpref:kotpref:2.2.0"
     implementation "com.chibatching.kotpref:gson-support:2.1.2"
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation 'com.aitangba:swipeback:1.0.2'
 
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 }
 
