@@ -4,13 +4,7 @@ import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.Rss
 import io.reactivex.Observable
 import okhttp3.ResponseBody
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
-import retrofit2.http.QueryMap
-import retrofit2.http.Url
+import retrofit2.http.*
 
 interface Service {
     @GET("https://kp.m-team.cc/movie.php")
@@ -22,8 +16,9 @@ interface Service {
         @Query("passkey") passkey: String? = null
     ): Observable<Rss>
 
-    @GET("/torrents.php")
+    @GET("/{path}")
     fun queryList(
+        @Path("path") path: String,
         @QueryMap queryMap: Map<String, String>,
         @Query("search", encoded = true) queryText: String? = null,
         @Query("page") page: Int

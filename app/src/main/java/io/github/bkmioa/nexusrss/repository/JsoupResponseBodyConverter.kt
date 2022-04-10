@@ -20,9 +20,9 @@ class JsoupResponseBodyConverter<T>(private val type: Type) : Converter<Response
             item.imageUrl = tr.select(".torrentimg img").first()?.absUrl("src")
 
             val selectTitle = tr.select("a[title]")
-            item.subTitle = selectTitle.attr("title")
+            item.title = selectTitle.attr("title")
             item.link = selectTitle.first()?.absUrl("href")
-            item.title = tr.select(".embedded:has(a[title])").first()?.childNodes()?.last().toString()
+            item.subTitle = tr.select(".embedded:has(a[title])").takeIf { it.select("br").isNotEmpty() }?.first()?.childNodes()?.last()?.toString() ?: item.title
             item.pubDate = tds[3].select("span").attr("title")
             item.sizeText = tds[4].text()
             item.description = ""

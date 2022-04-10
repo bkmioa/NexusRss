@@ -14,7 +14,17 @@ import io.github.bkmioa.nexusrss.model.Tab
 abstract class AppDatabase : RoomDatabase() {
     companion object {
         const val DB_NAME = "nexus-rss"
-        const val DB_VERSION = 3
+        const val DB_VERSION = 4
+
+        fun initData(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                "INSERT INTO tab (title,path, options,`order`,isShow,columnCount) VALUES\n" +
+                        "('MOVIE','movie.php','',0,1,1),\n" +
+                        "('TV','torrents.php','cat402,cat403,cat435,cat438',1,1,2),\n" +
+                        "('ANIME','torrents.php','cat405',2,1,1),\n" +
+                        "('MUSIC','music.php','',3,1,1)"
+            )
+        }
         fun migrations() = arrayOf(
             object : Migration(1, 2) {
                 override fun migrate(database: SupportSQLiteDatabase) {
@@ -33,6 +43,14 @@ abstract class AppDatabase : RoomDatabase() {
                     }
                 }
             },
+            object : Migration(3, 4) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    database.execSQL("DELETE FROM tab")
+                    database.execSQL("ALTER TABLE TAB ADD COLUMN path TEXT NOT NULL")
+                    initData(database)
+                }
+
+            }
         )
     }
 

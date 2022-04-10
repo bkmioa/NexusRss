@@ -36,7 +36,11 @@ object RemoteDownloader {
     private fun showFailure(context: Context, task: DownloadTask, message: String?) {
         val code = task.torrentUrl.hashCode()
         val downloadIntent = DownloadReceiver.createDownloadIntent(context, code, task)
-        val retryIntent = PendingIntent.getBroadcast(context, code, downloadIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        var flag = PendingIntent.FLAG_UPDATE_CURRENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flag = flag or PendingIntent.FLAG_IMMUTABLE
+        }
+        val retryIntent= PendingIntent.getBroadcast(context, code, downloadIntent, flag)
         val retryAction = NotificationCompat.Action.Builder(R.drawable.ic_refresh, "retry", retryIntent)
             .build()
 

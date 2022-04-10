@@ -1,16 +1,16 @@
 package io.github.bkmioa.nexusrss.ui
 
-import androidx.lifecycle.Observer
 import android.graphics.Rect
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyAdapter
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
@@ -33,6 +33,7 @@ class ListFragment : BaseFragment(), Scrollable {
 
     private val listAdapter = ListAdapter()
 
+    private lateinit var path: String
     private var options: Array<String>? = null
     private var queryText: String? = null
     private var withSearch = false
@@ -43,9 +44,10 @@ class ListFragment : BaseFragment(), Scrollable {
     private val listViewModel: RssListViewModel by viewModels()
 
     companion object {
-        fun newInstance(options: Array<String>? = null, withSearch: Boolean = false, columnCount: Int = 1): ListFragment {
+        fun newInstance(path: String, options: Array<String>? = null, withSearch: Boolean = false, columnCount: Int = 1): ListFragment {
             val fragment = ListFragment()
             val args = Bundle()
+            args.putString("path", path)
             options?.let { args.putStringArray("options", options) }
             args.putBoolean("withSearch", withSearch)
             args.putInt("columnCount", columnCount)
@@ -58,7 +60,8 @@ class ListFragment : BaseFragment(), Scrollable {
     override fun scrollToTop() {
         if (recyclerView.canScrollVertically(-1)) {
             if ((recyclerView.layoutManager as LinearLayoutManager)
-                            .findFirstVisibleItemPosition() < Settings.PAGE_SIZE) {
+                    .findFirstVisibleItemPosition() < Settings.PAGE_SIZE
+            ) {
                 recyclerView.smoothScrollToPosition(0)
             } else {
                 recyclerView.scrollToPosition(0)
@@ -72,6 +75,7 @@ class ListFragment : BaseFragment(), Scrollable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.apply {
+            path = requireNotNull(getString("path"))
             options = getStringArray("options")
             withSearch = getBoolean("withSearch", false)
             columnCount = getInt("columnCount", 1)
@@ -85,7 +89,7 @@ class ListFragment : BaseFragment(), Scrollable {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val context = activity?: throw IllegalStateException()
+        val context = activity ?: throw IllegalStateException()
 
         val gridLayoutManager = GridLayoutManager(context, columnCount)
         listAdapter.spanCount = gridLayoutManager.spanCount
@@ -136,7 +140,7 @@ class ListFragment : BaseFragment(), Scrollable {
             }
         })
 
-        listViewModel.loadingState.observe(this, Observer<LoadingState> {
+        listViewModel.loadingState.observe(viewLifecycleOwner, Observer<LoadingState> {
             it ?: throw IllegalStateException()
 
             swipeRefreshLayout.isRefreshing = it.loading && !it.loadMore
@@ -152,7 +156,7 @@ class ListFragment : BaseFragment(), Scrollable {
             }
         })
 
-        listViewModel.listData.observe(this, Observer<ListData<Item>> {
+        listViewModel.listData.observe(viewLifecycleOwner, Observer<ListData<Item>> {
             it ?: throw IllegalStateException()
 
             listAdapter.buildModels(it.data, !it.loadMore)
@@ -174,7 +178,7 @@ class ListFragment : BaseFragment(), Scrollable {
             swipeRefreshLayout.isRefreshing = false
             return
         }
-        listViewModel.query(options, queryText, update)
+        listViewModel.query(path, options, queryText, update)
     }
 
     override fun onResume() {
@@ -204,10 +208,10 @@ class ListFragment : BaseFragment(), Scrollable {
             }
             val list = data.map {
                 ItemViewModel_(it)
-                        .onClickListener { _ ->
-                            val intent = DetailActivity.createIntent(activity!!, it)
-                            startActivity(intent)
-                        }
+                    .onClickListener { _ ->
+                        val intent = DetailActivity.createIntent(activity!!, it)
+                        startActivity(intent)
+                    }
             }
             if (list.isEmpty()) {
                 addModel(emptyViewModel)
@@ -229,7 +233,7 @@ class ListFragment : BaseFragment(), Scrollable {
         }
 
         fun loadingError(error: Throwable) {
-            if(models.isEmpty()){
+            if (models.isEmpty()) {
                 addModel(errorViewModel)
             }
         }

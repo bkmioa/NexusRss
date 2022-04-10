@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.ActionBar
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.model.Tab
@@ -63,14 +63,16 @@ class TabEditActivity : BaseActivity() {
             editTextTitle.error = "item_empty!!"
             return
         }
+        val path = optionFragment.selectedCategory.path
         val options = optionFragment.selected.toTypedArray()
         val columnCount = optionFragment.columnCount
         val tab: Tab
         if (this.tab == null) {
-            tab = Tab(editable.toString(), options, columnCount)
+            tab = Tab(editable.toString(),path, options, columnCount)
         } else {
             tab = this.tab ?: return
             tab.title = editable.toString()
+            tab.path = path
             tab.options = options
             tab.columnCount = columnCount
         }

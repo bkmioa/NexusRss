@@ -1,15 +1,15 @@
 package io.github.bkmioa.nexusrss.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
-import java.util.*
 
 @Entity(tableName = "tab")
 @Parcelize
 data class Tab(
         var title: String,
+        var path: String,
         var options: Array<String>,
         var order: Int = 0,
         var isShow: Boolean = true,
@@ -29,6 +29,7 @@ data class Tab(
 
         if (id != other.id) return false
         if (title != other.title) return false
+        if (path != other.path) return false
         if (columnCount != other.columnCount) return false
         if (!options.contentEquals(other.options)) return false
 
@@ -37,6 +38,7 @@ data class Tab(
 
     override fun hashCode(): Int {
         var result = title.hashCode()
+        result = 31 * result + path.hashCode()
         result = 31 * result + options.contentHashCode()
         result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + columnCount.hashCode()

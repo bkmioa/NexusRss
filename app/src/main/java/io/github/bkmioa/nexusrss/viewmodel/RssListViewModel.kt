@@ -26,7 +26,7 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
     val loadingState = MutableLiveData<LoadingState>()
     val listData = MutableLiveData<ListData<Item>>()
 
-    fun query(options: Array<String>? = null, queryText: String? = null, update: Boolean = true) {
+    fun query(path: String, options: Array<String>? = null, queryText: String? = null, update: Boolean = true) {
         if (isLoading.get()) return
 
         if (noMore.get() && !update) return
@@ -46,42 +46,42 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
         val queryMap = HashMap<String, String>()
         options?.forEach { queryMap[it] = "1" }
 
-        service.queryList(queryMap, queryText, page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                // pre resolve imageUrl
-                .subscribeWith(object : Observer<List<Item>> {
-                    override fun onSubscribe(@NonNull d: Disposable) {
-                        if (update) {
-                            loadingState.value = LoadingState()
-                        } else {
-                            loadingState.value = LoadingState(loadMore = true)
-                        }
+        service.queryList(path, queryMap, queryText, page)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            // pre resolve imageUrl
+            .subscribeWith(object : Observer<List<Item>> {
+                override fun onSubscribe(@NonNull d: Disposable) {
+                    if (update) {
+                        loadingState.value = LoadingState()
+                    } else {
+                        loadingState.value = LoadingState(loadMore = true)
                     }
+                }
 
-                    override fun onNext(@NonNull list: List<Item>) {
-                        if (!list.isEmpty() || update) {
-                            listData.value = ListData(list.toTypedArray(), !update)
-                        }
-                        noMore.set(list.size < pageSize)
+                override fun onNext(@NonNull list: List<Item>) {
+                    if (!list.isEmpty() || update) {
+                        listData.value = ListData(list.toTypedArray(), !update)
                     }
+                    noMore.set(list.size < pageSize)
+                }
 
-                    override fun onError(@NonNull e: Throwable) {
-                        e.printStackTrace()
-                        isLoading.set(false)
-                        if (!update) {
-                            page--
-                        }else{
-                            noMore.set(true)
-                        }
-                        loadingState.value = LoadingState(false, false, e)
+                override fun onError(@NonNull e: Throwable) {
+                    e.printStackTrace()
+                    isLoading.set(false)
+                    if (!update) {
+                        page--
+                    } else {
+                        noMore.set(true)
                     }
+                    loadingState.value = LoadingState(false, false, e)
+                }
 
-                    override fun onComplete() {
-                        isLoading.set(false)
-                        loadingState.value = LoadingState(false, false)
-                    }
+                override fun onComplete() {
+                    isLoading.set(false)
+                    loadingState.value = LoadingState(false, false)
+                }
 
-                })
+            })
     }
 }

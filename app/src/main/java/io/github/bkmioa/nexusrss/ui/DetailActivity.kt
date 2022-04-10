@@ -114,7 +114,7 @@ class DetailActivity : BaseActivity() {
             .run(::startActivity)
     }
 
-    private fun getTorrentUrl() = item.torrentUrl
+    private fun getTorrentUrl() = item.torrentUrl + "&passkey=" + Settings.PASS_KEY
 
     private fun copyLink() {
         if (TextUtils.isEmpty(Settings.PASS_KEY)) {
@@ -140,7 +140,7 @@ class DetailActivity : BaseActivity() {
         }
 
         val torrentUrl = getTorrentUrl() ?: return
-        
+
         RemoteDownloader.download(applicationContext, node.toDownloadNode(), torrentUrl)
     }
 

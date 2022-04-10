@@ -24,8 +24,10 @@ class SearchActivity : BaseActivity() {
         private const val TAG_SEARCH_FILTER = "search_filter"
         private const val TAG_SEARCH = "search"
 
-        fun createIntent(context: Context): Intent {
-            return Intent(context, SearchActivity::class.java)
+        fun createIntent(context: Context, path: String): Intent {
+            return Intent(context, SearchActivity::class.java).apply {
+                putExtra("path", path)
+            }
         }
     }
 
@@ -36,8 +38,9 @@ class SearchActivity : BaseActivity() {
         supportActionBar?.apply {
             displayOptions = ActionBar.DISPLAY_HOME_AS_UP
         }
+        val path = intent.getStringExtra("path") ?: "torrents.php"
         searchFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH) as? ListFragment
-                ?: ListFragment.newInstance(withSearch = true)
+            ?: ListFragment.newInstance(path, withSearch = true)
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.container, searchFragment, TAG_SEARCH)

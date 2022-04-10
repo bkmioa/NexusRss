@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.option_group.view.*
 @EpoxyModelClass(layout = R.layout.option_group)
 abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
                                     @EpoxyAttribute @JvmField val allChecked: Boolean,
-                                    private val options: Array<Option>)
+                                    private val options: List<Option>)
     : EpoxyModelWithHolder<OptionGroupViewModel.ViewHolder>() {
 
     @EpoxyAttribute(hash = false)
@@ -40,7 +40,7 @@ abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
     }
 
     interface OnGroupCheckedListener {
-        fun onGroupChecked(options: Array<Option>, isChecked: Boolean)
+        fun onGroupChecked(options: List<Option>, isChecked: Boolean)
     }
 
     class ViewHolder : BaseEpoxyHolder() {

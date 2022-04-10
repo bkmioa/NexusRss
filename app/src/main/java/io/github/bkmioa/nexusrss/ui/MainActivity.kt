@@ -55,7 +55,7 @@ class MainActivity : BaseActivity() {
 
             override fun getItem(position: Int): Fragment {
                 val tab = tabs[position]
-                val fragment = ListFragment.newInstance(tab.options, false, tab.columnCount)
+                val fragment = ListFragment.newInstance(tab.path, tab.options, false, tab.columnCount)
                 mappingFragment.put(tab, fragment)
                 return fragment
             }
@@ -147,7 +147,8 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_search -> {
-            startActivity(SearchActivity.createIntent(this))
+            val path = tabs.get(tabLayout.selectedTabPosition).path
+            startActivity(SearchActivity.createIntent(this, path))
             true
         }
         R.id.action_login -> {
