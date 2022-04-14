@@ -50,7 +50,9 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateVisible"
             />
-        <activity android:name=".login.LoginActivity" />
+        <activity
+            android:name=".login.LoginActivity"
+            android:launchMode="singleInstance" />
 
         <activity android:name=".download.ui.DownloadEditActivity" />
 

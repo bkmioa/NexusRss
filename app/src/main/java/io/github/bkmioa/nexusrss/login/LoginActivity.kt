@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.ActionBar
@@ -27,12 +25,18 @@ class LoginActivity : BaseActivity() {
              })()
         """
 
+        private val getInfoBlock = """
+                (function() { return (document.getElementById('info_block').innerHTML); })();
+        """
+
         fun createIntent(context: Context): Intent {
             return Intent(context, LoginActivity::class.java)
         }
     }
 
     private lateinit var binding: ActivityLoginBinding
+
+    private var verifysuccess = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,15 +64,27 @@ class LoginActivity : BaseActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 binding.refreshLayout.isRefreshing = false
-                webView.loadUrl(initScript)
-            }
 
-            override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
-                return super.shouldInterceptRequest(view, request)
+                webView.loadUrl(initScript)
+                webView.evaluateJavascript(getInfoBlock) {
+                    val content = it ?: return@evaluateJavascript
+                    if (content.contains("logout.php")) {
+                        verifysuccess = true
+                        finish()
+                    }
+                }
             }
         }
         val additionalHttpHeaders = mapOf("x-requested-with" to "WebView")
         binding.webView.loadUrl(Settings.LOGIN_URL, additionalHttpHeaders)
     }
 
+    override fun finish() {
+        super.finish()
+        if (verifysuccess) {
+            VerifyManager.notifyVerifySuccess()
+        } else {
+            VerifyManager.notifyVerifyFailure()
+        }
+    }
 }

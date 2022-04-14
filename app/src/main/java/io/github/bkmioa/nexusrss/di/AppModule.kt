@@ -49,6 +49,7 @@ private fun provideService(httpclient: OkHttpClient): Service {
 
 private fun provideCommonHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor, app: App): OkHttpClient {
     return OkHttpClient.Builder()
+            .followRedirects(false)
             .cookieJar(JavaNetCookieJar(SharedCookieJar()))
             .addInterceptor(UserAgentInterceptor(app))
             .addInterceptor(httpLoggingInterceptor)

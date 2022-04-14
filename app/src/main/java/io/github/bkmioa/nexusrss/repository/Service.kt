@@ -4,6 +4,7 @@ import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.Rss
 import io.reactivex.Observable
 import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.*
 
 interface Service {
@@ -22,7 +23,7 @@ interface Service {
         @QueryMap queryMap: Map<String, String>,
         @Query("search", encoded = true) queryText: String? = null,
         @Query("page") page: Int
-    ): Observable<List<Item>>
+    ): Observable<Response<List<Item>>>
 
     @POST
     @FormUrlEncoded

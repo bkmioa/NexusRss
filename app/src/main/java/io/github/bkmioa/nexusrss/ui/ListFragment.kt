@@ -192,7 +192,7 @@ class ListFragment : BaseFragment(), Scrollable {
     }
 
     private fun tryInitRefresh() {
-        if (!withSearch && swipeRefreshLayout != null && userVisibleHint && listAdapter.isEmpty) {
+        if (!withSearch && swipeRefreshLayout != null && userVisibleHint && listAdapter.isEmpty && listViewModel.loadingState.value?.error == null) {
             refresh()
         }
     }

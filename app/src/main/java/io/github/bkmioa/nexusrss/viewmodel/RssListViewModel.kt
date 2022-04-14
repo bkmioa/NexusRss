@@ -4,9 +4,11 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseViewModel
+import io.github.bkmioa.nexusrss.login.VerifyManager
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.ListData
 import io.github.bkmioa.nexusrss.model.LoadingState
+import io.github.bkmioa.nexusrss.repository.Deconstructor
 import io.github.bkmioa.nexusrss.repository.Service
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -48,6 +50,8 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
 
         service.queryList(path, queryMap, queryText, page)
             .subscribeOn(Schedulers.io())
+            .compose(Deconstructor.apply())
+            .compose(VerifyManager.verify())
             .map { if (page == 0) it.sorted().reversed() else it }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : Observer<List<Item>> {

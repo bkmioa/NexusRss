@@ -4,6 +4,7 @@ import android.app.Application
 import com.aitangba.swipeback.ActivityLifecycleHelper
 import com.chibatching.kotpref.Kotpref
 import io.github.bkmioa.nexusrss.di.appModule
+import io.github.bkmioa.nexusrss.login.VerifyManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -19,7 +20,7 @@ class App : Application() {
         }
 
         Kotpref.init(this)
-
+        VerifyManager.init(this)
         registerActivityLifecycleCallbacks(ActivityLifecycleHelper.build())
     }
 
