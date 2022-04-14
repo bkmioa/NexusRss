@@ -47,8 +47,8 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
         options?.forEach { queryMap[it] = "1" }
 
         service.queryList(path, queryMap, queryText, page)
-            .map { it.sorted().reversed() }
             .subscribeOn(Schedulers.io())
+            .map { if (page == 0) it.sorted().reversed() else it }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : Observer<List<Item>> {
                 override fun onSubscribe(@NonNull d: Disposable) {
