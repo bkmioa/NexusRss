@@ -7,5 +7,11 @@ class StringArrayConverter {
     fun toString(array: Array<String>) = array.sortedArray().joinToString(",")
 
     @TypeConverter
-    fun toArray(str: String): Array<String> = str.split(",").toTypedArray().sortedArray()
+    fun toArray(str: String): Array<String>{
+        return if(str.isEmpty()){
+            emptyArray()
+        }else{
+            str.split(",").toTypedArray().sortedArray()
+        }
+    }
 }

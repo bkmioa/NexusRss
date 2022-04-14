@@ -6,12 +6,17 @@ import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Converter
 import java.lang.reflect.Type
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class JsoupResponseBodyConverter<T>(private val type: Type) : Converter<ResponseBody, T> {
     override fun convert(body: ResponseBody): T? {
         val doc = Jsoup.parse(body.string(), Settings.BASE_URL)
         val trs = doc.select(".torrents").first()?.child(0)?.children() ?: return null
         val items = ArrayList<Item>()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+
         for (tr in trs) {
             if (tr.select(".colhead").isNotEmpty()) continue
 
@@ -23,7 +28,7 @@ class JsoupResponseBodyConverter<T>(private val type: Type) : Converter<Response
             item.title = selectTitle.attr("title")
             item.link = selectTitle.first()?.absUrl("href")
             item.subTitle = tr.select(".embedded:has(a[title])").takeIf { it.select("br").isNotEmpty() }?.first()?.childNodes()?.last()?.toString() ?: item.title
-            item.pubDate = tds[3].select("span").attr("title")
+            item.pubDate = dateFormat.parse(tds[3].select("span").attr("title"))
             item.sizeText = tds[4].text()
             item.description = ""
             item.author = tds[9].select("b").text()

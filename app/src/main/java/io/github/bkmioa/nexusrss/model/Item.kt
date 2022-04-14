@@ -4,9 +4,10 @@ import org.simpleframework.xml.Attribute
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.Root
 import java.io.Serializable
+import java.util.*
 
 @Root(strict = false)
-class Item : Serializable {
+class Item : Serializable, Comparable<Item> {
     companion object {
         private val IGNORED_IMAGE_PATTERN = arrayOf(
             "pic/trans\\.gif", "pic/smilies/"
@@ -21,7 +22,7 @@ class Item : Serializable {
     var link: String? = null
 
     @field:Element(required = false)
-    lateinit var pubDate: String
+    var pubDate: Date? = null
 
     @field:Element(required = false)
     lateinit var description: String
@@ -51,5 +52,11 @@ class Item : Serializable {
 
         @field:Attribute(required = false)
         var url: String? = null
+    }
+
+    override fun compareTo(other: Item): Int {
+        val date1 = pubDate ?: return -1
+        val date2 = other.pubDate ?: return 1
+        return date1.compareTo(date2)
     }
 }
