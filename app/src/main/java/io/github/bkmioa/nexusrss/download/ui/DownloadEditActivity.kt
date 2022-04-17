@@ -32,7 +32,7 @@ class DownloadEditActivity : BaseActivity() {
         setSupportActionBar(toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
-        val types = arrayOf(DownloadNodeModel.TYPE_TRANSMISSION, DownloadNodeModel.TYPE_UTORRENT)
+        val types = DownloadNodeModel.ALL_TYPES
         typeSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
 
         downloadNode?.let {
