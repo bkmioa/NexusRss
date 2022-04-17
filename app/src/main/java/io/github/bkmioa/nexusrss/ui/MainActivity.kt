@@ -9,6 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -116,28 +117,16 @@ class MainActivity : BaseActivity() {
         viewPager.offscreenPageLimit = tabs.size - 1
 
         tabLayout.tabMode = TabLayout.MODE_SCROLLABLE
-        tabLayout.post {
-            if (!tabLayout.shouldDelayChildPressedState()) {
-                tabLayout.tabMode = TabLayout.MODE_FIXED
-            }
-
-            //add long click listener
-            val viewGroup = tabLayout.getChildAt(0) as ViewGroup
-            for (i in 0 until viewGroup.childCount) {
-                viewGroup.getChildAt(i).setOnLongClickListener {
-                    onTabLongClicked(i)
-                    true
+        tabLayout.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                tabLayout.viewTreeObserver.removeOnPreDrawListener(this)
+                if (!tabLayout.shouldDelayChildPressedState()) {
+                    tabLayout.tabMode = TabLayout.MODE_FIXED
+                    return false
                 }
+                return true
             }
-        }
-
-
-    }
-
-    private fun onTabLongClicked(position: Int) {
-        //todo edit tab
-//        val intent = TabEditActivity.createIntent(this, tabs[position])
-//        startActivity(intent)
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
