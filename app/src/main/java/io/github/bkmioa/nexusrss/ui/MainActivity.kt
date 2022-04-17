@@ -3,6 +3,7 @@ package io.github.bkmioa.nexusrss.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.method.LinkMovementMethod
@@ -200,10 +201,14 @@ class MainActivity : BaseActivity() {
     }
 
     override fun finish() {
-        //super.finish()
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
-        startActivity(intent)
+        //https://developer.android.com/about/versions/12/behavior-changes-all#back-press
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            super.finish()
+        } else {
+            val intent = Intent(Intent.ACTION_MAIN)
+            intent.addCategory(Intent.CATEGORY_HOME)
+            startActivity(intent)
+        }
     }
 }
 
