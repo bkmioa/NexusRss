@@ -52,6 +52,7 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
             .subscribeOn(Schedulers.io())
             .compose(Deconstructor.apply())
             .compose(VerifyManager.verify())
+            .map { it.list }
             .map { if (page == 0) it.sorted().reversed() else it }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : Observer<List<Item>> {

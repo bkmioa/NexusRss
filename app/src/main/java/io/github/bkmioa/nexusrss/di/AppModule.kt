@@ -15,16 +15,15 @@ import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.repository.GithubService
 import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
-import io.github.bkmioa.nexusrss.repository.JsoupConverterFactory
 import io.github.bkmioa.nexusrss.repository.Service
 import io.github.bkmioa.nexusrss.repository.UserAgentInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
+import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 
 val appModule = module {
     single { get<Application>() as App }
@@ -42,7 +41,7 @@ private fun provideService(httpclient: OkHttpClient): Service {
             .baseUrl(Settings.BASE_URL)
             .client(httpclient)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(JsoupConverterFactory.create())
+            .addConverterFactory(JspoonConverterFactory.create())
             .build()
             .create(Service::class.java)
 }
