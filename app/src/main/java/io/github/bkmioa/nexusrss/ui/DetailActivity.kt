@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.Window
 import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
@@ -61,6 +62,7 @@ class DetailActivity : BaseActivity() {
         binding.webView.webChromeClient = WebChromeClient()
         binding.webView.settings.apply {
             javaScriptEnabled = true
+            mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             useWideViewPort = true
             loadWithOverviewMode = true
             builtInZoomControls = true
