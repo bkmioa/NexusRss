@@ -9,7 +9,7 @@ import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Tab
 
-@Database(version = AppDatabase.DB_VERSION, entities = [Tab::class, DownloadNodeModel::class])
+@Database(exportSchema = false, version = AppDatabase.DB_VERSION, entities = [Tab::class, DownloadNodeModel::class])
 @TypeConverters(StringArrayConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     companion object {
