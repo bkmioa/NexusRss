@@ -23,17 +23,20 @@ class OptionFragment : BaseFragment(),
     OptionViewModel.OnOptionCheckedListener,
     OptionGroupViewModel.OnGroupCheckedListener {
     companion object {
+        private const val KEY_INIT_PATH = "init_path"
         private const val KEY_INIT_SELECTED = "init_selected"
         private const val KEY_WITH_LIST_STYLE = "with_list_style"
         private const val KEY_INIT_COLUMN_COUNT = "init_column_count"
 
         fun newInstance(
+            path: String?,
             initSelected: Array<String>? = null,
             withListStyle: Boolean = false,
             initColumnCount: Int = 1
         ): OptionFragment {
             val fragment = OptionFragment()
             val args = Bundle()
+            args.putString(KEY_INIT_PATH, path)
             args.putStringArray(KEY_INIT_SELECTED, initSelected)
             args.putBoolean(KEY_WITH_LIST_STYLE, withListStyle)
             args.putInt(KEY_INIT_COLUMN_COUNT, initColumnCount)
@@ -55,6 +58,9 @@ class OptionFragment : BaseFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.apply {
+            getString(KEY_INIT_PATH)?.also { path ->
+                selectedCategory = Category.ALL_CATEGORY.find { it.path == path }?: Category.ALL
+            }
             getStringArray(KEY_INIT_SELECTED)?.also {
                 selected.addAll(it.toSet())
             }

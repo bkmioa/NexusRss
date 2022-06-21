@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
+import io.github.bkmioa.nexusrss.model.Category
 import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : BaseActivity() {
@@ -19,6 +20,7 @@ class SearchActivity : BaseActivity() {
 
     private var searchFilterFragment: OptionFragment? = null
     private var searchFilter: Array<String>? = null
+    private var searchPath: String = Category.ALL.path
 
     companion object {
         private const val TAG_SEARCH_FILTER = "search_filter"
@@ -38,9 +40,9 @@ class SearchActivity : BaseActivity() {
         supportActionBar?.apply {
             displayOptions = ActionBar.DISPLAY_HOME_AS_UP
         }
-        val path = intent.getStringExtra("path") ?: "torrents.php"
+        searchPath= intent.getStringExtra("path") ?: Category.ALL.path
         searchFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH) as? ListFragment
-            ?: ListFragment.newInstance(path, withSearch = true)
+            ?: ListFragment.newInstance(searchPath, withSearch = true)
 
         supportFragmentManager.beginTransaction()
                 .replace(R.id.container, searchFragment, TAG_SEARCH)
@@ -92,7 +94,7 @@ class SearchActivity : BaseActivity() {
 
     private fun addSearchFilterFragment() {
         searchFilterFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH_FILTER) as? OptionFragment
-                ?: OptionFragment.newInstance(searchFilter)
+                ?: OptionFragment.newInstance(searchPath ,searchFilter)
 
         val fragment = searchFilterFragment ?: throw IllegalStateException()
 
