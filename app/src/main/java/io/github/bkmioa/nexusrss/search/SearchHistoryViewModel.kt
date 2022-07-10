@@ -61,7 +61,7 @@ class SearchHistoryViewModel(app: Application) : BaseViewModel(app) {
         }
     }
 
-    private val filterLivaData = MutableLiveData<String>()
+    private val filterLivaData = MutableLiveData<String?>()
     val historyLiveData: LiveData<List<String>> = initLiveData()
 
     private fun initLiveData(): LiveData<List<String>> {
