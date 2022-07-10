@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply from: '../gradle/getVersion.gradle'
 
 androidExtensions {
     experimental = true
@@ -13,8 +14,8 @@ android {
         applicationId "io.github.bkmioa.nexusrss"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 13
-        versionName "1.0.0-alpha_13"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     viewBinding {
@@ -51,19 +52,19 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //support
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation "androidx.fragment:fragment-ktx:1.5.0"
 
     // Koin
     def koin_version = '2.0.1'
     implementation "org.koin:koin-android:$koin_version"
 
     //lifecycle
-    def lifecycle_version = '2.4.1'
+    def lifecycle_version = '2.5.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
@@ -74,7 +75,7 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$android_room_version"
     kapt "androidx.room:room-compiler:$android_room_version"
 
-    implementation "androidx.constraintlayout:constraintlayout:2.1.3"
+    implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 
     //rx
     implementation 'io.reactivex.rxjava2:rxjava:2.2.18'
@@ -103,9 +104,9 @@ dependencies {
     kapt "com.airbnb.android:epoxy-processor:$epoxy_version"
 
     //kotpref
-    implementation "com.chibatching.kotpref:kotpref:2.2.0"
+    implementation "com.chibatching.kotpref:kotpref:2.13.1"
     implementation "com.chibatching.kotpref:gson-support:2.1.2"
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.9.0'
 
     implementation 'com.aitangba:swipeback:1.0.2'
 
