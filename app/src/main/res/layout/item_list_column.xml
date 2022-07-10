@@ -16,7 +16,7 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/spinner"
-        android:layout_width="100dp"
+        android:layout_width="200dp"
         android:layout_height="0dp"
         android:layout_alignTop="@+id/textViewName"
         android:layout_alignBottom="@+id/textViewName"

@@ -1,17 +1,20 @@
-package io.github.bkmioa.nexusrss.ui
+package io.github.bkmioa.nexusrss.search
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentManager
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.model.Category
+import io.github.bkmioa.nexusrss.ui.ListFragment
+import io.github.bkmioa.nexusrss.ui.OptionFragment
 import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : BaseActivity() {
@@ -22,9 +25,12 @@ class SearchActivity : BaseActivity() {
     private var searchFilter: Array<String>? = null
     private var searchPath: String = Category.ALL.path
 
+    private val searchHistoryViewModel: SearchHistoryViewModel by viewModels()
+
     companion object {
         private const val TAG_SEARCH_FILTER = "search_filter"
         private const val TAG_SEARCH = "search"
+        private const val TAG_SEARCH_HISTORY = "search_history"
 
         fun createIntent(context: Context, path: String): Intent {
             return Intent(context, SearchActivity::class.java).apply {
@@ -40,13 +46,13 @@ class SearchActivity : BaseActivity() {
         supportActionBar?.apply {
             displayOptions = ActionBar.DISPLAY_HOME_AS_UP
         }
-        searchPath= intent.getStringExtra("path") ?: Category.ALL.path
+        searchPath = intent.getStringExtra("path") ?: Category.ALL.path
         searchFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH) as? ListFragment
             ?: ListFragment.newInstance(searchPath, withSearch = true)
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.container, searchFragment, TAG_SEARCH)
-                .commit()
+            .replace(R.id.container, searchFragment, TAG_SEARCH)
+            .commit()
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -54,10 +60,28 @@ class SearchActivity : BaseActivity() {
                 return true
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean = false
-
+            override fun onQueryTextChange(newText: String?): Boolean {
+                searchHistoryViewModel.onQuery(newText)
+                return false
+            }
         })
+        searchView.setOnQueryTextFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                addSearchHistoryFragment()
+            } else {
+                removeSearchHistoryFragment()
+            }
+        }
+        searchHistoryViewModel.selectedKeywordLiveData.observe(this) {
+            it.first ?: return@observe
+
+            searchView.setQuery(it.first, it.second)
+            WindowCompat.getInsetsController(window, searchView).show(WindowInsetsCompat.Type.ime())
+            searchHistoryViewModel.onSelected(null, false)
+        }
         searchView.requestFocus()
+
+        //addSearchHistoryFragment()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -74,8 +98,7 @@ class SearchActivity : BaseActivity() {
                     query(query)
                 } else {
                     searchView.requestFocus()
-                    ContextCompat.getSystemService(this, InputMethodManager::class.java)
-                            ?.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+                    WindowCompat.getInsetsController(window, searchView).show(WindowInsetsCompat.Type.ime())
                 }
             } else {
                 searchView.clearFocus()
@@ -94,21 +117,40 @@ class SearchActivity : BaseActivity() {
 
     private fun addSearchFilterFragment() {
         searchFilterFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH_FILTER) as? OptionFragment
-                ?: OptionFragment.newInstance(searchPath ,searchFilter)
+            ?: OptionFragment.newInstance(searchPath, searchFilter)
 
         val fragment = searchFilterFragment ?: throw IllegalStateException()
 
         if (!fragment.isVisible) {
             supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_from_top, 0, 0, R.anim.slide_out_to_top)
-                    .add(R.id.container, fragment, TAG_SEARCH_FILTER)
-                    .addToBackStack(TAG_SEARCH_FILTER)
-                    .commit()
+                .setCustomAnimations(R.anim.slide_in_from_top, 0, 0, R.anim.slide_out_to_top)
+                .add(R.id.container, fragment, TAG_SEARCH_FILTER)
+                .addToBackStack(TAG_SEARCH_FILTER)
+                .commit()
         }
+    }
+
+    private fun addSearchHistoryFragment() {
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH_HISTORY) as? SearchHistoryFragment
+            ?: SearchHistoryFragment()
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.container, fragment, TAG_SEARCH_HISTORY)
+            .commit()
+    }
+
+    private fun removeSearchHistoryFragment() {
+        val fragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH_HISTORY) as? SearchHistoryFragment
+            ?: return
+
+        supportFragmentManager.beginTransaction()
+            .remove(fragment)
+            .commit()
     }
 
     private fun query(query: String) {
         searchView.clearFocus()
         searchFragment.query(query, searchFilter)
+        searchHistoryViewModel.add(query)
     }
 }

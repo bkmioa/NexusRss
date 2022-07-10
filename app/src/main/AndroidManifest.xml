@@ -46,7 +46,7 @@
             android:windowSoftInputMode="stateHidden"
             />
         <activity
-            android:name=".ui.SearchActivity"
+            android:name=".search.SearchActivity"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateVisible"
             />

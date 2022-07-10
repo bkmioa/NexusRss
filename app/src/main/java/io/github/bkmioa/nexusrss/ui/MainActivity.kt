@@ -26,6 +26,7 @@ import io.github.bkmioa.nexusrss.common.Scrollable
 import io.github.bkmioa.nexusrss.login.LoginActivity
 import io.github.bkmioa.nexusrss.model.Release
 import io.github.bkmioa.nexusrss.model.Tab
+import io.github.bkmioa.nexusrss.search.SearchActivity
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
