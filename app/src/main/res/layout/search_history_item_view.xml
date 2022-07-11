@@ -7,14 +7,15 @@
     android:layout_height="48dp"
     android:background="?selectableItemBackground"
     android:gravity="center_vertical"
-    android:paddingStart="24dp"
-    android:paddingEnd="24dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     >
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center_vertical"
+        android:scaleType="center"
         android:src="@drawable/ic_history"
         app:tint="?android:textColorSecondary"
         />
@@ -26,14 +27,16 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
+        android:textSize="15sp"
         tools:text="123456"
         />
 
     <ImageView
         android:id="@+id/shift"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?android:selectableItemBackground"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?actionBarItemBackground"
+        android:scaleType="center"
         android:src="@drawable/ic_shift"
         app:tint="?android:textColorSecondary"
         />
