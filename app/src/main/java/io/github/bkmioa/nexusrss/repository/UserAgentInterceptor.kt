@@ -7,10 +7,8 @@ import okhttp3.Response
 
 
 class UserAgentInterceptor(app: Application) : Interceptor {
-    private var USER_AGENT = WebView(app).settings.userAgentString
-
     override fun intercept(chain: Interceptor.Chain): Response {
-        val newRequest = chain.request().newBuilder().header("User-Agent", USER_AGENT).build()
+        val newRequest = chain.request().newBuilder().header("User-Agent", UserAgent.userAgentString).build()
         return chain.proceed(newRequest)
     }
 }

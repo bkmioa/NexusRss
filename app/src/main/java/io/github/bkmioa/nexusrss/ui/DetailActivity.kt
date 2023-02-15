@@ -23,6 +23,7 @@ import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.repository.UserAgent
 import kotlinx.android.synthetic.main.activity_detail.*
 import org.koin.android.ext.android.inject
 
@@ -67,6 +68,7 @@ class DetailActivity : BaseActivity() {
             loadWithOverviewMode = true
             builtInZoomControls = true
             displayZoomControls = false
+            userAgentString = UserAgent.userAgentString
         }
         item.link?.let {
             val additionalHttpHeaders = mapOf("x-requested-with" to "WebView")

@@ -11,6 +11,7 @@ import androidx.appcompat.app.ActionBar
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.databinding.ActivityLoginBinding
+import io.github.bkmioa.nexusrss.repository.UserAgent
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : BaseActivity() {
@@ -58,6 +59,7 @@ class LoginActivity : BaseActivity() {
             javaScriptEnabled = true
             useWideViewPort = false
             builtInZoomControls = false
+            userAgentString = UserAgent.userAgentString
         }
         binding.webView.webChromeClient = WebChromeClient()
         binding.webView.webViewClient = object : WebViewClient() {
