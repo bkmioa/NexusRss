@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">M-Team</string>
-    <string name="action_settings">Download Settings</string>
+    <string name="action_settings">Settings</string>
     <string name="action_tabs">Tabs</string>
+    <string name="download_settings">Download Settings</string>
     <string name="remote_download">Download To …</string>
     <string name="copy_link">Copy Torrent Link</string>
     <string name="open_link">Open in Browser</string>
-    <string name="pass_key">Pass Key</string>
+    <string name="base_url">Web Url</string>
     <string name="remote_name">Name</string>
     <string name="remote_url">Remote Url</string>
     <string name="remote_username">Username</string>

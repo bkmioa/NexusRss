@@ -24,11 +24,11 @@ class SettingActivity : BaseActivity() {
         setSupportActionBar(toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
-        editTextPasskey.setText(Settings.PASS_KEY)
+        editTextBaseUrl.setText(Settings.BASE_URL)
 
-        editTextPasskey.addTextChangedListener(object : OnTextChange() {
+        editTextBaseUrl.addTextChangedListener(object : OnTextChange() {
             override fun afterTextChanged(s: Editable) {
-                Settings.PASS_KEY = s.toString().trim()
+                Settings.BASE_URL = s.toString().trim().removeSuffix("/")
             }
         })
     }

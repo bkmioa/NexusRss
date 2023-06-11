@@ -30,10 +30,10 @@
             >
 
             <EditText
-                android:id="@+id/editTextPasskey"
+                android:id="@+id/editTextBaseUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/pass_key"
+                android:hint="@string/base_url"
                 android:inputType="text"
                 android:maxLines="1"
                 />
