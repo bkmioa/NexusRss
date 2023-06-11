@@ -34,7 +34,22 @@
                 android:resource="@xml/shortcuts"
                 />
         </activity>
-        <activity android:name=".ui.DetailActivity" />
+        <activity
+            android:name=".ui.DetailActivity"
+            android:exported="true"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="*.m-team.cc"/>
+                <data android:pathPrefix="/details.php"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.SettingActivity"
             android:windowSoftInputMode="stateHidden"
@@ -51,7 +66,8 @@
             />
         <activity
             android:name=".login.LoginActivity"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            />
 
         <activity android:name=".download.ui.DownloadEditActivity" />
 

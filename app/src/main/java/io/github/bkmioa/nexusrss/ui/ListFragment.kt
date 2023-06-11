@@ -209,7 +209,7 @@ class ListFragment : BaseFragment(), Scrollable {
             val list = data.map {
                 ItemViewModel_(it)
                     .onClickListener { _ ->
-                        val intent = DetailActivity.createIntent(activity!!, it)
+                        val intent = DetailActivity.createIntent(activity!!, title = it.subTitle ?: it.title, subTitle = it.title, link = it.link)
                         startActivity(intent)
                     }
             }
