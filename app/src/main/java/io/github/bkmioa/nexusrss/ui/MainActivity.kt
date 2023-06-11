@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -163,16 +164,20 @@ class MainActivity : BaseActivity() {
 
     @SuppressLint("CheckResult")
     private fun checkingVersion() {
+        Toast.makeText(this, R.string.checking_version, Toast.LENGTH_SHORT).show()
         mainViewModel.checkNewVersion()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(::checkNewVersion, Throwable::printStackTrace)
+                .subscribe(::checkNewVersion) {
+                    Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                }
     }
 
     private fun checkNewVersion(release: Array<Release>?) {
         release?.firstOrNull()
                 ?.takeIf { it.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}" }
                 ?.apply(::hasNewVersion)
+                ?: Toast.makeText(this, R.string.no_new_version, Toast.LENGTH_SHORT).show()
     }
 
     private fun hasNewVersion(release: Release) {

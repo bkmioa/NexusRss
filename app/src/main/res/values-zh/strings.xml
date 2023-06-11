@@ -42,4 +42,6 @@
     <string name="action_duplicate">拷贝</string>
     <string name="deleted">已删除</string>
     <string name="downloading">正在下载…</string>
+    <string name="checking_version">正在检查新版本…</string>
+    <string name="no_new_version">没有新版本</string>
 </resources>

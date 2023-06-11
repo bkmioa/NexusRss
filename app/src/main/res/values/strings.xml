@@ -42,4 +42,6 @@
     <string name="action_duplicate">Duplicate</string>
     <string name="deleted">Deleted</string>
     <string name="downloading">Downloading...</string>
+    <string name="checking_version">Checking new version…</string>
+    <string name="no_new_version">No new version found</string>
 </resources>
