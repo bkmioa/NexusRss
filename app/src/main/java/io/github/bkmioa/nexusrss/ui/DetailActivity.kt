@@ -26,9 +26,7 @@ import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.repository.UserAgent
 import kotlinx.android.synthetic.main.activity_detail.toolBar
-import kotlinx.android.synthetic.main.activity_detail.webView
 import org.koin.android.ext.android.inject
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 class DetailActivity : BaseActivity() {
@@ -190,7 +188,6 @@ class DetailActivity : BaseActivity() {
     }
 
     private inner class InnerWebViewClient : WebViewClient() {
-        val executed = AtomicBoolean(false)
         override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
             if (request.isForMainFrame) {
                 handleUrl(request.url)
@@ -198,14 +195,10 @@ class DetailActivity : BaseActivity() {
             return true
         }
 
-        override fun onLoadResource(view: WebView, url: String) {
-            super.onLoadResource(view, url)
-            if (url != webView.url && !executed.get()) {
-                executed.set(true)
-                findDownloadUrl(view)
-            }
+        override fun onPageCommitVisible(view: WebView, url: String) {
+            super.onPageCommitVisible(view, url)
+            findDownloadUrl(view)
         }
-
         private fun findDownloadUrl(view: WebView) {
             val getDownloadUrl = """
                 (function () {
@@ -218,7 +211,7 @@ class DetailActivity : BaseActivity() {
                 })();
             """
             view.evaluateJavascript(getDownloadUrl) { value ->
-                downloadUrl = value.replace("\"", "")
+                downloadUrl = value.trim('"')
                 invalidateOptionsMenu()
             }
         }
