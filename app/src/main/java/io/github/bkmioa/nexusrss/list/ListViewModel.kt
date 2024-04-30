@@ -77,7 +77,7 @@ class ListDataSource(val mtService: MtService, val requestData: RequestData) : P
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> = try {
         val page = params.key ?: 1
-        val req = requestData.copy(pageNumber = page)
+        val req = requestData.copy(pageNumber = page, pageSize = Settings.PAGE_SIZE)
         val res = mtService.search(req)
         if (res.code != 0) {
             LoadResult.Error(Exception(res.message))
