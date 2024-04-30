@@ -32,7 +32,7 @@ class Item : Comparable<Item>, Parcelable {
     var size: Long = 0
 
     var status: Status = Status.DEFAULT
-    
+
     val sizeText: String
         get() = Formatter.formatShortFileSize(App.instance, size)
 
@@ -55,6 +55,10 @@ class Item : Comparable<Item>, Parcelable {
     var torrentUrl: String? = null
 
     var descr: String? = null
+
+    var originFileName: String? = null
+
+    var mediainfo: String? = null
 
     override fun compareTo(other: Item): Int {
         val date1 = pubDate ?: return -1

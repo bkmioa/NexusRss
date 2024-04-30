@@ -34,9 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.Routers
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
@@ -45,10 +45,11 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen() {
     val homeViewModel: HomeViewModel = mavericksViewModel()
     val uiState by homeViewModel.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val navController = LocalNavController.current
     Scaffold(
         topBar = {
             val defaultColors = TopAppBarDefaults.topAppBarColors()

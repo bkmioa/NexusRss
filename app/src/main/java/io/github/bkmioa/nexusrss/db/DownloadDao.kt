@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DownloadDao {
@@ -18,6 +19,9 @@ interface DownloadDao {
 
     @Query("select * from download_node")
     fun getAllLiveData(): LiveData<List<DownloadNodeModel>>
+
+    @Query("select * from download_node")
+    fun getAllFlow(): Flow<List<DownloadNodeModel>>
 
     @Delete
     fun delete(node: DownloadNodeModel)

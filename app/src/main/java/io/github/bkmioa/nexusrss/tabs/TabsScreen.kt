@@ -2,9 +2,7 @@
 
 package io.github.bkmioa.nexusrss.tabs
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,15 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 
 @Composable
-fun TabsScreen(navController: NavHostController) {
+fun TabsScreen() {
     val viewModel: TabsViewModel = mavericksViewModel()
     val uiState by viewModel.collectAsState()
+    val navController = LocalNavController.current
 
     Scaffold(
         topBar = {

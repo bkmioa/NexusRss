@@ -48,19 +48,20 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.Category
 import io.github.bkmioa.nexusrss.model.RequestData
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
+fun SearchScreen() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     var text by rememberSaveable { mutableStateOf("") }
     var searchText by remember { mutableStateOf("") }
     var showFilter by remember { mutableStateOf(false) }
+    val navController = LocalNavController.current
     Scaffold(
         topBar = {
             Box {
