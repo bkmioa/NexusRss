@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -168,11 +170,7 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
         val append = lazyPagingItems.loadState.append
         if (append is LoadState.Loading) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
+                FooterLoading()
             }
         }
         if (append is LoadState.Error) {
@@ -183,6 +181,16 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
             }
         }
     }
+}
+
+@Composable
+private fun FooterLoading() {
+    CircularProgressIndicator(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .wrapContentSize(Alignment.Center)
+    )
 }
 
 @Composable
@@ -247,11 +255,13 @@ fun ErrorLayout(message: String, onRetry: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .height(80.dp)
             .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(text = message, style = MaterialTheme.typography.labelSmall)
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Button(onClick = onRetry) {
             Text(text = "重试")
         }
