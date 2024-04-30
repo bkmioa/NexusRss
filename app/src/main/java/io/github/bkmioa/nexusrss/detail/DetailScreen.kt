@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,14 +16,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,11 +36,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
@@ -49,7 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DetailScreen(id: String, initialItem: Item? = null) {
     val viewModel: DetailViewModel = mavericksViewModel(argsFactory = { Pair(id, initialItem) })
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val navController = LocalNavController.current
 
     val uiState by viewModel.collectAsState()
@@ -58,7 +65,7 @@ fun DetailScreen(id: String, initialItem: Item? = null) {
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            TopAppBar(
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -69,7 +76,11 @@ fun DetailScreen(id: String, initialItem: Item? = null) {
                     }
                 },
                 title = {
-                    Text(item?.title ?: "")
+                    Text(
+                        item?.title ?: "",
+                        maxLines = 1,
+                        modifier = Modifier.alpha(scrollBehavior.state.overlappedFraction)
+                    )
                 },
                 scrollBehavior = scrollBehavior,
                 actions = {
@@ -117,8 +128,44 @@ fun DetailScreen(id: String, initialItem: Item? = null) {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                DetailWebView(data = item?.descr)
-                Text(text = item?.mediainfo ?: "")
+                OutlinedCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                ) {
+                    item?.title?.let {
+                        Text(
+                            it,
+                            modifier = Modifier
+                                .padding(8.dp),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                    item?.subTitle?.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            it,
+                            modifier = Modifier
+                                .padding(8.dp),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+                OutlinedCard(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                ) {
+                    DetailWebView(data = item?.descr)
+                }
+                item?.mediainfo?.let { text ->
+                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = text,
+                            modifier = Modifier
+                                .padding(8.dp),
+                        )
+                    }
+                }
             }
         }
     }
