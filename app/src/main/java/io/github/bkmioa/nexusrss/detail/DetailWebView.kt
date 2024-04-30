@@ -8,6 +8,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.widget.FrameLayout
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.net.toUri
@@ -30,7 +31,7 @@ fun DetailWebView(data: String?) {
         mimeType = "text/html",
         historyUrl = null
     )
-
+    val backgroundColor = MaterialTheme.colorScheme.background.value.toInt()
     WebView(
         state = webViewState,
         layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT),
@@ -39,7 +40,7 @@ fun DetailWebView(data: String?) {
         onCreated = {
             //https://stackoverflow.com/a/75076174
             it.alpha = 0.99f
-
+            it.setBackgroundColor(backgroundColor)
             it.settings.apply {
                 javaScriptEnabled = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW

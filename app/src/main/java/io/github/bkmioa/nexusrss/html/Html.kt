@@ -21,6 +21,14 @@ object Html {
       white-space: pre-wrap;
       word-wrap: break-word;
     }
+    @media (prefers-color-scheme: dark) {
+      html, img { 
+        filter: invert(1) hue-rotate(180deg);
+      }
+      img {
+        opacity: 0.75;    
+      }
+    }
   </style>
 </head>
 
