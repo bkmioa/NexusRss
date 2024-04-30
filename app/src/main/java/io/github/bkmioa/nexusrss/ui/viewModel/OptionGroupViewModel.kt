@@ -5,16 +5,17 @@ import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
-import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
+import io.github.bkmioa.nexusrss.databinding.OptionGroupBinding
 import io.github.bkmioa.nexusrss.model.Option
-import kotlinx.android.synthetic.main.option_group.view.*
 
-@EpoxyModelClass(layout = R.layout.option_group)
-abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
-                                    @EpoxyAttribute @JvmField val allChecked: Boolean,
-                                    private val options: List<Option>)
-    : EpoxyModelWithHolder<OptionGroupViewModel.ViewHolder>() {
+@EpoxyModelClass(layout = R2.layout.option_group)
+abstract class OptionGroupViewModel(
+    @EpoxyAttribute var name: String,
+    @EpoxyAttribute var allChecked: Boolean,
+    private val options: List<Option>
+) : EpoxyModelWithHolder<OptionGroupViewModel.ViewHolder>() {
 
     @EpoxyAttribute(hash = false)
     lateinit var onGroupCheckedListener: OnGroupCheckedListener
@@ -44,7 +45,8 @@ abstract class OptionGroupViewModel(@EpoxyAttribute @JvmField val name: String,
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val textView: TextView by lazy { itemView.textViewName }
-        val checkBox: CheckBox by lazy { itemView.checkBox }
+        val viewBinding by lazy { OptionGroupBinding.bind(itemView) }
+        val textView: TextView by lazy { viewBinding.textViewName }
+        val checkBox: CheckBox by lazy { viewBinding.checkBox }
     }
 }

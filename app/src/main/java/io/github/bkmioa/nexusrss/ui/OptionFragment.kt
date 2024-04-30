@@ -10,6 +10,7 @@ import com.airbnb.epoxy.EpoxyController
 import com.airbnb.epoxy.EpoxyModel
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseFragment
+import io.github.bkmioa.nexusrss.databinding.FragmentOptionBinding
 import io.github.bkmioa.nexusrss.model.Category
 import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.ui.viewModel.*
@@ -17,7 +18,6 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_option.*
 
 class OptionFragment : BaseFragment(),
     OptionViewModel.OnOptionCheckedListener,
@@ -47,7 +47,7 @@ class OptionFragment : BaseFragment(),
 
     private val optionController = OptionController()
 
-    var selectedCategory: Category = Category.ALL
+    var selectedCategory: Category = Category.NORMAL
 
     val selected: MutableSet<String> = HashSet()
 
@@ -59,7 +59,7 @@ class OptionFragment : BaseFragment(),
         super.onCreate(savedInstanceState)
         arguments?.apply {
             getString(KEY_INIT_PATH)?.also { path ->
-                selectedCategory = Category.ALL_CATEGORY.find { it.path == path }?: Category.ALL
+                selectedCategory = Category.ALL_CATEGORY.find { it.path == path } ?: Category.NORMAL
             }
             getStringArray(KEY_INIT_SELECTED)?.also {
                 selected.addAll(it.toSet())
@@ -77,14 +77,15 @@ class OptionFragment : BaseFragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val viewBinding = FragmentOptionBinding.bind(view)
 
-        recyclerView.adapter = optionController.adapter
+        viewBinding.recyclerView.adapter = optionController.adapter
 
         val gridLayoutManager = GridLayoutManager(activity, 4)
         gridLayoutManager.spanSizeLookup = optionController.spanSizeLookup
         optionController.spanCount = gridLayoutManager.spanCount
 
-        recyclerView.layoutManager = gridLayoutManager
+        viewBinding.recyclerView.layoutManager = gridLayoutManager
 
         optionController.update()
 

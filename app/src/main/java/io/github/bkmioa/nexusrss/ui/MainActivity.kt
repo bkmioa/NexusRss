@@ -24,6 +24,7 @@ import io.github.bkmioa.nexusrss.BuildConfig
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.common.Scrollable
+import io.github.bkmioa.nexusrss.databinding.ActivityMainBinding
 import io.github.bkmioa.nexusrss.login.LoginActivity
 import io.github.bkmioa.nexusrss.model.Release
 import io.github.bkmioa.nexusrss.model.Tab
@@ -31,7 +32,6 @@ import io.github.bkmioa.nexusrss.search.SearchActivity
 import io.github.bkmioa.nexusrss.viewmodel.MainViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
@@ -41,14 +41,15 @@ class MainActivity : BaseActivity() {
 
     private val tabs = ArrayList<Tab>()
 
-    override fun supportSlideBack() = false
+    private lateinit var viewBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolBar)
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+        setSupportActionBar(viewBinding.toolBar)
 
-        viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+        viewBinding.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
             private val mappingFragment = WeakHashMap<Tab, ListFragment>()
 
             override fun getCount() = tabs.size
@@ -88,9 +89,9 @@ class MainActivity : BaseActivity() {
 
         }
 
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        viewBinding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab) {
-                val item = viewPager.adapter?.instantiateItem(viewPager, tab.position)
+                val item = viewBinding.viewPager.adapter?.instantiateItem(viewBinding.viewPager, tab.position)
                 if (item is Scrollable) {
                     item.scrollToTop()
                 }
@@ -112,7 +113,7 @@ class MainActivity : BaseActivity() {
 
     }
 
-    private fun buildTabs() {
+    private fun buildTabs() = with(viewBinding) {
         tabLayout.removeAllTabs()
         tabs.forEach { tabLayout.newTab() }
 
@@ -139,26 +140,31 @@ class MainActivity : BaseActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.action_search -> {
-            val path = tabs.get(tabLayout.selectedTabPosition).path
+            val path = tabs.get(viewBinding.tabLayout.selectedTabPosition).path
             startActivity(SearchActivity.createIntent(this, path))
             true
         }
+
         R.id.action_login -> {
             startActivity(LoginActivity.createIntent(this))
             true
         }
+
         R.id.action_settings -> {
             startActivity(SettingActivity.createIntent(this))
             true
         }
+
         R.id.action_tabs -> {
             startActivity(TabListActivity.createIntent(this))
             true
         }
+
         R.id.action_checking_version -> {
             checkingVersion()
             true
         }
+
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -166,33 +172,33 @@ class MainActivity : BaseActivity() {
     private fun checkingVersion() {
         Toast.makeText(this, R.string.checking_version, Toast.LENGTH_SHORT).show()
         mainViewModel.checkNewVersion()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(::checkNewVersion) {
-                    Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
-                }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(::checkNewVersion) {
+                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun checkNewVersion(release: Array<Release>?) {
         release?.firstOrNull()
-                ?.takeIf { it.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}" }
-                ?.apply(::hasNewVersion)
-                ?: Toast.makeText(this, R.string.no_new_version, Toast.LENGTH_SHORT).show()
+            ?.takeIf { it.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}" }
+            ?.apply(::hasNewVersion)
+            ?: Toast.makeText(this, R.string.no_new_version, Toast.LENGTH_SHORT).show()
     }
 
     private fun hasNewVersion(release: Release) {
         val dialog = AlertDialog.Builder(this)
-                .setTitle(release.name)
-                .setMessage(Html.fromHtml(release.body))
-                .setPositiveButton(R.string.download) { _, _ ->
-                    goDownloadApk(release)
-                }
-                .setNegativeButton(R.string.cancel, null)
-                .create()
+            .setTitle(release.name)
+            .setMessage(Html.fromHtml(release.body))
+            .setPositiveButton(R.string.download) { _, _ ->
+                goDownloadApk(release)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .create()
 
         dialog.setOnShowListener {
             dialog.findViewById<TextView>(android.R.id.message)
-                    ?.movementMethod = LinkMovementMethod.getInstance()
+                ?.movementMethod = LinkMovementMethod.getInstance()
         }
 
         dialog.show()
@@ -201,8 +207,8 @@ class MainActivity : BaseActivity() {
 
     private fun goDownloadApk(release: Release) {
         val url = release.assets.firstOrNull()
-                ?.takeIf { it.contentType == Release.Asset.TYPE_APK }
-                ?.browserDownloadUrl ?: release.htmlUrl
+            ?.takeIf { it.contentType == Release.Asset.TYPE_APK }
+            ?.browserDownloadUrl ?: release.htmlUrl
         startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 

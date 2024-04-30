@@ -12,10 +12,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentManager
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
+import io.github.bkmioa.nexusrss.databinding.ActivitySearchBinding
 import io.github.bkmioa.nexusrss.model.Category
 import io.github.bkmioa.nexusrss.ui.ListFragment
 import io.github.bkmioa.nexusrss.ui.OptionFragment
-import kotlinx.android.synthetic.main.activity_search.*
 
 class SearchActivity : BaseActivity() {
 
@@ -23,9 +23,11 @@ class SearchActivity : BaseActivity() {
 
     private var searchFilterFragment: OptionFragment? = null
     private var searchFilter: Array<String>? = null
-    private var searchPath: String = Category.ALL.path
+    private var searchPath: String = Category.NORMAL.path
 
     private val searchHistoryViewModel: SearchHistoryViewModel by viewModels()
+
+    private lateinit var viewBinding: ActivitySearchBinding
 
     companion object {
         private const val TAG_SEARCH_FILTER = "search_filter"
@@ -41,12 +43,13 @@ class SearchActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        setSupportActionBar(toolBar)
+        viewBinding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+        setSupportActionBar(viewBinding.toolBar)
         supportActionBar?.apply {
             displayOptions = ActionBar.DISPLAY_HOME_AS_UP
         }
-        searchPath = intent.getStringExtra("path") ?: Category.ALL.path
+        searchPath = intent.getStringExtra("path") ?: Category.NORMAL.path
         searchFragment = supportFragmentManager.findFragmentByTag(TAG_SEARCH) as? ListFragment
             ?: ListFragment.newInstance(searchPath, withSearch = true)
 
@@ -54,7 +57,7 @@ class SearchActivity : BaseActivity() {
             .replace(R.id.container, searchFragment, TAG_SEARCH)
             .commit()
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        viewBinding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 query(query)
                 return true
@@ -65,7 +68,7 @@ class SearchActivity : BaseActivity() {
                 return false
             }
         })
-        searchView.setOnQueryTextFocusChangeListener { v, hasFocus ->
+        viewBinding.searchView.setOnQueryTextFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 addSearchHistoryFragment()
             } else {
@@ -75,11 +78,11 @@ class SearchActivity : BaseActivity() {
         searchHistoryViewModel.selectedKeywordLiveData.observe(this) {
             it.first ?: return@observe
 
-            searchView.setQuery(it.first, it.second)
-            WindowCompat.getInsetsController(window, searchView).show(WindowInsetsCompat.Type.ime())
+            viewBinding.searchView.setQuery(it.first, it.second)
+            WindowCompat.getInsetsController(window, viewBinding.searchView).show(WindowInsetsCompat.Type.ime())
             searchHistoryViewModel.onSelected(null, false)
         }
-        searchView.requestFocus()
+        viewBinding.searchView.requestFocus()
 
         //addSearchHistoryFragment()
     }
@@ -93,15 +96,15 @@ class SearchActivity : BaseActivity() {
                 removeSearchFilterFragment()
                 searchFilterMenu.setIcon(R.drawable.ic_menu_filter)
 
-                val query = searchView.query.toString()
+                val query = viewBinding.searchView.query.toString()
                 if (query.isNotBlank()) {
                     query(query)
                 } else {
-                    searchView.requestFocus()
-                    WindowCompat.getInsetsController(window, searchView).show(WindowInsetsCompat.Type.ime())
+                    viewBinding.searchView.requestFocus()
+                    WindowCompat.getInsetsController(window, viewBinding.searchView).show(WindowInsetsCompat.Type.ime())
                 }
             } else {
-                searchView.clearFocus()
+                viewBinding.searchView.clearFocus()
                 addSearchFilterFragment()
                 searchFilterMenu.setIcon(R.drawable.ic_menu_done)
             }
@@ -149,7 +152,7 @@ class SearchActivity : BaseActivity() {
     }
 
     private fun query(query: String) {
-        searchView.clearFocus()
+        viewBinding.searchView.clearFocus()
         searchFragment.query(query, searchFilter)
         searchHistoryViewModel.add(query)
     }

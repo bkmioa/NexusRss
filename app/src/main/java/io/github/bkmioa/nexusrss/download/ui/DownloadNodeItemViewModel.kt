@@ -6,14 +6,15 @@ import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
+import io.github.bkmioa.nexusrss.databinding.ItemDownloadNodeBinding
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
-import kotlinx.android.synthetic.main.item_download_node.view.*
 
-@EpoxyModelClass(layout = R.layout.item_download_node)
+@EpoxyModelClass(layout = R2.layout.item_download_node)
 abstract class DownloadNodeItemViewModel(
-    @EpoxyAttribute @JvmField
-    val item: DownloadNodeModel
+    @EpoxyAttribute
+    var item: DownloadNodeModel
 ) : EpoxyModelWithHolder<DownloadNodeItemViewModel.ViewHolder>() {
 
     init {
@@ -35,8 +36,9 @@ abstract class DownloadNodeItemViewModel(
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val text1: TextView by lazy { itemView.text1 }
-        val text2: TextView by lazy { itemView.text2 }
-        val more: View by lazy { itemView.more }
+        val viewBinding by lazy { ItemDownloadNodeBinding.bind(itemView) }
+        val text1: TextView by lazy { viewBinding.text1 }
+        val text2: TextView by lazy { viewBinding.text2 }
+        val more: View by lazy { viewBinding.more }
     }
 }

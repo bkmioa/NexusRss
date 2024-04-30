@@ -16,9 +16,9 @@ import com.airbnb.epoxy.EpoxyController
 import com.google.android.material.snackbar.Snackbar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseFragment
+import io.github.bkmioa.nexusrss.databinding.FragmentDownloadNodeListBinding
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.ui.TabListActivity
-import kotlinx.android.synthetic.main.activity_tab_list.*
 
 class DownloadNodeListFragment : BaseFragment() {
     companion object {
@@ -41,8 +41,9 @@ class DownloadNodeListFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = listController.adapter
+        val bind = FragmentDownloadNodeListBinding.bind(view)
+        bind.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        bind.recyclerView.adapter = listController.adapter
         listViewModel.getAllLiveData().observe(viewLifecycleOwner, {
             it ?: throw IllegalStateException()
 

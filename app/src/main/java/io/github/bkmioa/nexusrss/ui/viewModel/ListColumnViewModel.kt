@@ -8,15 +8,15 @@ import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
-import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
-import kotlinx.android.synthetic.main.item_list_column.view.*
+import io.github.bkmioa.nexusrss.databinding.ItemListColumnBinding
 
-@EpoxyModelClass(layout = R.layout.item_list_column)
+@EpoxyModelClass(layout = R2.layout.item_list_column)
 abstract class ListColumnViewModel(
-    @EpoxyAttribute @JvmField val title: String,
-    @EpoxyAttribute @JvmField val selectedIndex: Int,
-    @EpoxyAttribute @JvmField val data: List<String>
+    @EpoxyAttribute var title: String,
+    @EpoxyAttribute var selectedIndex: Int,
+    @EpoxyAttribute var data: List<String>
 ) : EpoxyModelWithHolder<ListColumnViewModel.ViewHolder>() {
 
     @EpoxyAttribute(hash = false)
@@ -50,7 +50,8 @@ abstract class ListColumnViewModel(
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val textView: TextView by lazy { itemView.textViewName }
-        val spinner: Spinner by lazy { itemView.spinner }
+        val viewBinding by lazy { ItemListColumnBinding.bind(itemView) }
+        val textView: TextView by lazy { viewBinding.textViewName }
+        val spinner: Spinner by lazy { viewBinding.spinner }
     }
 }

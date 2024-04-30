@@ -10,12 +10,17 @@ import android.view.Menu
 import android.view.Window
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import com.airbnb.mvrx.Mavericks
+import com.airbnb.mvrx.MavericksView
+import com.airbnb.mvrx.viewModel
 import com.google.android.material.snackbar.Snackbar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
@@ -23,31 +28,42 @@ import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.databinding.ActivityDetailBinding
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
+import io.github.bkmioa.nexusrss.html.Html
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
+import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.repository.UserAgent
-import kotlinx.android.synthetic.main.activity_detail.toolBar
+import io.github.bkmioa.nexusrss.webview.WebImageLoader
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 
 
-class DetailActivity : BaseActivity() {
+class DetailActivity : BaseActivity(), MavericksView {
     companion object {
         const val KEY_TITLE = "title"
         const val KEY_SUB_TITLE = "sub_title"
         const val KEY_LINK = "link"
         const val KEY_DOWNLOAD_URL = "download_url"
 
+        fun createIntent(context: Context, item: Item): Intent {
+            return createIntent(context, item.id, item.title, item.subTitle, item.link)
+        }
+
         fun createIntent(
             context: Context,
+            id: String,
             title: String? = null,
             subTitle: String? = null,
             link: String? = null,
             downloadUrl: String? = null
         ): Intent {
             val intent = Intent(context, DetailActivity::class.java).apply {
+                putExtra("id", id)
                 putExtra(KEY_TITLE, title)
                 putExtra(KEY_SUB_TITLE, subTitle)
                 putExtra(KEY_LINK, link)
                 putExtra(KEY_DOWNLOAD_URL, downloadUrl)
+                putExtra(Mavericks.KEY_ARG, extras)
             }
             return intent
         }
@@ -64,13 +80,15 @@ class DetailActivity : BaseActivity() {
 
     private lateinit var binding: ActivityDetailBinding
 
+    private val viewModel: DetailViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
 
-        setSupportActionBar(toolBar)
+        setSupportActionBar(binding.toolBar)
 
         link = intent.getStringExtra(KEY_LINK) ?: handleDeepLink(intent.data) ?: ""
         title = intent.getStringExtra(KEY_TITLE) ?: ""
@@ -87,18 +105,32 @@ class DetailActivity : BaseActivity() {
         binding.webView.settings.apply {
             javaScriptEnabled = true
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            useWideViewPort = true
-            loadWithOverviewMode = true
-            builtInZoomControls = true
+            useWideViewPort = false
+            //loadWithOverviewMode = true
+            //builtInZoomControls = true
+            //allowFileAccessFromFileURLs = true
             displayZoomControls = false
             userAgentString = UserAgent.userAgentString
         }
-        loadUrl(link)
+        //loadUrl(link)
 
         downloadDao.getAllLiveData().observe(this) {
             downloadNodes = it
             invalidateOptionsMenu()
         }
+
+
+        viewModel.onAsync(UiState::data, onFail = {
+            it.printStackTrace()
+            Toast.makeText(this, it.message ?: "", Toast.LENGTH_SHORT).show()
+        }) {
+            loadData(it.descr)
+        }
+
+    }
+
+    private fun loadData(descr: String?) {
+        binding.webView.loadDataWithBaseURL(Settings.BASE_URL, Html.render(descr), "text/html", "utf-8", null)
     }
 
     private fun handleDeepLink(uri: Uri?): String? {
@@ -133,7 +165,6 @@ class DetailActivity : BaseActivity() {
             val subMenu = menu.addSubMenu(R.string.remote_download)
             downloadNodes.forEach { node ->
                 subMenu.add(node.name)
-                    .setEnabled(downloadUrl.isNotBlank())
                     .setOnMenuItemClickListener {
                         downloadTo(node)
                         true
@@ -142,7 +173,6 @@ class DetailActivity : BaseActivity() {
         }
 
         menu.add(R.string.copy_link)
-            .setEnabled(downloadUrl.isNotBlank())
             .setOnMenuItemClickListener {
                 copyLink()
                 true
@@ -162,10 +192,17 @@ class DetailActivity : BaseActivity() {
         }
     }
 
-    private fun getTorrentUrl() = downloadUrl
+    private suspend fun getTorrentUrl(): String? = try {
+        viewModel.getDownloadLink()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Toast.makeText(this, e.message ?: "error", Toast.LENGTH_SHORT).show()
+        null
+    }
 
-    private fun copyLink() {
-        val torrentUrl = getTorrentUrl()
+    private fun copyLink() = lifecycleScope.launch {
+        val torrentUrl = getTorrentUrl()?.takeIf { it.isNotBlank() } ?: return@launch
+
         (getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
             ?.apply {
                 setPrimaryClip(ClipData.newPlainText(torrentUrl, torrentUrl))
@@ -173,8 +210,8 @@ class DetailActivity : BaseActivity() {
             }
     }
 
-    private fun downloadTo(node: DownloadNodeModel) {
-        val torrentUrl = getTorrentUrl().takeIf { it.isNotBlank() } ?: return
+    private fun downloadTo(node: DownloadNodeModel) = lifecycleScope.launch {
+        val torrentUrl = getTorrentUrl()?.takeIf { it.isNotBlank() } ?: return@launch
 
         RemoteDownloader.download(applicationContext, node.toDownloadNode(), torrentUrl)
     }
@@ -197,8 +234,9 @@ class DetailActivity : BaseActivity() {
 
         override fun onPageCommitVisible(view: WebView, url: String) {
             super.onPageCommitVisible(view, url)
-            findDownloadUrl(view)
+            //findDownloadUrl(view)
         }
+
         private fun findDownloadUrl(view: WebView) {
             val getDownloadUrl = """
                 (function () {
@@ -216,11 +254,26 @@ class DetailActivity : BaseActivity() {
             }
         }
 
+        override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+            //拦截图片请求
+            val url = request.url.toString()
+            if (url.endsWith("jpg", true)
+                || url.endsWith("png", true)
+                || url.endsWith("gif", true)
+                || url.endsWith("jpeg", true)
+                || url.endsWith("webp", true)
+                || url.endsWith("bmp", true)
+                || url.endsWith("svg", true)
+            ) {
+                return WebImageLoader.loadSync(request.url, lifecycle)
+            }
+            return super.shouldInterceptRequest(view, request)
+        }
 
         private fun handleUrl(uri: Uri) {
             val intent = Intent(Intent.ACTION_VIEW, uri)
 
-            if (uri.path?.startsWith("/details.php") == true) {
+            if (uri.path?.startsWith("/details") == true) {
                 if (uri.host?.endsWith("m-team.cc") == true) {
                     val baseUrl = uri.scheme + "://" + uri.host
 
@@ -251,5 +304,9 @@ class DetailActivity : BaseActivity() {
         val last = title.indexOfLast { it == '"' }
         if (first == -1 || last == -1) return title
         return title.substring(first + 1, last)
+    }
+
+    override fun invalidate() {
+
     }
 }

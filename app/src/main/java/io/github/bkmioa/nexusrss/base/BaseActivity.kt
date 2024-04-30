@@ -1,9 +1,9 @@
 package io.github.bkmioa.nexusrss.base
 
 import android.view.MenuItem
-import com.aitangba.swipeback.SwipeBackActivity
+import androidx.appcompat.app.AppCompatActivity
 
-open class BaseActivity : SwipeBackActivity() {
+open class BaseActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

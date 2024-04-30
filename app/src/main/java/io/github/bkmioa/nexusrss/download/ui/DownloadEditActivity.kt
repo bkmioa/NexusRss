@@ -10,8 +10,8 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.ActionBar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
+import io.github.bkmioa.nexusrss.databinding.ActivityDownloadEditBinding
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
-import kotlinx.android.synthetic.main.activity_download_edit.*
 
 class DownloadEditActivity : BaseActivity() {
     companion object {
@@ -26,22 +26,28 @@ class DownloadEditActivity : BaseActivity() {
 
     private val downloadNode: DownloadNodeModel? by lazy { intent.getParcelableExtra(KEY_DOWNLOAD_NODE) }
 
+    private lateinit var viewBinding: ActivityDownloadEditBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_download_edit)
-        setSupportActionBar(toolBar)
+        viewBinding = ActivityDownloadEditBinding.inflate(layoutInflater)
+
+        setContentView(viewBinding.root)
+        setSupportActionBar(viewBinding.toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
         val types = DownloadNodeModel.ALL_TYPES
-        typeSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
+        viewBinding.typeSpinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, types)
 
         downloadNode?.let {
-            typeSpinner.setSelection(types.indexOf(it.type))
-            editTextName.setText(it.name)
-            editTextRemoteUrl.setText(it.host)
-            editTextUsername.setText(it.userName)
-            editTextPassword.setText(it.password)
-            editTextPath.setText(it.defaultPath)
+            with(viewBinding) {
+                typeSpinner.setSelection(types.indexOf(it.type))
+                editTextName.setText(it.name)
+                editTextRemoteUrl.setText(it.host)
+                editTextUsername.setText(it.userName)
+                editTextPassword.setText(it.password)
+                editTextPath.setText(it.defaultPath)
+            }
         }
     }
 
@@ -56,7 +62,7 @@ class DownloadEditActivity : BaseActivity() {
         return true
     }
 
-    private fun done() {
+    private fun done() = with(viewBinding) {
         val name = editTextName.text.toString().trim()
         val host = editTextRemoteUrl.text.toString().trim()
         val userName = editTextUsername.text.toString().trim()

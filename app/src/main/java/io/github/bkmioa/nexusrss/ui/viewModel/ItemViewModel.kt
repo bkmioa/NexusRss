@@ -7,20 +7,22 @@ import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
-import io.github.bkmioa.nexusrss.base.GlideApp
+import io.github.bkmioa.nexusrss.databinding.ItemViewBinding
 import io.github.bkmioa.nexusrss.model.Item
-import kotlinx.android.synthetic.main.item_view.view.*
 
-@EpoxyModelClass(layout = R.layout.item_view)
+@EpoxyModelClass(layout = R2.layout.item_view)
 abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<ItemViewModel.ViewHolder>() {
 
-    @EpoxyAttribute lateinit var onClickListener: View.OnClickListener
+    @EpoxyAttribute
+    lateinit var onClickListener: View.OnClickListener
 
     init {
-        id(item.link)
+        id(item.id)
     }
 
     override fun bind(holder: ViewHolder) {
@@ -28,23 +30,27 @@ abstract class ItemViewModel(private val item: Item) : EpoxyModelWithHolder<Item
 
         with(holder) {
             textViewTitle.text = item.subTitle ?: item.title
-            textViewSubTitle.text = "[${item.sizeText}] ${if (item.subTitle == null) "" else item.title}"
+            val size = Formatter.formatShortFileSize(itemView.context, item.size)
 
-            GlideApp.with(imageView.context)
-                    .load(item.imageUrl)
-                    .placeholder(R.drawable.place_holder)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .centerCrop()
-                    .into(imageView)
+            textViewSubTitle.text = "[${size}] ${if (item.subTitle == null) "" else item.title}"
+
+            Glide.with(imageView.context)
+                .load(item.imageUrl)
+                .placeholder(R.drawable.place_holder)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .centerCrop()
+                .into(imageView)
 
             itemView.setOnClickListener(onClickListener)
         }
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val imageView: ImageView by lazy { itemView.imageView }
-        val textViewTitle: TextView by lazy { itemView.textViewTitle }
-        val textViewSubTitle: TextView by lazy { itemView.textViewSubTitle }
+        val viewBinding by lazy { ItemViewBinding.bind(itemView) }
+
+        val imageView: ImageView by lazy { viewBinding.imageView }
+        val textViewTitle: TextView by lazy { viewBinding.textViewTitle }
+        val textViewSubTitle: TextView by lazy { viewBinding.textViewSubTitle }
 
     }
 }

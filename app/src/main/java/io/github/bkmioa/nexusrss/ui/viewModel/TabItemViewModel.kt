@@ -6,14 +6,13 @@ import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
-import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
+import io.github.bkmioa.nexusrss.databinding.TabListItemBinding
 import io.github.bkmioa.nexusrss.model.Tab
-import kotlinx.android.synthetic.main.tab_list_item.view.*
 
-@EpoxyModelClass(layout = R.layout.tab_list_item)
-abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
-    : EpoxyModelWithHolder<TabItemViewModel.ViewHolder>() {
+@EpoxyModelClass(layout = R2.layout.tab_list_item)
+abstract class TabItemViewModel(@EpoxyAttribute var tab: Tab) : EpoxyModelWithHolder<TabItemViewModel.ViewHolder>() {
 
     @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
     internal lateinit var onTabVisibilityChangeListener: OnTabVisibilityChangeListener
@@ -39,8 +38,9 @@ abstract class TabItemViewModel(@EpoxyAttribute @JvmField val tab: Tab)
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val textViewTitle: TextView by lazy { itemView.textViewTitle }
-        val switchVisibility: SwitchCompat by lazy { itemView.switchVisibility }
+        val viewBinding by lazy { TabListItemBinding.bind(itemView) }
+        val textViewTitle: TextView by lazy { viewBinding.textViewTitle }
+        val switchVisibility: SwitchCompat by lazy { viewBinding.switchVisibility }
     }
 
     interface OnTabVisibilityChangeListener {

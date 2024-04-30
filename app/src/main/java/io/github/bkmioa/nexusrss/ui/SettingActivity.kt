@@ -9,7 +9,7 @@ import androidx.appcompat.app.ActionBar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
-import kotlinx.android.synthetic.main.activity_setting.*
+import io.github.bkmioa.nexusrss.databinding.ActivitySettingBinding
 
 class SettingActivity : BaseActivity() {
     companion object {
@@ -18,17 +18,27 @@ class SettingActivity : BaseActivity() {
         }
     }
 
+    private lateinit var viewBinding: ActivitySettingBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_setting)
-        setSupportActionBar(toolBar)
+        viewBinding = ActivitySettingBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
+        setSupportActionBar(viewBinding.toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
-        editTextBaseUrl.setText(Settings.BASE_URL)
+        viewBinding.editTextBaseUrl.setText(Settings.BASE_URL)
 
-        editTextBaseUrl.addTextChangedListener(object : OnTextChange() {
+        viewBinding.editTextBaseUrl.addTextChangedListener(object : OnTextChange() {
             override fun afterTextChanged(s: Editable) {
                 Settings.BASE_URL = s.toString().trim().removeSuffix("/")
+            }
+        })
+
+        viewBinding.editTextApiKey.setText(Settings.API_KEY)
+        viewBinding.editTextApiKey.addTextChangedListener(object : OnTextChange() {
+            override fun afterTextChanged(s: Editable) {
+                Settings.API_KEY = s.toString().trim()
             }
         })
     }

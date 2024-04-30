@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.ActionBar
@@ -12,7 +14,6 @@ import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseActivity
 import io.github.bkmioa.nexusrss.databinding.ActivityLoginBinding
 import io.github.bkmioa.nexusrss.repository.UserAgent
-import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : BaseActivity() {
     companion object {
@@ -27,7 +28,7 @@ class LoginActivity : BaseActivity() {
         """
 
         private val getInfoBlock = """
-                (function() { return (document.getElementById('info_block').innerHTML); })();
+                (function() { return (document.getElementById('info_block')?.innerHTML); })();
         """
 
         fun createIntent(context: Context): Intent {
@@ -63,18 +64,22 @@ class LoginActivity : BaseActivity() {
         }
         binding.webView.webChromeClient = WebChromeClient()
         binding.webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                Log.d(TAG, "shouldOverrideUrlLoading() called with: request = $request")
+                return super.shouldOverrideUrlLoading(view, request)
+            }
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 binding.refreshLayout.isRefreshing = false
 
-                webView.loadUrl(initScript)
-                webView.evaluateJavascript(getInfoBlock) {
-                    val content = it ?: return@evaluateJavascript
-                    if (content.contains("logout.php")) {
-                        verifysuccess = true
-                        finish()
-                    }
-                }
+                binding.webView.loadUrl(initScript)
+                //webView.evaluateJavascript(getInfoBlock) {
+                //    val content = it ?: return@evaluateJavascript
+                //    if (content.contains("logout.php")) {
+                //        verifysuccess = true
+                //        finish()
+                //    }
+                //}
             }
         }
         val additionalHttpHeaders = mapOf("x-requested-with" to "WebView")

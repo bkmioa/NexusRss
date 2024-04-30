@@ -1,6 +1,7 @@
 package io.github.bkmioa.nexusrss.viewmodel
 
 import android.app.Application
+import androidx.annotation.IntRange
 import androidx.lifecycle.MutableLiveData
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseViewModel
@@ -8,8 +9,9 @@ import io.github.bkmioa.nexusrss.login.VerifyManager
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.ListData
 import io.github.bkmioa.nexusrss.model.LoadingState
+import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.repository.Deconstructor
-import io.github.bkmioa.nexusrss.repository.Service
+import io.github.bkmioa.nexusrss.repository.MtService
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.annotations.NonNull
@@ -19,9 +21,10 @@ import org.koin.core.inject
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RssListViewModel(app: Application) : BaseViewModel(app) {
-    private val service: Service by inject()
+    private val service: MtService by inject()
 
-    private var page: Int = 0
+    @IntRange(from = 1)
+    private var page: Int = 1
     private val isLoading = AtomicBoolean(false)
     private val noMore = AtomicBoolean(false)
 
@@ -36,23 +39,28 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
         isLoading.set(true)
 
         if (update) {
-            page = 0
+            page = 1
             noMore.set(false)
         } else {
             page++
         }
 
         val pageSize = Settings.PAGE_SIZE
-        val startIndex = page * pageSize
 
-        val queryMap = HashMap<String, String>()
-        options?.forEach { queryMap[it] = "1" }
+        val requestData = RequestData(
+            mode = path,
+            categories = resolveCategories(options),
+            standards = resolveStandards(options),
+            keyword = queryText,
+            pageSize = pageSize,
+            pageNumber = page,
+        )
 
-        service.queryList(path, queryMap, queryText, page)
+        service.queryList(requestData)
             .subscribeOn(Schedulers.io())
             .compose(Deconstructor.apply())
             .compose(VerifyManager.verify())
-            .map { it.list }
+            .map { it.data }
             .map { if (page == 0) it.sorted().reversed() else it }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : Observer<List<Item>> {
@@ -89,4 +97,10 @@ class RssListViewModel(app: Application) : BaseViewModel(app) {
 
             })
     }
+
+    private fun resolveStandards(options: Array<String>?): List<String>? {
+        return options?.filter { it.startsWith("standard_") }?.map { it.split("_")[1] }
+    }
+
+    private fun resolveCategories(options: Array<String>?) = (options ?: emptyArray()).filter { it.startsWith("cat_") }.map { it.split("_")[1] }
 }

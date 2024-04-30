@@ -3,11 +3,11 @@ package io.github.bkmioa.nexusrss.search
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
-import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
 import io.github.bkmioa.nexusrss.databinding.SearchHistoryItemViewBinding
 
-@EpoxyModelClass(layout = R.layout.search_history_item_view)
+@EpoxyModelClass(layout = R2.layout.search_history_item_view)
 abstract class SearchHistoryItemViewModel(
     @EpoxyAttribute var text: String
 ) : EpoxyModelWithHolder<SearchHistoryItemViewModel.ViewHolder>() {

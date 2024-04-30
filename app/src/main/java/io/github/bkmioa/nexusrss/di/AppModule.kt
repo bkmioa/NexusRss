@@ -15,58 +15,83 @@ import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.repository.GithubService
 import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
-import io.github.bkmioa.nexusrss.repository.Service
+import io.github.bkmioa.nexusrss.repository.MtService
 import io.github.bkmioa.nexusrss.repository.UserAgentInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import pl.droidsonroids.retrofit2.JspoonConverterFactory
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 val appModule = module {
     single { get<Application>() as App }
     single { provideLoggingInterceptor() }
     single { provideCommonHttpClient(get(), get()) }
-    single { provideService(httpclient = get()) }
+    single { provideMtService(httpclient = get()) }
     single { provideGithubService(get()) }
     single { provideAppDatabase(get()) }
     single { provideAppDao(get()) }
     single { provideDownloadDao(get()) }
+    single(named("coil")) {
+        provideCoilOkHttpClient(get())
+    }
 }
 
-private fun provideService(httpclient: OkHttpClient): Service {
+private fun provideMtService(httpclient: OkHttpClient): MtService {
+    val client = httpclient.newBuilder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("x-api-key", Settings.API_KEY)
+                .build()
+            chain.proceed(request)
+        }
+        .build()
     return Retrofit.Builder()
-            .baseUrl(Settings.BASE_URL)
-            .client(httpclient)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(JspoonConverterFactory.create())
-            .build()
-            .create(Service::class.java)
+        .baseUrl(Settings.BASE_URL)
+        .client(client)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(MtService::class.java)
 }
 
 private fun provideCommonHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor, app: App): OkHttpClient {
     return OkHttpClient.Builder()
-            .followRedirects(false)
-            .cookieJar(JavaNetCookieJar(SharedCookieJar()))
-            .addInterceptor(UserAgentInterceptor(app))
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
+        .cookieJar(JavaNetCookieJar(SharedCookieJar()))
+        .addInterceptor(UserAgentInterceptor(app))
+        .addInterceptor(httpLoggingInterceptor)
+        .build()
+}
+
+fun provideCoilOkHttpClient(common: OkHttpClient): OkHttpClient {
+    return common.newBuilder()
+        .addInterceptor { chain ->
+            val request = chain.request()
+            val referer = with(request.url) { "$scheme://$host" }
+            val newRequest = request.newBuilder()
+                .header("referer", referer)
+                .build()
+            chain.proceed(newRequest)
+        }
+        .build()
+
 }
 
 private fun provideGithubService(httpclient: OkHttpClient): GithubService {
     val gson = GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create()
+        .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+        .create()
 
     return Retrofit.Builder()
-            .baseUrl("https://api.github.com")
-            .client(httpclient)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-            .create(GithubService::class.java)
+        .baseUrl("https://api.github.com")
+        .client(httpclient)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .build()
+        .create(GithubService::class.java)
 }
 
 private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
@@ -79,15 +104,15 @@ private fun provideLoggingInterceptor(): HttpLoggingInterceptor {
 
 private fun provideAppDatabase(app: App): AppDatabase {
     return Room.databaseBuilder(app, AppDatabase::class.java, AppDatabase.DB_NAME)
-            .allowMainThreadQueries()
-            .addCallback(object : RoomDatabase.Callback() {
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    super.onCreate(db)
-                    AppDatabase.initData(db)
-                }
-            })
-            .addMigrations(*AppDatabase.migrations())
-            .build()
+        .allowMainThreadQueries()
+        .addCallback(object : RoomDatabase.Callback() {
+            override fun onCreate(db: SupportSQLiteDatabase) {
+                super.onCreate(db)
+                AppDatabase.initData(db)
+            }
+        })
+        .addMigrations(*AppDatabase.migrations())
+        .build()
 }
 
 private fun provideAppDao(database: AppDatabase): AppDao = database.appDao()

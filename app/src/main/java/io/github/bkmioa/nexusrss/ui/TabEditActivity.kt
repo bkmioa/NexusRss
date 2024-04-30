@@ -9,8 +9,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.ActionBar
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.base.BaseActivity
+import io.github.bkmioa.nexusrss.databinding.ActivityTabEditBinding
 import io.github.bkmioa.nexusrss.model.Tab
-import kotlinx.android.synthetic.main.activity_tab_edit.*
 
 class TabEditActivity : BaseActivity() {
     private lateinit var optionFragment: OptionFragment
@@ -24,25 +24,27 @@ class TabEditActivity : BaseActivity() {
     }
 
     private var tab: Tab? = null
+    private lateinit var viewBinding: ActivityTabEditBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tab_edit)
+        viewBinding = ActivityTabEditBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
-        setSupportActionBar(toolBar)
+        setSupportActionBar(viewBinding.toolBar)
         supportActionBar?.displayOptions = ActionBar.DISPLAY_HOME_AS_UP or ActionBar.DISPLAY_SHOW_TITLE
 
         tab = intent.getParcelableExtra("tab")
 
         tab?.apply {
-            editTextTitle.setText(title)
+            viewBinding.editTextTitle.setText(title)
         }
 
         optionFragment = supportFragmentManager.findFragmentByTag("options") as? OptionFragment
-                ?: OptionFragment.newInstance(tab?.path,tab?.options, true, tab?.columnCount ?: 1)
+            ?: OptionFragment.newInstance(tab?.path, tab?.options, true, tab?.columnCount ?: 1)
 
         supportFragmentManager.beginTransaction()
-                .replace(R.id.optionContainer, optionFragment, "options")
-                .commit()
+            .replace(R.id.optionContainer, optionFragment, "options")
+            .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -57,10 +59,10 @@ class TabEditActivity : BaseActivity() {
     }
 
     private fun done() {
-        val editable = editTextTitle.text ?: throw IllegalStateException()
+        val editable = viewBinding.editTextTitle.text ?: throw IllegalStateException()
 
         if (editable.isEmpty()) {
-            editTextTitle.error = "item_empty!!"
+            viewBinding.editTextTitle.error = "item_empty!!"
             return
         }
         val path = optionFragment.selectedCategory.path
@@ -68,7 +70,7 @@ class TabEditActivity : BaseActivity() {
         val columnCount = optionFragment.columnCount
         val tab: Tab
         if (this.tab == null) {
-            tab = Tab(editable.toString(),path, options, columnCount)
+            tab = Tab(editable.toString(), path, options, columnCount)
         } else {
             tab = this.tab ?: return
             tab.title = editable.toString()

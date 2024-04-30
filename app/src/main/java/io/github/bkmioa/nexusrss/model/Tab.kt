@@ -3,19 +3,21 @@ package io.github.bkmioa.nexusrss.model
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
+import java.util.Objects
 
 @Entity(tableName = "tab")
 @Parcelize
 data class Tab(
-        var title: String,
-        var path: String,
-        var options: Array<String>,
-        var order: Int = 0,
-        var isShow: Boolean = true,
-        var columnCount: Int = 1,
-        @PrimaryKey(autoGenerate = true)
-        var id: Long? = null) : Parcelable, Comparable<Tab> {
+    var title: String,
+    var path: String,
+    var options: Array<String>,
+    var order: Int = 0,
+    var isShow: Boolean = true,
+    var columnCount: Int = 1,
+    @PrimaryKey(autoGenerate = true)
+    var id: Long? = null
+) : Parcelable, Comparable<Tab> {
 
 
     override fun compareTo(other: Tab) = this.order.compareTo(other.order)
@@ -45,5 +47,8 @@ data class Tab(
         return result
     }
 
+    fun makeKey(): String {
+        return Objects.hash(path, options).toString()
+    }
 }
 

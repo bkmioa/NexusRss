@@ -6,24 +6,26 @@ import android.widget.ImageView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.R2
+import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseEpoxyHolder
-import io.github.bkmioa.nexusrss.base.GlideApp
+import io.github.bkmioa.nexusrss.databinding.OptionItemBinding
 import io.github.bkmioa.nexusrss.model.Option
-import kotlinx.android.synthetic.main.option_item.view.*
 
-@EpoxyModelClass(layout = R.layout.option_item)
+@EpoxyModelClass(layout = R2.layout.option_item)
 abstract class OptionViewModel(
-        @EpoxyAttribute @JvmField val option: Option,
-        @EpoxyAttribute @JvmField val selected: Boolean)
-    : EpoxyModelWithHolder<OptionViewModel.ViewHolder>() {
+    @EpoxyAttribute var option: Option,
+    @EpoxyAttribute var selected: Boolean
+) : EpoxyModelWithHolder<OptionViewModel.ViewHolder>() {
 
     init {
-        id(option.key)
+        id(option.key, option.des)
     }
 
-    @EpoxyAttribute(hash = false) lateinit
+    @EpoxyAttribute(hash = false)
+    lateinit
     var onOptionCheckedListener: OnOptionCheckedListener
 
     override fun bind(holder: ViewHolder) {
@@ -34,10 +36,10 @@ abstract class OptionViewModel(
             if (option.img != null) {
                 checkBox.text = null
                 imageView.visibility = View.VISIBLE
-                GlideApp.with(holder.itemView.context)
-                        .load(option.img)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .into(imageView)
+                Glide.with(holder.itemView.context)
+                    .load(Settings.BASE_URL + option.img)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(imageView)
             } else {
                 imageView.visibility = View.GONE
             }
@@ -52,8 +54,9 @@ abstract class OptionViewModel(
     }
 
     class ViewHolder : BaseEpoxyHolder() {
-        val checkBox: CheckBox by lazy { itemView.checkBox }
-        val imageView: ImageView by lazy { itemView.imageView }
+        val viewBinding by lazy { OptionItemBinding.bind(itemView) }
+        val checkBox: CheckBox by lazy { viewBinding.checkBox }
+        val imageView: ImageView by lazy { viewBinding.imageView }
     }
 
     interface OnOptionCheckedListener {

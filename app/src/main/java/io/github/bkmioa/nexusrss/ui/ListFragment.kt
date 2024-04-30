@@ -16,6 +16,7 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.base.BaseFragment
 import io.github.bkmioa.nexusrss.common.Scrollable
+import io.github.bkmioa.nexusrss.databinding.FragmentListBinding
 import io.github.bkmioa.nexusrss.dp2px
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.ListData
@@ -25,7 +26,6 @@ import io.github.bkmioa.nexusrss.ui.viewModel.ErrorViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.ItemViewModel_
 import io.github.bkmioa.nexusrss.ui.viewModel.LoadMoreViewModel_
 import io.github.bkmioa.nexusrss.viewmodel.RssListViewModel
-import kotlinx.android.synthetic.main.fragment_list.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -43,6 +43,8 @@ class ListFragment : BaseFragment(), Scrollable {
 
     private val listViewModel: RssListViewModel by viewModels()
 
+    private lateinit var viewBinding: FragmentListBinding
+
     companion object {
         fun newInstance(path: String, options: Array<String>? = null, withSearch: Boolean = false, columnCount: Int = 1): ListFragment {
             val fragment = ListFragment()
@@ -57,7 +59,7 @@ class ListFragment : BaseFragment(), Scrollable {
 
     }
 
-    override fun scrollToTop() {
+    override fun scrollToTop() = with(viewBinding) {
         if (recyclerView.canScrollVertically(-1)) {
             if ((recyclerView.layoutManager as LinearLayoutManager)
                     .findFirstVisibleItemPosition() < Settings.PAGE_SIZE
@@ -88,6 +90,7 @@ class ListFragment : BaseFragment(), Scrollable {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewBinding = FragmentListBinding.bind(view)
 
         val context = activity ?: throw IllegalStateException()
 
@@ -95,6 +98,7 @@ class ListFragment : BaseFragment(), Scrollable {
         listAdapter.spanCount = gridLayoutManager.spanCount
         gridLayoutManager.spanSizeLookup = listAdapter.spanSizeLookup
 
+        val recyclerView = viewBinding.recyclerView
         recyclerView.layoutManager = gridLayoutManager
         recyclerView.adapter = listAdapter
 
@@ -125,9 +129,9 @@ class ListFragment : BaseFragment(), Scrollable {
             }
         })
 
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
+        viewBinding.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
 
-        swipeRefreshLayout.setOnRefreshListener {
+        viewBinding.swipeRefreshLayout.setOnRefreshListener {
             refresh()
         }
 
@@ -143,7 +147,7 @@ class ListFragment : BaseFragment(), Scrollable {
         listViewModel.loadingState.observe(viewLifecycleOwner, Observer<LoadingState> {
             it ?: throw IllegalStateException()
 
-            swipeRefreshLayout.isRefreshing = it.loading && !it.loadMore
+            viewBinding.swipeRefreshLayout.isRefreshing = it.loading && !it.loadMore
 
             if (isLoadingMore.get() != it.loadMore) {
                 isLoadingMore.set(it.loading)
@@ -151,7 +155,7 @@ class ListFragment : BaseFragment(), Scrollable {
             }
 
             if (it.error != null) {
-                Toast.makeText(context, R.string.loading_error_toast, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, it.error.message ?: context.getString(R.string.loading_error_toast), Toast.LENGTH_SHORT).show()
                 listAdapter.loadingError(it.error)
             }
         })
@@ -175,7 +179,7 @@ class ListFragment : BaseFragment(), Scrollable {
 
     private fun query(update: Boolean) {
         if (withSearch && queryText.isNullOrBlank()) {
-            swipeRefreshLayout.isRefreshing = false
+            viewBinding.swipeRefreshLayout.isRefreshing = false
             return
         }
         listViewModel.query(path, options, queryText, update)
@@ -192,7 +196,7 @@ class ListFragment : BaseFragment(), Scrollable {
     }
 
     private fun tryInitRefresh() {
-        if (!withSearch && swipeRefreshLayout != null && userVisibleHint && listAdapter.isEmpty && listViewModel.loadingState.value?.error == null) {
+        if (this::viewBinding.isInitialized && !withSearch && viewBinding.swipeRefreshLayout != null && userVisibleHint && listAdapter.isEmpty && listViewModel.loadingState.value?.error == null) {
             refresh()
         }
     }
@@ -209,7 +213,7 @@ class ListFragment : BaseFragment(), Scrollable {
             val list = data.map {
                 ItemViewModel_(it)
                     .onClickListener { _ ->
-                        val intent = DetailActivity.createIntent(activity!!, title = it.subTitle ?: it.title, subTitle = it.title, link = it.link)
+                        val intent = DetailActivity.createIntent(activity!!, id = it.id, title = it.subTitle ?: it.title, subTitle = it.title, link = it.link)
                         startActivity(intent)
                     }
             }
@@ -222,10 +226,10 @@ class ListFragment : BaseFragment(), Scrollable {
 
         fun loadMore(loadMore: Boolean) {
             if (loadMore) {
-                recyclerView.post {
+                viewBinding.recyclerView.post {
                     addModel(loadMoreViewModel)
-                    recyclerView.invalidateItemDecorations()
-                    recyclerView.smoothScrollToPosition(listAdapter.itemCount - 1)
+                    viewBinding.recyclerView.invalidateItemDecorations()
+                    viewBinding.recyclerView.smoothScrollToPosition(listAdapter.itemCount - 1)
                 }
             } else {
                 removeModel(loadMoreViewModel)
