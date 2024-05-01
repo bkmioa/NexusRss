@@ -1,5 +1,6 @@
 package io.github.bkmioa.nexusrss.detail
 
+import android.os.Bundle
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
@@ -21,9 +22,9 @@ data class UiState(
     val downloadLink: Async<String> = Uninitialized
 ) : MavericksState {
 
-    constructor(args: Pair<String, Item?>) : this(
-        id = args.first,
-        data = args.second?.let { Success(it) } ?: Uninitialized,
+    constructor(args: Bundle) : this(
+        id = args.getString("id")!!,
+        data = args.getParcelable<Item>("data")?.let { Success(it) } ?: Uninitialized,
     )
 }
 
@@ -42,11 +43,10 @@ class DetailViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
     fun fetchItem(id: String) {
         suspend {
             mtService.getDetail(id).data!!
-        }.execute {
+        }.execute(retainValue = UiState::data) {
             copy(data = it)
         }
     }
-
     suspend fun getDownloadLink(): String? {
         return withContext(Dispatchers.IO) {
             mtService.getDownloadLink(awaitState().id).data

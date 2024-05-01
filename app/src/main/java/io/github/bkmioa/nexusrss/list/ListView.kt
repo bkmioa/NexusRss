@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -46,7 +45,6 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -55,9 +53,9 @@ import coil.compose.AsyncImage
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.LocalNavController
+import io.github.bkmioa.nexusrss.Router
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
-import io.github.bkmioa.nexusrss.ui.DetailActivity
 import io.github.bkmioa.nexusrss.widget.pullrefresh.PullRefreshIndicator
 import io.github.bkmioa.nexusrss.widget.pullrefresh.pullRefresh
 import io.github.bkmioa.nexusrss.widget.pullrefresh.rememberPullRefreshState
@@ -203,8 +201,7 @@ fun TopItemCard(item: Item?) {
         else -> MaterialTheme.colorScheme.tertiaryContainer
     }
 
-    val context = LocalContext.current
-    val navHostController = LocalNavController.current
+    val navController = LocalNavController.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -212,7 +209,7 @@ fun TopItemCard(item: Item?) {
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            navHostController.navigate("detail/${item.id}")
+            Router.Detail.navigate(navController, item.id, item)
         }
     ) {
         Row {
@@ -277,7 +274,7 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f) {
             .fillMaxWidth()
             .aspectRatio(aspectRatio),
         onClick = {
-            navController.navigate("detail/${item.id}")
+            Router.Detail.navigate(navController, item.id, item)
         }
     ) {
         Box(Modifier.fillMaxWidth()) {

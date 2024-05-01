@@ -4,6 +4,7 @@ package io.github.bkmioa.nexusrss.detail
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +17,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CloudDownload
-import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -42,7 +41,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
@@ -50,14 +48,13 @@ import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
-import io.github.bkmioa.nexusrss.model.Item
 import kotlinx.coroutines.launch
 
 @Composable
-fun DetailScreen(id: String, initialItem: Item? = null) {
-    val viewModel: DetailViewModel = mavericksViewModel(argsFactory = { Pair(id, initialItem) })
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+fun DetailScreen(args: Bundle) {
     val navController = LocalNavController.current
+    val viewModel: DetailViewModel = mavericksViewModel(argsFactory = { args })
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val uiState by viewModel.collectAsState()
 
@@ -164,7 +161,7 @@ fun DetailScreen(id: String, initialItem: Item? = null) {
                             .fillMaxWidth()
                     ) {
                         Text(
-                            text = text,
+                            text = text.replace("  +".toRegex(), " "),
                             modifier = Modifier
                                 .padding(8.dp),
                         )

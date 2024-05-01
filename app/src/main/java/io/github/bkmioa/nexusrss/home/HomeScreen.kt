@@ -37,7 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.LocalNavController
-import io.github.bkmioa.nexusrss.Routers
+import io.github.bkmioa.nexusrss.Router
+import io.github.bkmioa.nexusrss.navigate
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
 import kotlinx.coroutines.delay
@@ -60,10 +61,10 @@ fun HomeScreen() {
                 scrollBehavior = scrollBehavior,
                 colors = defaultColors.copy(scrolledContainerColor = defaultColors.containerColor),
                 actions = {
-                    IconButton(onClick = { navController.navigate(Routers.SEARCH) }) {
+                    IconButton(onClick = { navController.navigate(Router.Search) }) {
                         Icon(imageVector = Icons.Filled.Search, contentDescription = "search")
                     }
-                    IconButton(onClick = { navController.navigate(Routers.TABS) }) {
+                    IconButton(onClick = { navController.navigate(Router.Tabs) }) {
                         Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "more")
                     }
                 },
