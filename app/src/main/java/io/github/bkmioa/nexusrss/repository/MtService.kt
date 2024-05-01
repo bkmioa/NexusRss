@@ -1,5 +1,6 @@
 package io.github.bkmioa.nexusrss.repository
 
+import io.github.bkmioa.nexusrss.model.FileItem
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.Result
 import io.github.bkmioa.nexusrss.model.ItemList
@@ -36,4 +37,7 @@ interface MtService {
     @POST("api/torrent/genDlToken")
     @FormUrlEncoded
     suspend fun getDownloadLink(@Field("id") id: String): Result<String>
+    @POST("api/torrent/files")
+    @FormUrlEncoded
+    suspend fun getFileList(@Field("id") id: String): Result<List<FileItem>>
 }

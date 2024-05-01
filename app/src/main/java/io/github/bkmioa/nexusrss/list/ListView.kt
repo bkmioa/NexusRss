@@ -56,6 +56,7 @@ import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.Router
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
+import io.github.bkmioa.nexusrss.widget.ErrorLayout
 import io.github.bkmioa.nexusrss.widget.pullrefresh.PullRefreshIndicator
 import io.github.bkmioa.nexusrss.widget.pullrefresh.pullRefresh
 import io.github.bkmioa.nexusrss.widget.pullrefresh.rememberPullRefreshState
@@ -244,24 +245,6 @@ fun TopItemCard(item: Item?) {
         }
 
 
-    }
-}
-
-@Composable
-fun ErrorLayout(message: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(text = message, style = MaterialTheme.typography.labelSmall)
-        Spacer(modifier = Modifier.height(4.dp))
-        Button(onClick = onRetry) {
-            Text(text = "重试")
-        }
     }
 }
 
