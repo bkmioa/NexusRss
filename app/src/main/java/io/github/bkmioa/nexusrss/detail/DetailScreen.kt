@@ -158,7 +158,11 @@ fun DetailScreen(id: String, initialItem: Item? = null) {
                     DetailWebView(data = item?.descr)
                 }
                 item?.mediainfo?.let { text ->
-                    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedCard(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                    ) {
                         Text(
                             text = text,
                             modifier = Modifier
