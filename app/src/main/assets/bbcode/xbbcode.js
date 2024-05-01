@@ -27,6 +27,7 @@ THE SOFTWARE.
 
     This module allows you to parse BBCode and to extend to the mark-up language
     to add in your own tags.
+    https://github.com/patorjk/Extendible-BBCode-Parser
 */
 
 var XBBCODE = (function() {

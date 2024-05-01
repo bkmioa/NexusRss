@@ -18,7 +18,6 @@ object Html {
       height: auto;
     }
     #content {
-      white-space: pre-wrap;
       word-wrap: break-word;
     }
     @media (prefers-color-scheme: dark) {
@@ -59,7 +58,10 @@ object Html {
 
     fun render(content: String?): String {
         if (content == null) return ""
-        return template.replace("{{content}}", StringEscapeUtils.escapeEcmaScript(content))
+        val html = content
+            .replace("\r\n\r\n", "\n")
+            .replace("\n", "\r\n\r\n")
+        return template.replace("{{content}}", StringEscapeUtils.escapeEcmaScript(html))
     }
 
 }
