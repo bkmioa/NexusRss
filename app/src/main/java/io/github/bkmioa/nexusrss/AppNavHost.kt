@@ -21,6 +21,7 @@ import io.github.bkmioa.nexusrss.detail.DetailScreen
 import io.github.bkmioa.nexusrss.home.HomeScreen
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.search.SearchScreen
+import io.github.bkmioa.nexusrss.settings.SettingsScreen
 import io.github.bkmioa.nexusrss.tabs.TabsScreen
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> { error("shouldn't happen") }
@@ -47,6 +48,8 @@ sealed class Router(val route: String) {
             navigate(navController, args)
         }
     }
+
+    object Settings : Router("settings")
 }
 
 @Composable
@@ -87,6 +90,9 @@ fun AppNavHost(
             ) { backStackEntry ->
                 val args = checkNotNull(backStackEntry.arguments)
                 DetailScreen(args)
+            }
+            composable(Router.Settings.route) {
+                SettingsScreen()
             }
         }
     }
