@@ -70,6 +70,7 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.FileItem
+import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.widget.ErrorLayout
 import kotlinx.coroutines.launch
 
@@ -148,63 +149,13 @@ fun DetailScreen(args: Bundle) {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ) {
-                OutlinedCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                ) {
-                    item?.title?.let {
-                        Text(
-                            it,
-                            modifier = Modifier
-                                .padding(8.dp),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                    item?.subTitle?.takeIf { it.isNotBlank() }?.let {
-                        Text(
-                            it,
-                            modifier = Modifier
-                                .padding(8.dp),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                    }
-                }
-                OutlinedCard(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                ) {
-                    DetailWebView(data = item?.descr)
-                }
-                item?.mediainfo?.let { text ->
-                    OutlinedCard(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = text.replace("  +".toRegex(), " "),
-                            modifier = Modifier
-                                .padding(8.dp),
-                        )
-                    }
-                }
-                OutlinedCard(
-                    onClick = {
-                        viewModel.showFileList()
-                    },
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "種子檔案",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp, vertical = 16.dp),
-                    )
-                }
+                TitleInfo(item?.title, item?.subTitle)
+
+                TorrentFileList { viewModel.showFileList() }
+
+                DetailInfo(item?.descr)
+
+                MediaInfo(item?.mediainfo)
             }
         }
     }
@@ -217,6 +168,79 @@ fun DetailScreen(args: Bundle) {
             onRetry = {
                 viewModel.fetchFileList()
             }
+        )
+    }
+}
+
+@Composable
+private fun TitleInfo(title: String?, subTitle: String?) {
+    if (title.isNullOrBlank()) return
+
+    OutlinedCard(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            title,
+            modifier = Modifier
+                .padding(8.dp),
+            style = MaterialTheme.typography.titleLarge
+        )
+        if (!subTitle.isNullOrBlank()) {
+            Text(
+                subTitle,
+                modifier = Modifier
+                    .padding(8.dp),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+    }
+}
+
+@Composable
+private fun TorrentFileList(onClick: () -> Unit) {
+    OutlinedCard(
+        onClick = onClick,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "種子檔案",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 16.dp),
+        )
+    }
+}
+
+@Composable
+private fun DetailInfo(detailInfo: String?) {
+    if (detailInfo.isNullOrBlank()) return
+
+    OutlinedCard(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        DetailWebView(data = detailInfo)
+    }
+}
+
+@Composable
+private fun MediaInfo(mediainfo: String?) {
+    if (mediainfo.isNullOrBlank()) return
+
+    OutlinedCard(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = mediainfo.replace("  +".toRegex(), " "),
+            modifier = Modifier
+                .padding(8.dp),
         )
     }
 }
