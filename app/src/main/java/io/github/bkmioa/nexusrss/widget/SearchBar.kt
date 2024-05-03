@@ -65,11 +65,7 @@ fun SearchBar(
     }
 
     fun back() {
-        if (active) {
-            focusManager.clearFocus(true)
-        } else {
-            onNavigateBack()
-        }
+        onNavigateBack()
     }
 
     BackHandler() {

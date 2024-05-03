@@ -75,7 +75,13 @@ fun SearchScreen() {
                 actions = {
                     Box(modifier = Modifier.weight(1.0f)) {
                         SearchBar(
-                            onNavigateBack = { navController.popBackStack() },
+                            onNavigateBack = {
+                                if (uiState.searchText.isNotBlank() && uiState.active) {
+                                    viewModel.setActive(false)
+                                } else {
+                                    navController.popBackStack()
+                                }
+                            },
                             placeholderText = stringResource(id = R.string.action_search),
                             searchText = uiState.text,
                             active = uiState.active,
