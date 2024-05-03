@@ -17,8 +17,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ErrorLayout(message: String, onRetry: () -> Unit) {
+    ErrorLayout(Modifier, message, onRetry)
+}
+
+@Composable
+fun ErrorLayout(modifier: Modifier = Modifier, message: String, onRetry: () -> Unit) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
             .padding(horizontal = 16.dp),

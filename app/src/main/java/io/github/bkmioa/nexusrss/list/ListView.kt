@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package io.github.bkmioa.nexusrss.list
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +30,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.North
 import androidx.compose.material.icons.filled.South
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -156,25 +158,26 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
                 } else {
                     GridItemSpan(1)
                 }
-            }
+            },
+            key = { index -> index }
         ) { index ->
             val item = lazyPagingItems[index]
             if (item?.status?.toppingLevel != 0) {
-                TopItemCard(item)
+                TopItemCard(item, Modifier.animateItemPlacement())
             } else {
-                ItemCard(item, aspectRatio)
+                ItemCard(item, aspectRatio, Modifier.animateItemPlacement())
             }
         }
 
         val append = lazyPagingItems.loadState.append
         if (append is LoadState.Loading) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                FooterLoading()
+            item(span = { GridItemSpan(maxLineSpan) }, key = "footer") {
+                FooterLoading(Modifier.animateItemPlacement())
             }
         }
         if (append is LoadState.Error) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                ErrorLayout(append.error.message ?: "Unknown error") {
+            item(span = { GridItemSpan(maxLineSpan) }, key = "footer") {
+                ErrorLayout(Modifier.animateItemPlacement(), message = append.error.message ?: "Unknown error") {
                     lazyPagingItems.retry()
                 }
             }
@@ -183,9 +186,9 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
 }
 
 @Composable
-private fun FooterLoading() {
+private fun FooterLoading(modifier: Modifier = Modifier) {
     CircularProgressIndicator(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
             .wrapContentSize(Alignment.Center)
@@ -193,7 +196,7 @@ private fun FooterLoading() {
 }
 
 @Composable
-fun TopItemCard(item: Item?) {
+fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
     item ?: return
 
     val containerColor = when (item.status.toppingLevel) {
@@ -204,7 +207,7 @@ fun TopItemCard(item: Item?) {
 
     val navController = LocalNavController.current
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(60.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
@@ -249,11 +252,11 @@ fun TopItemCard(item: Item?) {
 }
 
 @Composable
-fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f) {
+fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modifier) {
     item ?: return
     val navController = LocalNavController.current
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(aspectRatio),
         onClick = {
