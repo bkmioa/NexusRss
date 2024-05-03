@@ -92,21 +92,21 @@ class OptionFragment : BaseFragment(),
     }
 
     override fun onChecked(option: Option, isChecked: Boolean) {
-        if (isChecked) selected.add(option.key) else selected.remove(option.key)
+        if (isChecked) selected.add(option.id) else selected.remove(option.id)
         optionController.update()
     }
 
     override fun onGroupChecked(options: List<Option>, isChecked: Boolean) {
         if (isChecked) {
-            selected.addAll(options.map { it.key })
+            selected.addAll(options.map { it.id })
         } else {
-            selected.removeAll(options.map { it.key })
+            selected.removeAll(options.map { it.id })
         }
         optionController.update()
     }
 
     private fun isAllChecked(options: List<Option>): Boolean {
-        return selected.containsAll(options.map { it.key })
+        return selected.containsAll(options.map { it.id })
     }
 
     inner class OptionController : EpoxyController() {
@@ -162,7 +162,7 @@ class OptionFragment : BaseFragment(),
                 )
                 selectedCategory.options.takeIf { it.isNotEmpty() }?.forEach {
                     add(
-                        OptionViewModel_(it, selected.contains(it.key))
+                        OptionViewModel_(it, selected.contains(it.id))
                             .onOptionCheckedListener(this@OptionFragment)
                     )
                 }
@@ -173,7 +173,7 @@ class OptionFragment : BaseFragment(),
                 )
                 Option.RESOLUTION.forEach {
                     add(
-                        OptionViewModel_(it, selected.contains(it.key))
+                        OptionViewModel_(it, selected.contains(it.id))
                             .onOptionCheckedListener(this@OptionFragment)
                     )
                 }
@@ -185,7 +185,7 @@ class OptionFragment : BaseFragment(),
 
                 Option.PROCESS.forEach {
                     add(
-                        OptionViewModel_(it, selected.contains(it.key))
+                        OptionViewModel_(it, selected.contains(it.id))
                             .onOptionCheckedListener(this@OptionFragment)
                     )
                 }

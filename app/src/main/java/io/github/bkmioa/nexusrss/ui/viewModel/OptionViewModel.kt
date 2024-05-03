@@ -21,7 +21,7 @@ abstract class OptionViewModel(
 ) : EpoxyModelWithHolder<OptionViewModel.ViewHolder>() {
 
     init {
-        id(option.key, option.des)
+        id(option.id, option.des)
     }
 
     @EpoxyAttribute(hash = false)
