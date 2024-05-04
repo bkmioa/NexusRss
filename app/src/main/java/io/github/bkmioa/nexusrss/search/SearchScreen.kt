@@ -188,12 +188,13 @@ fun SearchScreen() {
 private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
     LazyRow(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item(key = "category") {
             var showCategoryList by remember { mutableStateOf(false) }
-            Box(modifier = Modifier.animateItemPlacement()) {
+            Box(modifier = Modifier.animateItem()) {
                 InputChip(
                     onClick = {
                         showCategoryList = true
@@ -245,7 +246,7 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
                             modifier = Modifier.size(16.dp)
                         )
                     },
-                    modifier = Modifier.animateItemPlacement()
+                    modifier = Modifier.animateItem()
                 )
             }
         }
@@ -331,7 +332,7 @@ private fun HistoryList(uiState: UiState, viewModel: SearchViewModel) {
             SwipeToDismissBox(
                 state = dismissBoxState,
                 backgroundContent = {},
-                modifier = Modifier.animateItemPlacement()
+                modifier = Modifier.animateItem()
             ) {
                 ListItem(
                     modifier = Modifier

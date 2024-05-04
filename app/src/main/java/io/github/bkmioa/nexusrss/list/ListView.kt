@@ -163,21 +163,21 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
         ) { index ->
             val item = lazyPagingItems[index]
             if (item?.status?.toppingLevel != 0) {
-                TopItemCard(item, Modifier.animateItemPlacement())
+                TopItemCard(item, Modifier.animateItem())
             } else {
-                ItemCard(item, aspectRatio, Modifier.animateItemPlacement())
+                ItemCard(item, aspectRatio, Modifier.animateItem())
             }
         }
 
         val append = lazyPagingItems.loadState.append
         if (append is LoadState.Loading) {
             item(span = { GridItemSpan(maxLineSpan) }, key = "footer") {
-                FooterLoading(Modifier.animateItemPlacement())
+                FooterLoading(Modifier.animateItem())
             }
         }
         if (append is LoadState.Error) {
             item(span = { GridItemSpan(maxLineSpan) }, key = "footer") {
-                ErrorLayout(Modifier.animateItemPlacement(), message = append.error.message ?: "Unknown error") {
+                ErrorLayout(Modifier.animateItem(), message = append.error.message ?: "Unknown error") {
                     lazyPagingItems.retry()
                 }
             }
