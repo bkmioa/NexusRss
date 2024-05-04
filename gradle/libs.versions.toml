@@ -17,6 +17,7 @@ activity = "1.9.0"
 fragment = "1.6.2"
 room = "2.6.1"
 compose-bom = "2024.04.01"
+chrisbanes-compose-bom = "2024.05.00-alpha01"
 accompanist = "0.32.0"
 koin = "2.0.1"
 constraintlayout = "2.1.4"
@@ -73,7 +74,8 @@ mavericks-compose = { group = "com.airbnb.android", name = "mavericks-compose", 
 apache_commons-text = { group = "org.apache.commons", name = "commons-text", version.ref = "apache_commons" }
 
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+#compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+compose-bom = { group = "dev.chrisbanes.compose", name = "compose-bom", version.ref = "chrisbanes-compose-bom" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }

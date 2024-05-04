@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -314,14 +316,10 @@ fun DownLoadList(
 
 @Composable
 fun FileListDialog(fileList: Async<List<FileItem>>, onDismissRequest: () -> Unit, onRetry: () -> Unit) {
-    val paddingValues = WindowInsets.systemBars.asPaddingValues()
-    val topPadding = paddingValues.calculateTopPadding() / 2
-    val bottomPadding = paddingValues.calculateBottomPadding()
     ModalBottomSheet(
         onDismissRequest = { onDismissRequest() },
-        windowInsets = WindowInsets(0),
         modifier = Modifier
-            .padding(top = topPadding)
+            .padding( WindowInsets.statusBars.asPaddingValues())
             .fillMaxHeight()
     ) {
         Text(
@@ -332,7 +330,6 @@ fun FileListDialog(fileList: Async<List<FileItem>>, onDismissRequest: () -> Unit
 
         Box(
             modifier = Modifier
-                .padding(bottom = bottomPadding + topPadding)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
