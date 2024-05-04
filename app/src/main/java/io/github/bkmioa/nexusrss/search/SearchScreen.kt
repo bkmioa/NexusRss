@@ -3,7 +3,6 @@
 package io.github.bkmioa.nexusrss.search
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -17,6 +16,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -134,7 +134,10 @@ fun SearchScreen() {
                 .fillMaxSize()
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Box(modifier = Modifier.weight(1f)) {
                         FilterStatus(uiState, viewModel)
                     }
@@ -170,7 +173,6 @@ fun SearchScreen() {
                     ) {
                         HistoryList(uiState, viewModel)
                     }
-
                     this@Column.AnimatedVisibility(
                         visible = showFilter,
                         enter = slideInVertically() + fadeIn(),
@@ -178,6 +180,7 @@ fun SearchScreen() {
                     ) {
                         FilterPanel(uiState, viewModel)
                     }
+
                 }
             }
         }
@@ -189,7 +192,7 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item(key = "category") {
@@ -226,6 +229,7 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
                         DropdownMenuItem(text = { Text(text = cat.des) }, onClick = {
                             showCategoryList = false
                             viewModel.setCategory(cat)
+                            viewModel.submit()
                         })
                     }
                 }

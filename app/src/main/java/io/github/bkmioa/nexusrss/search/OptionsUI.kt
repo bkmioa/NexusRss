@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -56,7 +58,7 @@ fun OptionsUI(
     LazyVerticalGrid(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(16.dp),
         columns = GridCells.Adaptive(100.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -99,10 +101,10 @@ fun OptionsUI(
                 },
                 label = {
                     Text(
+                        modifier = Modifier.fillMaxSize(),
                         text = option.des,
-                        minLines = 2,
-                        maxLines = 2,
-                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.labelMedium,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
@@ -121,7 +123,14 @@ fun OptionsUI(
                 FilterChip(
                     selected = selected,
                     onClick = { onSelect(option, !selected) },
-                    label = { Text(text = option.des) }
+                    label = {
+                        Text(
+                            modifier = Modifier.fillMaxSize(),
+                            text = option.des, textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 )
             }
         }

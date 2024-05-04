@@ -108,16 +108,9 @@ data class Option(
             Option("videoCodec", "2", "VC-1"),
             Option("videoCodec", "3", "Xvid"),
             Option("videoCodec", "4", "MPEG-2"),
-            Option("videoCodec", "5", "FLAC"),
-            Option("videoCodec", "10", "APE"),
-            Option("videoCodec", "11", "DTS"),
-            Option("videoCodec", "12", "AC-3"),
-            Option("videoCodec", "13", "WAV"),
-            Option("videoCodec", "14", "MP3"),
             Option("videoCodec", "15", "MPEG-4"),
             Option("videoCodec", "16", "H.265"),
-            Option("videoCodec", "17", "ALAC"),
-            Option("videoCodec", "18", "AAC"),
+            Option("videoCodec", "19", "AV1"),
         )
 
         val AUDIOCODECS = listOf(
