@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -72,8 +70,7 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.FileItem
-import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.widget.ErrorLayout
+import io.github.bkmioa.nexusrss.widget.Empty
 import kotlinx.coroutines.launch
 
 @Composable
@@ -373,7 +370,7 @@ fun FileListDialog(fileList: Async<List<FileItem>>, onDismissRequest: () -> Unit
                             .height(100.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        ErrorLayout(fileList.error.message ?: "Unknown error") {
+                        Empty(message = fileList.error.message ?: "Unknown error") {
                             onRetry()
                         }
                     }

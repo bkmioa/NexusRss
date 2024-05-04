@@ -1,14 +1,12 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package io.github.bkmioa.nexusrss.list
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +31,8 @@ import androidx.compose.material.icons.filled.South
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,9 +44,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -55,10 +58,11 @@ import coil.compose.AsyncImage
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.LocalNavController
+import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Router
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
-import io.github.bkmioa.nexusrss.widget.ErrorLayout
+import io.github.bkmioa.nexusrss.widget.Empty
 import io.github.bkmioa.nexusrss.widget.pullrefresh.PullRefreshIndicator
 import io.github.bkmioa.nexusrss.widget.pullrefresh.pullRefresh
 import io.github.bkmioa.nexusrss.widget.pullrefresh.rememberPullRefreshState
@@ -101,10 +105,23 @@ fun ThreadList(
             val message = refresh.error.message ?: "Unknown error"
             if (lazyPagingItems.itemCount == 0) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.75f),
                     contentAlignment = Alignment.Center
                 ) {
-                    ErrorLayout(message = message) {
+                    Empty(
+                        image = {
+                            Icon(
+                                modifier = Modifier.size(100.dp),
+                                imageVector = ImageVector.vectorResource(id = R.drawable.wifi_error),
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
+                            )
+                        },
+                        message = message,
+                        actionText = "重试"
+                    ) {
                         lazyPagingItems.retry()
                     }
                 }
@@ -177,10 +194,60 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
         }
         if (append is LoadState.Error) {
             item(span = { GridItemSpan(maxLineSpan) }, key = "footer") {
-                ErrorLayout(Modifier.animateItem(), message = append.error.message ?: "Unknown error") {
+                Empty(
+                    Modifier
+                        .animateItem()
+                        .height(80.dp),
+                    message = append.error.message ?: "Unknown error"
+                ) {
                     lazyPagingItems.retry()
                 }
             }
+        }
+        if (append is LoadState.NotLoading && append.endOfPaginationReached && lazyPagingItems.itemCount > 0) {
+            item(span = { GridItemSpan(maxLineSpan) }, key = "footer") {
+                Row(
+                    Modifier.height(80.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.width(40.dp),
+                        thickness = 1.dp
+                    )
+                    Text(
+                        text = "没有更多了",
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.width(40.dp),
+                        thickness = 1.dp
+                    )
+                }
+            }
+        }
+    }
+    if (lazyPagingItems.loadState.refresh is LoadState.NotLoading && lazyPagingItems.itemCount == 0) {
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.75f)
+        ) {
+            Empty(
+                modifier = Modifier.fillMaxSize(),
+                image = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.empty),
+                        contentDescription = "",
+                        modifier = Modifier.size(100.dp),
+                        tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
+                    )
+                },
+                message = "没有内容"
+            )
         }
     }
 }
