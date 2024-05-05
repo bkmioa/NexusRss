@@ -29,7 +29,6 @@ data class Tab(
 
         other as Tab
 
-        if (id != other.id) return false
         if (title != other.title) return false
         if (path != other.path) return false
         if (columnCount != other.columnCount) return false
@@ -42,13 +41,12 @@ data class Tab(
         var result = title.hashCode()
         result = 31 * result + path.hashCode()
         result = 31 * result + options.contentHashCode()
-        result = 31 * result + (id?.hashCode() ?: 0)
         result = 31 * result + columnCount.hashCode()
         return result
     }
 
     fun makeKey(): String {
-        return Objects.hash(path, options).toString()
+        return hashCode().toString()
     }
 }
 
