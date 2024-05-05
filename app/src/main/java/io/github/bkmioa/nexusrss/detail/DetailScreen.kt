@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
 package io.github.bkmioa.nexusrss.detail
 
@@ -10,6 +10,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
@@ -18,14 +21,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -71,6 +80,8 @@ import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.FileItem
+import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.widget.Empty
 import kotlinx.coroutines.launch
 
@@ -151,6 +162,8 @@ fun DetailScreen(args: Bundle) {
             ) {
                 TitleInfo(item?.title, item?.subTitle)
 
+                BasicInfo(item)
+
                 TorrentFileList { viewModel.showFileList() }
 
                 DetailInfo(item?.descr)
@@ -199,6 +212,58 @@ private fun TitleInfo(title: String?, subTitle: String?) {
 }
 
 @Composable
+fun BasicInfo(item: Item?) {
+    if (item == null) return
+    val context = LocalContext.current
+    OutlinedCard(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Column() {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = buildAnnotatedString {
+                    append("由 ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(item.getAuthorText(context))
+                    }
+                    append(" 发布于 ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(item.formatRelativeDateText())
+                    }
+                },
+            )
+            FlowRow(
+                modifier = Modifier.padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                InfoLabel("大小", item.sizeText)
+                InfoLabel("類別", Option.ALL.find { it.value == item.category }?.des)
+                InfoLabel("視頻編碼", Option.VIDEOCODECS.find { it.value == item.videoCodec }?.des)
+                InfoLabel("音頻編碼", Option.AUDIOCODECS.find { it.value == item.audioCodec }?.des)
+                InfoLabel("解析度", Option.STANDARDS.find { it.value == item.standard }?.des)
+                InfoLabel("地區", Option.PROCESSINGS.find { it.value == item.processing }?.des)
+                InfoLabel("製作組:", Option.TEAMS.find { it.value == item.team }?.des)
+            }
+        }
+    }
+}
+
+@Composable
+fun InfoLabel(title: String, text: String?) {
+    if (text.isNullOrBlank()) return
+
+    Text(text = buildAnnotatedString {
+        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+            append("$title: ")
+        }
+        append(text)
+    })
+}
+
+@Composable
 private fun TorrentFileList(onClick: () -> Unit) {
     OutlinedCard(
         onClick = onClick,
@@ -206,12 +271,23 @@ private fun TorrentFileList(onClick: () -> Unit) {
             .padding(8.dp)
             .fillMaxWidth()
     ) {
-        Text(
-            text = "種子檔案",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp),
-        )
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text = "種子檔案",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp, vertical = 16.dp),
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                contentDescription = "open file list",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp),
+                tint = MaterialTheme.colorScheme.outlineVariant,
+            )
+        }
     }
 }
 
@@ -317,7 +393,7 @@ fun FileListDialog(fileList: Async<List<FileItem>>, onDismissRequest: () -> Unit
     ModalBottomSheet(
         onDismissRequest = { onDismissRequest() },
         modifier = Modifier
-            .padding( WindowInsets.statusBars.asPaddingValues())
+            .padding(WindowInsets.statusBars.asPaddingValues())
             .fillMaxHeight()
     ) {
         Text(

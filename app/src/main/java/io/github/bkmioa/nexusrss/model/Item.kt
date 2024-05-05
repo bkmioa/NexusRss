@@ -1,11 +1,15 @@
 package io.github.bkmioa.nexusrss.model
 
+import android.content.Context
 import android.os.Parcelable
+import android.text.format.DateUtils
 import android.text.format.Formatter
 import io.github.bkmioa.nexusrss.App
 import io.github.bkmioa.nexusrss.Settings
 import kotlinx.parcelize.Parcelize
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Parcelize
 class Item : Comparable<Item>, Parcelable {
@@ -19,6 +23,22 @@ class Item : Comparable<Item>, Parcelable {
 
     var smallDescr: String? = null
 
+    var category: String? = null
+
+    var source: String? = null
+
+    var medium: String? = null
+
+    var standard: String? = null
+
+    var videoCodec: String? = null
+
+    var audioCodec: String? = null
+
+    var team: String? = null
+
+    var processing: String? = null
+
     var imdb: String = ""
 
     var imdbRating: String = ""
@@ -27,7 +47,9 @@ class Item : Comparable<Item>, Parcelable {
 
     var doubanRating: String = ""
 
-    var author: String = ""
+    var anonymous: Boolean = false
+
+    var author: String? = null
 
     var size: Long = 0
 
@@ -47,8 +69,12 @@ class Item : Comparable<Item>, Parcelable {
     val link: String
         get() = Settings.BASE_URL + "/detail/$id"
 
-    var pubDate: Date? = null
-
+    val pubDate: Date?
+        get() = try {
+            SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(createdDate)
+        } catch (e: Exception) {
+            null
+        }
     val imageUrl: String?
         get() = imageList.firstOrNull()
 
@@ -64,5 +90,16 @@ class Item : Comparable<Item>, Parcelable {
         val date1 = pubDate ?: return -1
         val date2 = other.pubDate ?: return 1
         return date1.compareTo(date2)
+    }
+
+    fun formatRelativeDateText(): String {
+        val date = pubDate ?: return ""
+        return DateUtils.getRelativeTimeSpanString(date.time).toString()
+    }
+
+    fun getAuthorText(context: Context): String {
+        if (anonymous) return "匿名"
+
+        return author ?: "未知用户"
     }
 }
