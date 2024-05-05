@@ -101,7 +101,9 @@ fun SearchScreen() {
                     Box(modifier = Modifier.weight(1.0f)) {
                         SearchBar(
                             onNavigateBack = {
-                                if (uiState.requestData != null && uiState.active) {
+                                if (showFilter) {
+                                    showFilter = false
+                                } else if (uiState.requestData != null && uiState.active) {
                                     viewModel.setActive(false)
                                 } else {
                                     navController.popBackStack()
@@ -115,10 +117,16 @@ fun SearchScreen() {
                             onSearch = {
                                 viewModel.setKeywords(it)
                                 viewModel.submit()
+                                showFilter = false
                             }
                         )
                     }
-                    IconButton(onClick = { viewModel.submit() }) {
+                    IconButton(
+                        onClick = {
+                            viewModel.submit()
+                            showFilter = false
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "search"
