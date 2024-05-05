@@ -105,15 +105,16 @@ data class Option(
 
         val VIDEOCODECS = listOf(
             Option("videoCodec", "1", "H.264"),
+            Option("videoCodec", "16", "H.265"),
             Option("videoCodec", "2", "VC-1"),
-            Option("videoCodec", "3", "Xvid"),
+            Option("videoCodec", "19", "AV1"),
             Option("videoCodec", "4", "MPEG-2"),
             Option("videoCodec", "15", "MPEG-4"),
-            Option("videoCodec", "16", "H.265"),
-            Option("videoCodec", "19", "AV1"),
-        )
+            Option("videoCodec", "3", "Xvid"),
+            )
 
         val AUDIOCODECS = listOf(
+            Option("audioCodec", "8", "AC3"),
             Option("audioCodec", "1", "FLAC"),
             Option("audioCodec", "2", "APE"),
             Option("audioCodec", "3", "DTS"),
@@ -124,20 +125,22 @@ data class Option(
         )
 
         val TEAMS = listOf(
-            Option("team", "6", "BMDru"),
-            Option("team", "7", "KiSHD"),
-            Option("team", "8", "Pack"),
             Option("team", "9", "MTeam"),
-            Option("team", "10", "MPAD"),
-            Option("team", "17", "MTeamTV"),
+            Option("team", "23", "TnP"),
+            Option("team", "7", "KiSHD"),
+            Option("team", "6", "BMDru"),
             Option("team", "18", "OneHD"),
             Option("team", "19", "CNHK"),
             Option("team", "20", "StBOX"),
-            Option("team", "21", "R2HD"),
-            Option("team", "22", "LowPower-Raws"),
-            Option("team", "23", "TnP"),
+            Option("team", "8", "Pack"),
             Option("team", "24", "Geek"),
             Option("team", "25", "CatEDU"),
+            Option("team", "27", "Telesto"),
+            Option("team", "30", "7³ACG"),
+            Option("team", "34", "QHstudIo"),
+            Option("team", "31", "JKCT"),
+            Option("team", "35", "G00DB0Y"),
+            Option("team", "22", "LowPower-Raws"),
         )
 
         val LABELS = listOf(
