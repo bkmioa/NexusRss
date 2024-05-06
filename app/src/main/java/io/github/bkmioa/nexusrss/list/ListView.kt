@@ -37,15 +37,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -202,6 +203,7 @@ private fun List(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
+                    shape = MaterialTheme.shapes.small,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(32.dp),
@@ -229,7 +231,6 @@ private fun List(
                     }
                 }
             }
-
         }
         if (collapsePinedItems && collapseItemCount > 0) {
             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -387,7 +388,7 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp),
+            .height(80.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = MaterialTheme.shapes.small,
         onClick = {
@@ -405,23 +406,35 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(8.dp)
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
             ) {
-                Text(
-                    text = item.title,
-                    maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "[${item.sizeText}] ${item.subTitle ?: ""}",
-                    maxLines = 1,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                LabelBox(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd),
+                    shape = MaterialTheme.shapes.small.copy(topStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                ) {
+                    SeedersAndLeechers(item)
+                }
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = item.title,
+                        maxLines = 1,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "[${item.sizeText}] ${item.subTitle ?: ""}",
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         }
 
@@ -450,39 +463,13 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modi
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
-            Box(
+            LabelBox(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .clip(MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)))
                     .height(24.dp),
+                shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
             ) {
-                Box(
-                    modifier = Modifier
-                        //.blur(4.dp)
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
-                        .shadow(8.dp)
-                        .matchParentSize()
-                )
-                Row(
-                    modifier = Modifier
-                        .defaultMinSize(32.dp)
-                        .padding(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(12.dp),
-                        imageVector = Icons.Filled.North,
-                        contentDescription = "seeders"
-                    )
-                    Text(text = item.status.seeders, style = MaterialTheme.typography.bodySmall)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Icon(
-                        modifier = Modifier.size(12.dp),
-                        imageVector = Icons.Filled.South,
-                        contentDescription = "leechers"
-                    )
-                    Text(text = item.status.leechers, style = MaterialTheme.typography.bodySmall)
-                }
+                SeedersAndLeechers(item)
             }
             Box(
                 modifier = Modifier
@@ -514,6 +501,48 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modi
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+private fun SeedersAndLeechers(item: Item) {
+    Row(
+        modifier = Modifier
+            .defaultMinSize(32.dp)
+            .padding(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(12.dp),
+            imageVector = Icons.Filled.North,
+            contentDescription = "seeders"
+        )
+        Text(text = item.status.seeders)
+        Spacer(modifier = Modifier.width(6.dp))
+        Icon(
+            modifier = Modifier.size(12.dp),
+            imageVector = Icons.Filled.South,
+            contentDescription = "leechers"
+        )
+        Text(text = item.status.leechers)
+    }
+}
+
+@Composable
+fun LabelBox(
+    modifier: Modifier = Modifier,
+    shape: Shape = MaterialTheme.shapes.extraSmall,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
+        shape = shape,
+        shadowElevation = 1.dp
+    ) {
+        ProvideTextStyle(value = MaterialTheme.typography.labelSmall) {
+            content()
         }
     }
 }
