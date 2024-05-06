@@ -20,9 +20,10 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 data class UiState(
-    val requestData: RequestData
+    val requestData: RequestData,
+    val collapsePinedItems: Boolean = true
 ) : MavericksState {
-
+    constructor(requestData: RequestData) : this(requestData, true)
 }
 
 class ListViewModel(initialState: UiState) : MavericksViewModel<UiState>(initialState), KoinComponent {
@@ -66,6 +67,12 @@ class ListViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
                 copy(requestData = requestData)
             }
             pager.invalidate()
+        }
+    }
+
+    fun setCollapsePinedItems(collapse: Boolean) {
+        setState {
+            copy(collapsePinedItems = collapse)
         }
     }
 }

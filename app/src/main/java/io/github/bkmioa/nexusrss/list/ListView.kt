@@ -3,10 +3,10 @@ package io.github.bkmioa.nexusrss.list
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,16 +24,18 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.North
 import androidx.compose.material.icons.filled.South
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -97,7 +100,13 @@ fun ThreadList(
             .pullRefresh(refreshState)
             .fillMaxSize()
     ) {
-        List(lazyPagingItems, requestScrollToTop, columns)
+        List(
+            lazyPagingItems,
+            requestScrollToTop,
+            columns = columns,
+            collapsePinedItems = state.collapsePinedItems,
+            onCheckCollapsePinedItems = { viewModel.setCollapsePinedItems(it) }
+        )
 
         val refresh = lazyPagingItems.loadState.refresh
         if (refresh is LoadState.Error) {
@@ -141,7 +150,13 @@ fun ThreadList(
 }
 
 @Composable
-private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boolean, columns: Int = 0) {
+private fun List(
+    lazyPagingItems: LazyPagingItems<Item>,
+    requestScrollToTop: Boolean,
+    columns: Int = 0,
+    collapsePinedItems: Boolean,
+    onCheckCollapsePinedItems: (Boolean) -> Unit
+) {
     val gridState = rememberLazyGridState()
     LaunchedEffect(requestScrollToTop) {
         if (requestScrollToTop) {
@@ -159,6 +174,7 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
         GridCells.Fixed(columns)
     }
     val aspectRatio = if (columns == 1) 16 / 9f else 3 / 4f
+
     LazyVerticalGrid(
         columns = if (columns == 0) GridCells.Adaptive(minSize = 160.dp) else GridCells.Fixed(columns),
         state = gridState,
@@ -166,19 +182,86 @@ private fun List(lazyPagingItems: LazyPagingItems<Item>, requestScrollToTop: Boo
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+
+        var collapseItemCount = 0
+        while (collapseItemCount < lazyPagingItems.itemCount) {
+            val item = lazyPagingItems.peek(collapseItemCount)
+            if (item?.status?.toppingLevel != 0) {
+                collapseItemCount++
+            } else {
+                break
+            }
+        }
+
+        if (collapseItemCount > 0) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Card(
+                    onClick = {
+                        onCheckCollapsePinedItems(!collapsePinedItems)
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(32.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = "${if (collapsePinedItems) "展开" else "收起"}置顶内容",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(horizontal = 8.dp)
+                                .rotate(if (collapsePinedItems) 90f else 270f)
+                                .size(20.dp),
+                            tint = LocalContentColor.current
+                        )
+                    }
+                }
+            }
+
+        }
+        if (collapsePinedItems && collapseItemCount > 0) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                ) {
+                    for (index in 0 until collapseItemCount) {
+                        val item = lazyPagingItems[index]
+                        SmallItemCard(item, modifier = Modifier.animateItem())
+                    }
+                }
+            }
+        }
+
+        val itemCount = if (collapsePinedItems) lazyPagingItems.itemCount - collapseItemCount else lazyPagingItems.itemCount
+        val startIndex = if (collapsePinedItems) collapseItemCount else 0
+
         items(
-            count = lazyPagingItems.itemCount,
+            count = itemCount,
             span = { index ->
-                val item = lazyPagingItems.peek(index)
+                val item = lazyPagingItems.peek(index + startIndex)
                 if (item?.status?.toppingLevel != 0) {
                     GridItemSpan((maxLineSpan / 2).coerceAtLeast(2))
                 } else {
                     GridItemSpan(1)
                 }
             },
-            key = { index -> index }
+            key = { index -> lazyPagingItems.peek(index + startIndex)!!.id }
         ) { index ->
-            val item = lazyPagingItems[index]
+            val item = lazyPagingItems[index + startIndex]
             if (item?.status?.toppingLevel != 0) {
                 TopItemCard(item, Modifier.animateItem())
             } else {
@@ -260,6 +343,34 @@ private fun FooterLoading(modifier: Modifier = Modifier) {
             .height(80.dp)
             .wrapContentSize(Alignment.Center)
     )
+}
+
+@Composable
+fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
+    item ?: return
+
+    val navController = LocalNavController.current
+    Card(
+        modifier = modifier
+            .height(80.dp)
+            .aspectRatio(3 / 4f),
+        shape = MaterialTheme.shapes.small,
+        onClick = {
+            Router.Detail.navigate(navController, item.id, item)
+        },
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        AsyncImage(
+            model = item.imageUrl,
+            placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+            error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier
+                .fillMaxHeight()
+                .aspectRatio(3 / 4f),
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
