@@ -207,6 +207,7 @@ private fun List(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(32.dp),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -393,7 +394,8 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
         shape = MaterialTheme.shapes.small,
         onClick = {
             Router.Detail.navigate(navController, item.id, item)
-        }
+        },
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row {
             AsyncImage(
@@ -452,7 +454,7 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modi
             .aspectRatio(aspectRatio),
         onClick = {
             Router.Detail.navigate(navController, item.id, item)
-        }
+        }, elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Box(Modifier.fillMaxWidth()) {
             AsyncImage(
