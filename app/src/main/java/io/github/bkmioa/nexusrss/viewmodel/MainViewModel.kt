@@ -4,7 +4,7 @@ import android.app.Application
 import io.github.bkmioa.nexusrss.base.BaseViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.repository.GithubService
-import org.koin.core.inject
+import org.koin.core.component.inject
 
 class MainViewModel(app: Application) : BaseViewModel(app) {
 

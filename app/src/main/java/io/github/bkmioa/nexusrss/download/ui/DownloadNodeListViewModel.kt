@@ -4,7 +4,7 @@ import android.app.Application
 import io.github.bkmioa.nexusrss.base.BaseViewModel
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
-import org.koin.core.inject
+import org.koin.core.component.inject
 
 class DownloadNodeListViewModel(app: Application) : BaseViewModel(app) {
 

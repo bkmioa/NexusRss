@@ -4,8 +4,8 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.model.Tab
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 data class UiState(
     val tabs: List<Tab> = emptyList()

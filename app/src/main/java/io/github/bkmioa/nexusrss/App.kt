@@ -13,7 +13,7 @@ import io.github.bkmioa.nexusrss.login.VerifyManager
 import okhttp3.OkHttpClient
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 import org.koin.core.context.startKoin
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.named

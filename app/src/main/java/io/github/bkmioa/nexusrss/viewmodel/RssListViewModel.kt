@@ -17,7 +17,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.annotations.NonNull
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import org.koin.core.inject
+import org.koin.core.component.inject
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RssListViewModel(app: Application) : BaseViewModel(app) {

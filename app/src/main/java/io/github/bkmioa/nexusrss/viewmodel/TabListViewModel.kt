@@ -4,7 +4,7 @@ import android.app.Application
 import io.github.bkmioa.nexusrss.base.BaseViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.model.Tab
-import org.koin.core.inject
+import org.koin.core.component.inject
 
 class TabListViewModel(app: Application) : BaseViewModel(app) {
 
