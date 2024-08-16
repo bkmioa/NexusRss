@@ -7,6 +7,7 @@
     <string name="copy_link">Copy Torrent Link</string>
     <string name="open_link">Open in Browser</string>
     <string name="base_url">Base Url</string>
+    <string name="api_url">API Url</string>
     <string name="remote_name">Name</string>
     <string name="remote_url">Remote Url</string>
     <string name="remote_username">Username</string>

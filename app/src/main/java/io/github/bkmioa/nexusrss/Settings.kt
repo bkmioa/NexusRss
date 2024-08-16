@@ -8,8 +8,10 @@ class Settings {
         override val kotprefName = BuildConfig.APPLICATION_ID + "_preferences"
 
         const val DEFAULT_BASE_URL = "https://kp.m-team.cc"
+        const val DEFAULT_API_URL = "https://api.m-team.cc"
 
         var BASE_URL by stringPref(DEFAULT_BASE_URL, key = "baseUrl")
+        var API_URL by stringPref(DEFAULT_API_URL, key = "apiUrl")
         val LOGIN_URL
             get() = "$BASE_URL/login"
         var API_KEY by stringPref(key = "apiKey")

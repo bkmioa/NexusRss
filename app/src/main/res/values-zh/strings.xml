@@ -7,6 +7,7 @@
     <string name="copy_link">复制种子地址</string>
     <string name="open_link">浏览器打开</string>
     <string name="base_url">网站地址</string>
+    <string name="api_url">API 地址</string>
     <string name="remote_name">名称</string>
     <string name="remote_url">远程地址</string>
     <string name="remote_username">用户名</string>

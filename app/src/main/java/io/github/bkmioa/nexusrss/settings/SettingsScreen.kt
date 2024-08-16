@@ -68,6 +68,26 @@ fun SettingsScreen() {
                         Text(text = stringResource(id = R.string.base_url))
                     }
                 )
+                var apiUrlTextFieldValue by remember {
+                    mutableStateOf(TextFieldValue(Settings.API_URL, TextRange(Settings.API_URL.length)))
+                }
+
+                OutlinedTextField(
+                    value = apiUrlTextFieldValue,
+                    placeholder = {
+                        Text(text = Settings.DEFAULT_API_URL)
+                    },
+                    onValueChange = { value ->
+                        apiUrlTextFieldValue = value
+                        val url = value.text.trim().removeSuffix("/")
+                        Settings.API_URL = url.takeIf { it.isNotBlank() } ?: Settings.DEFAULT_API_URL
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = {
+                        Text(text = stringResource(id = R.string.api_url))
+                    }
+                )
 
                 var apiKeyTextFieldValue by remember {
                     mutableStateOf(TextFieldValue(Settings.API_KEY, TextRange(Settings.API_KEY.length)))

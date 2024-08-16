@@ -50,7 +50,7 @@ private fun provideMtService(httpclient: OkHttpClient): MtService {
         }
         .build()
     return Retrofit.Builder()
-        .baseUrl(Settings.BASE_URL)
+        .baseUrl(Settings.API_URL)
         .client(client)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
