@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -27,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +47,6 @@ import io.github.bkmioa.nexusrss.Router
 import io.github.bkmioa.nexusrss.navigate
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -106,7 +106,8 @@ fun HomeScreen() {
             val coroutineScope = rememberCoroutineScope()
 
             val tabAndPagers = tabs.mapIndexed { index, tab ->
-                var requestScrollToTop by remember { mutableStateOf(false) }
+                val gridState: LazyGridState = rememberLazyGridState()
+                var requestRefresh by remember { mutableStateOf(false) }
                 val visibleBefore by remember { derivedStateOf { AtomicBoolean(false) } }
                 val selected = index == pagerState.currentPage
                 val createTab = @Composable {
@@ -114,9 +115,16 @@ fun HomeScreen() {
                         text = { Text(tab.title) },
                         selected = selected,
                         onClick = {
-                            requestScrollToTop = pagerState.currentPage == index
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
+                            if (pagerState.currentPage == index) {
+                                if (gridState.firstVisibleItemIndex != 0) {
+                                    coroutineScope.launch { gridState.animateScrollToItem(0) }
+                                } else {
+                                    requestRefresh = true
+                                }
+                            } else {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
                             }
                         }
                     )
@@ -130,15 +138,13 @@ fun HomeScreen() {
                         visibleBefore.compareAndSet(false, selected)
                         ThreadList(
                             requestData = RequestData.from(tab),
+                            requestRefresh = requestRefresh,
+                            onRefreshed = { requestRefresh = false },
                             //tab.columnCount,
                             visible = visibleBefore.get(),
                             keyFactory = { tab.makeKey() },
-                            requestScrollToTop = requestScrollToTop
+                            gridState = gridState,
                         )
-                        LaunchedEffect(requestScrollToTop) {
-                            delay(100)
-                            requestScrollToTop = false
-                        }
                     }
                 }
                 createTab to createPager

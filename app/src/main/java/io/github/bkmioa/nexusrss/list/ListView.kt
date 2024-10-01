@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
@@ -74,10 +75,12 @@ import io.github.bkmioa.nexusrss.widget.pullrefresh.rememberPullRefreshState
 @Composable
 fun ThreadList(
     requestData: RequestData,
+    requestRefresh: Boolean = true,
+    onRefreshed: () -> Unit = {},
     columns: Int = 0,
     visible: Boolean = true,
     keyFactory: () -> String = { "default" },
-    requestScrollToTop: Boolean = false
+    gridState: LazyGridState = rememberLazyGridState(),
 ) {
     if (!visible) {
         return
@@ -96,6 +99,14 @@ fun ThreadList(
         Log.d("ListViewModel", "CardList() called with:  keyFactory = ${keyFactory()}")
         viewModel.request(requestData)
     }
+    LaunchedEffect(requestRefresh) {
+        if (requestRefresh) {
+            if (!refreshing) {
+                lazyPagingItems.refresh()
+            }
+            onRefreshed()
+        }
+    }
     Box(
         Modifier
             .pullRefresh(refreshState)
@@ -103,7 +114,7 @@ fun ThreadList(
     ) {
         List(
             lazyPagingItems,
-            requestScrollToTop,
+            gridState,
             columns = columns,
             collapsePinedItems = state.collapsePinedItems,
             onCheckCollapsePinedItems = { viewModel.setCollapsePinedItems(it) }
@@ -153,22 +164,11 @@ fun ThreadList(
 @Composable
 private fun List(
     lazyPagingItems: LazyPagingItems<Item>,
-    requestScrollToTop: Boolean,
+    gridState: LazyGridState,
     columns: Int = 0,
     collapsePinedItems: Boolean,
     onCheckCollapsePinedItems: (Boolean) -> Unit
 ) {
-    val gridState = rememberLazyGridState()
-    LaunchedEffect(requestScrollToTop) {
-        if (requestScrollToTop) {
-            if (gridState.firstVisibleItemIndex == 0) {
-                lazyPagingItems.refresh()
-            } else {
-                gridState.animateScrollToItem(0)
-            }
-
-        }
-    }
     if (columns == 0) {
         GridCells.Adaptive(minSize = 160.dp)
     } else {
@@ -181,7 +181,7 @@ private fun List(
         state = gridState,
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
 
         var collapseItemCount = 0
