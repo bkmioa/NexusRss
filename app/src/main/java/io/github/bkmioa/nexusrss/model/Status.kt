@@ -18,4 +18,6 @@ class Status : Parcelable {
     var seeders: String = ""
 
     var leechers: String = ""
+
+    var comments: String = ""
 }

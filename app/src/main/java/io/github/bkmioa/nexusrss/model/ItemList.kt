@@ -1,6 +1,6 @@
 package io.github.bkmioa.nexusrss.model
 
-class ItemList {
+class ItemList<T> {
     var pageNumber: Int = 0
 
     var pageSize: Int = 0
@@ -9,5 +9,5 @@ class ItemList {
 
     var totalPages: Int = 0
 
-    var data: List<Item> = emptyList()
+    var data: List<T> = emptyList()
 }

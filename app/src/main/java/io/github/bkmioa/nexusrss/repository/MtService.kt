@@ -1,10 +1,6 @@
 package io.github.bkmioa.nexusrss.repository
 
-import io.github.bkmioa.nexusrss.model.FileItem
-import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.model.Result
-import io.github.bkmioa.nexusrss.model.ItemList
-import io.github.bkmioa.nexusrss.model.RequestData
+import io.github.bkmioa.nexusrss.model.*
 import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -25,10 +21,10 @@ interface MtService {
             : Observable<ResponseBody>
 
     @POST("api/torrent/search")
-    fun queryList(@Body requestData: RequestData): Observable<Response<Result<ItemList>>>
+    fun queryList(@Body requestData: RequestData): Observable<Response<Result<ItemList<Item>>>>
 
     @POST("api/torrent/search")
-    suspend fun search(@Body requestData: RequestData): Result<ItemList>
+    suspend fun search(@Body requestData: RequestData): Result<ItemList<Item>>
 
     @POST("api/torrent/detail")
     @FormUrlEncoded
@@ -37,7 +33,14 @@ interface MtService {
     @POST("api/torrent/genDlToken")
     @FormUrlEncoded
     suspend fun getDownloadLink(@Field("id") id: String): Result<String>
+
     @POST("api/torrent/files")
     @FormUrlEncoded
     suspend fun getFileList(@Field("id") id: String): Result<List<FileItem>>
+
+    @POST("api/comment/fetchList")
+    suspend fun getComments(@Body requestData: CommentRequestBody): Result<ItemList<Comment>>
+
+    @POST("api/member/bases")
+    suspend fun getMemberInfos(@Body body: MemberRequestBody): Result<HashMap<String, MemberInfo>>
 }

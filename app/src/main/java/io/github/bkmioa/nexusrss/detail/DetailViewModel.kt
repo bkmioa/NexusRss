@@ -25,6 +25,7 @@ data class UiState(
     val downloadNodes: List<DownloadNodeModel> = emptyList(),
     val downloadLink: Async<String> = Uninitialized,
     val showFileList: Boolean = false,
+    val showCommentList: Boolean = false,
     val fileList: Async<List<FileItem>> = Uninitialized
 ) : MavericksState {
 
@@ -86,5 +87,13 @@ class DetailViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
 
     fun hideFileList() {
         setState { copy(showFileList = false) }
+    }
+
+    fun showCommentList() {
+        setState { copy(showCommentList = true) }
+    }
+
+    fun hideCommentList() {
+        setState { copy(showCommentList = false) }
     }
 }

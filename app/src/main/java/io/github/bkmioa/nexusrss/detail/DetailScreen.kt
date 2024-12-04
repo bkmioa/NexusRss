@@ -24,17 +24,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -68,6 +64,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -77,6 +74,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.comment.CommentList
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.FileItem
@@ -164,6 +162,8 @@ fun DetailScreen(args: Bundle) {
 
                 BasicInfo(item)
 
+                CommentInfo(item) { viewModel.showCommentList() }
+
                 TorrentFileList { viewModel.showFileList() }
 
                 DetailInfo(item?.descr)
@@ -182,6 +182,42 @@ fun DetailScreen(args: Bundle) {
                 viewModel.fetchFileList()
             }
         )
+    }
+
+    if (uiState.showCommentList) {
+        CommentListDialog(relationId = item?.id ?: "") {
+            viewModel.hideCommentList()
+        }
+    }
+}
+
+@Composable
+fun CommentInfo(item: Item?, onClick: () -> Unit) {
+    item ?: return
+
+    OutlinedCard(
+        onClick = onClick,
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                text = "评论列表 (${item.status.comments})",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 8.dp, vertical = 16.dp),
+            )
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.NavigateNext,
+                contentDescription = "open file list",
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(4.dp),
+                tint = MaterialTheme.colorScheme.outlineVariant,
+            )
+        }
     }
 }
 
@@ -454,5 +490,23 @@ fun FileListDialog(fileList: Async<List<FileItem>>, onDismissRequest: () -> Unit
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CommentListDialog(relationId: String, onDismissRequest: () -> Unit) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    ModalBottomSheet(
+        onDismissRequest = { onDismissRequest() },
+        modifier = Modifier
+            .padding(WindowInsets.statusBars.asPaddingValues())
+            .fillMaxHeight()
+    ) {
+        Text(
+            text = "评论列表",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+        )
+        CommentList(relationId, lifecycleOwner)
     }
 }
