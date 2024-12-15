@@ -44,9 +44,9 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Router
-import io.github.bkmioa.nexusrss.navigate
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
+import io.github.bkmioa.nexusrss.navigate2
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -68,7 +68,7 @@ fun HomeScreen() {
                 actions = {
                     var showMoreMenu by remember { mutableStateOf(false) }
 
-                    IconButton(onClick = { navController.navigate(Router.Search) }) {
+                    IconButton(onClick = { navController.navigate2(Router.Search) }) {
                         Icon(imageVector = Icons.Filled.Search, contentDescription = "search")
                     }
                     IconButton(onClick = { showMoreMenu = true }) {
@@ -78,7 +78,7 @@ fun HomeScreen() {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.action_tabs)) },
                             onClick = {
-                                navController.navigate(Router.Tabs)
+                                navController.navigate2(Router.Tabs)
                                 showMoreMenu = false
                             },
                             modifier = Modifier.defaultMinSize(150.dp)
@@ -86,7 +86,7 @@ fun HomeScreen() {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.action_settings)) },
                             onClick = {
-                                navController.navigate(Router.Settings)
+                                navController.navigate2(Router.Settings)
                                 showMoreMenu = false
                             },
                             modifier = Modifier.defaultMinSize(150.dp)

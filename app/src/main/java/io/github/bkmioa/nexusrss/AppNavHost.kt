@@ -33,7 +33,7 @@ sealed class Router(val route: String) {
         navOptions: NavOptions? = null,
         navigatorExtras: Navigator.Extras? = null
     ) {
-        navController.navigate(this, args, navOptions, navigatorExtras)
+        navController.navigate2(this, args, navOptions, navigatorExtras)
     }
 
     object Home : Router("home")
@@ -98,7 +98,7 @@ fun AppNavHost(
     }
 }
 
-fun NavController.navigate(
+fun NavController.navigate2(
     route: String,
     args: Bundle,
     navOptions: NavOptions? = null,
@@ -110,14 +110,14 @@ fun NavController.navigate(
     }
 }
 
-fun NavHostController.navigate(
+fun NavHostController.navigate2(
     route: Router,
     args: Bundle? = null,
     navOptions: NavOptions? = null,
     navigatorExtras: Navigator.Extras? = null
 ) {
     if (args != null) {
-        navigate(route.route, args, navOptions, navigatorExtras)
+        navigate2(route.route, args, navOptions, navigatorExtras)
     } else {
         navigate(route.route, navOptions, navigatorExtras)
     }
