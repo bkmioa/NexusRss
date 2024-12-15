@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package io.github.bkmioa.nexusrss.list
 
 import android.util.Log
@@ -34,6 +36,7 @@ import androidx.compose.material.icons.filled.South
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -41,9 +44,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -68,9 +74,6 @@ import io.github.bkmioa.nexusrss.Router
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.widget.Empty
-import io.github.bkmioa.nexusrss.widget.pullrefresh.PullRefreshIndicator
-import io.github.bkmioa.nexusrss.widget.pullrefresh.pullRefresh
-import io.github.bkmioa.nexusrss.widget.pullrefresh.rememberPullRefreshState
 
 @Composable
 fun ThreadList(
@@ -90,9 +93,8 @@ fun ThreadList(
     val state by viewModel.collectAsState()
     val lazyPagingItems = viewModel.pagerFlow.collectAsLazyPagingItems()
     val refreshing = lazyPagingItems.loadState.refresh is LoadState.Loading
-    val refreshState = rememberPullRefreshState(refreshing, {
-        viewModel.refresh()
-    })
+    val refreshState = rememberPullToRefreshState()
+    val refreshScope = rememberCoroutineScope()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     Log.d("ListViewModel", "CardList() called with: requestData = ${requestData.mode}, ${lifecycle.currentState}")
     LaunchedEffect(key1 = requestData) {
@@ -107,10 +109,13 @@ fun ThreadList(
             onRefreshed()
         }
     }
-    Box(
-        Modifier
-            .pullRefresh(refreshState)
-            .fillMaxSize()
+
+    PullToRefreshBox(
+        modifier = Modifier.fillMaxSize(),
+        state = refreshState,
+        isRefreshing = refreshing, onRefresh = {
+            viewModel.refresh()
+        }
     ) {
         List(
             lazyPagingItems,
@@ -152,12 +157,6 @@ fun ThreadList(
                 }
             }
         }
-
-        PullRefreshIndicator(
-            refreshing, refreshState,
-            Modifier.align(Alignment.TopCenter),
-            contentColor = MaterialTheme.colorScheme.primary
-        )
     }
 }
 
