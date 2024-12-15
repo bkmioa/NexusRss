@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.lsplugin.apksign)
     alias(libs.plugins.kotlinx.parcelize)
@@ -22,9 +23,6 @@ android {
         buildConfig = true
         viewBinding = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.11"
     }
 }
 
@@ -102,7 +100,4 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
-}
-configurations.all {
-    //resolutionStrategy.force("androidx.compose.material3:material3:1.1.2")
 }

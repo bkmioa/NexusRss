@@ -181,7 +181,7 @@ class MainActivity : BaseActivity() {
 
     private fun checkNewVersion(release: Array<Release>?) {
         release?.firstOrNull()
-            ?.takeIf { it.name.toLowerCase() > "v${BuildConfig.VERSION_NAME}" }
+            ?.takeIf { it.name.lowercase() > "v${BuildConfig.VERSION_NAME}" }
             ?.apply(::hasNewVersion)
             ?: Toast.makeText(this, R.string.no_new_version, Toast.LENGTH_SHORT).show()
     }

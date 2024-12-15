@@ -16,6 +16,7 @@ buildscript {
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.kotlinAndroid) apply false
+    alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.lsplugin.jgit)
     alias(libs.plugins.lsplugin.apksign) apply false
@@ -31,10 +32,10 @@ val appApplicationId by extra("io.github.bkmioa.nexusrss")
 val appVersionCode by extra(commitCount)
 val appVersionName by extra(latestTag)
 
-val androidTargetSdkVersion by extra(34)
+val androidTargetSdkVersion by extra(35)
 val androidMinSdkVersion by extra(27)
-val androidBuildToolsVersion by extra("34.0.0")
-val androidCompileSdkVersion by extra(34)
+val androidBuildToolsVersion by extra("35.0.0")
+val androidCompileSdkVersion by extra(35)
 val androidSourceCompatibility by extra(JavaVersion.VERSION_1_8)
 val androidTargetCompatibility by extra(JavaVersion.VERSION_1_8)
 
