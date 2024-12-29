@@ -78,6 +78,8 @@ class ListViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
 }
 
 class ListDataSource(val mtService: MtService, val requestData: RequestData) : PagingSource<Int, Item>() {
+    private val allList = ArrayList<Item>()
+
     override fun getRefreshKey(state: PagingState<Int, Item>): Int {
         return 1
     }
@@ -89,7 +91,10 @@ class ListDataSource(val mtService: MtService, val requestData: RequestData) : P
         if (res.code != 0) {
             LoadResult.Error(Exception(res.message))
         } else {
-            val list = res.data?.data ?: emptyList()
+            val list = (res.data?.data ?: emptyList())
+                .filter { item -> allList.none { it.id == item.id } }
+            allList.addAll(list)
+
             LoadResult.Page(data = list, prevKey = null, nextKey = if (list.isEmpty()) null else page + 1)
         }
     } catch (e: Exception) {
