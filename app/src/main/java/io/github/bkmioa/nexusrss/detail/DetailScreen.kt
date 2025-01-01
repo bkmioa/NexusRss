@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -32,10 +33,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.material.icons.outlined.Comment
+import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +66,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -148,6 +153,40 @@ fun DetailScreen(args: Bundle) {
                         })
                 }
             )
+        },
+        floatingActionButton = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                var showDownload by remember { mutableStateOf(false) }
+                FloatingActionButton(onClick = { showDownload = true }) {
+                    Icon(imageVector = Icons.Outlined.CloudDownload, contentDescription = "comment")
+                    DownLoadList(expanded = showDownload, downloadNodes = uiState.downloadNodes, getTorrentUrl = { viewModel.getDownloadLink() }) {
+                        showDownload = false
+                    }
+                }
+                FloatingActionButton(onClick = { viewModel.showFileList() }) {
+                    Icon(imageVector = Icons.Outlined.Description, contentDescription = "files")
+                }
+                FloatingActionButton(
+                    onClick = { viewModel.showCommentList() },
+                    modifier = Modifier.width(80.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = item?.status?.comments ?: "0",
+                            style = MaterialTheme.typography.labelLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.width(20.dp),
+                        )
+                        Icon(
+                            imageVector = Icons.Outlined.Comment,
+                            contentDescription = "comment"
+                        )
+                    }
+                }
+            }
         }
     ) {
         Box(
@@ -162,9 +201,9 @@ fun DetailScreen(args: Bundle) {
 
                 BasicInfo(item)
 
-                CommentInfo(item) { viewModel.showCommentList() }
+                //CommentInfo(item) { viewModel.showCommentList() }
 
-                TorrentFileList { viewModel.showFileList() }
+                //TorrentFileList { viewModel.showFileList() }
 
                 DetailInfo(item?.descr)
 
