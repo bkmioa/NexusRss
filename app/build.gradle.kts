@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.lsplugin.apksign)
     alias(libs.plugins.kotlinx.parcelize)
     id("com.jakewharton.butterknife")
+    kotlin("kapt") version "2.2.20"
 }
 
 android {
@@ -15,8 +16,10 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
@@ -24,6 +27,10 @@ android {
         viewBinding = true
         compose = true
     }
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {
@@ -86,7 +93,7 @@ dependencies {
 
     //epoxy
     implementation(libs.epoxy)
-    ksp(libs.epoxy.processor)
+    kapt(libs.epoxy.processor)
 
     //kotpref
     implementation(libs.kotpref)

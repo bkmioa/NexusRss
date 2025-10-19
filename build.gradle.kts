@@ -21,6 +21,7 @@ plugins {
     alias(libs.plugins.lsplugin.jgit)
     alias(libs.plugins.lsplugin.apksign) apply false
     alias(libs.plugins.kotlinx.parcelize) apply false
+    kotlin("kapt") version "2.2.20"
 }
 val repo = jgit.repo()
 val commitCount = (repo?.commitCount("refs/remotes/origin/main") ?: 1)
@@ -35,7 +36,7 @@ val appVersionName by extra(latestTag)
 val androidTargetSdkVersion by extra(35)
 val androidMinSdkVersion by extra(27)
 val androidBuildToolsVersion by extra("35.0.0")
-val androidCompileSdkVersion by extra(35)
+val androidCompileSdkVersion by extra(36)
 val androidSourceCompatibility by extra(JavaVersion.VERSION_1_8)
 val androidTargetCompatibility by extra(JavaVersion.VERSION_1_8)
 
