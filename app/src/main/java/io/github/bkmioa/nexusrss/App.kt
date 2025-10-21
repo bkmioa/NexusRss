@@ -9,7 +9,6 @@ import coil.decode.ImageDecoderDecoder
 import com.airbnb.mvrx.Mavericks
 import com.chibatching.kotpref.Kotpref
 import io.github.bkmioa.nexusrss.di.appModule
-import io.github.bkmioa.nexusrss.login.VerifyManager
 import okhttp3.OkHttpClient
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
@@ -36,7 +35,6 @@ class App : Application(), ImageLoaderFactory, KoinComponent {
         }
 
         Kotpref.init(this)
-        VerifyManager.init(this)
         Mavericks.initialize(this)
     }
 

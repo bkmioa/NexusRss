@@ -1,6 +1,5 @@
 [versions]
 agp = "8.13.0"
-butterknife-gradle-plugin = "10.2.3"
 kotlin = "2.2.20"
 kotlinx = "1.10.2"
 ksp = "2.2.20-2.0.3"
@@ -8,24 +7,16 @@ core = "1.17.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.3.0"
 espresso-core = "3.7.0"
-appcompat = "1.7.1"
-recyclerview = "1.4.0"
-swiperefreshlayout = "1.1.0"
-material = "1.13.0"
 lifecycle = "2.9.4"
 activity = "1.11.0"
-fragment = "1.8.9"
 room = "2.8.0"
 compose-bom = "2025.09.00"
 accompanist = "0.34.0"
 koin = "3.5.6"
-constraintlayout = "2.2.1"
 rxjava2 = "2.2.21"
 rxandroid = "2.1.1"
 okhttp = "4.12.0"
 retrofit2 = "2.10.0"
-glide = "4.16.0"
-epoxy = "5.1.4"
 kotpref = "2.13.1"
 mavericks = "3.0.9"
 apache_commons = "1.10.0"
@@ -35,24 +26,17 @@ coil = "2.6.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
-kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 kotlinx-coroutines-rx2 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-rx2", version.ref = "kotlinx" }
-butterknife-gradle-plugin = { module = "com.jakewharton:butterknife-gradle-plugin", version.ref = "butterknife-gradle-plugin" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
-lifecycle-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "lifecycle" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-rxjava2 = { group = "androidx.room", name = "room-rxjava2", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 rxjava2 = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava2" }
 rxandroid = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -60,12 +44,6 @@ okhttp-loggingInterceptor = { group = "com.squareup.okhttp3", name = "logging-in
 retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
 retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit2" }
 retrofit2-adapter-rxjava2 = { group = "com.squareup.retrofit2", name = "adapter-rxjava2", version.ref = "retrofit2" }
-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
-glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glide" }
-glide-okhttp3-integration = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
-epoxy = { group = "com.airbnb.android", name = "epoxy", version.ref = "epoxy" }
-epoxy-processor = { group = "com.airbnb.android", name = "epoxy-processor", version.ref = "epoxy" }
 kotpref = { group = "com.chibatching.kotpref", name = "kotpref", version.ref = "kotpref" }
 kotpref-gsonsupport = { group = "com.chibatching.kotpref", name = "gson-support", version.ref = "kotpref" }
 mavericks = { group = "com.airbnb.android", name = "mavericks", version.ref = "mavericks" }
@@ -85,9 +63,6 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist" }
-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }

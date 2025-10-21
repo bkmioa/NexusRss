@@ -9,9 +9,6 @@ buildscript {
         mavenCentral()
         google()
     }
-    dependencies {
-        classpath(libs.butterknife.gradle.plugin)
-    }
 }
 plugins {
     alias(libs.plugins.androidApplication) apply false
@@ -21,7 +18,6 @@ plugins {
     alias(libs.plugins.lsplugin.jgit)
     alias(libs.plugins.lsplugin.apksign) apply false
     alias(libs.plugins.kotlinx.parcelize) apply false
-    kotlin("kapt") version "2.2.20"
 }
 val repo = jgit.repo()
 val commitCount = (repo?.commitCount("refs/remotes/origin/main") ?: 1)

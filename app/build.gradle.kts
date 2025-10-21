@@ -5,8 +5,6 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.lsplugin.apksign)
     alias(libs.plugins.kotlinx.parcelize)
-    id("com.jakewharton.butterknife")
-    kotlin("kapt") version "2.2.20"
 }
 
 android {
@@ -35,8 +33,6 @@ kotlin {
 
 dependencies {
     implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    implementation(libs.material)
     implementation(libs.activity.compose)
 
     implementation(platform(libs.compose.bom))
@@ -54,23 +50,16 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    //support
-    implementation(libs.recyclerview)
-    implementation(libs.swiperefreshlayout)
-    implementation(libs.fragment.ktx)
-
 
     //lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.viewmodel.savedstate)
-    ksp(libs.lifecycle.common.java8)
 
     //room
     implementation(libs.room.ktx)
     implementation(libs.room.rxjava2)
     ksp(libs.room.compiler)
 
-    implementation(libs.constraintlayout)
     implementation(libs.koin.android)
 
     //rx
@@ -85,15 +74,6 @@ dependencies {
     implementation(libs.retrofit2)
     implementation(libs.retrofit2.adapter.rxjava2)
     implementation(libs.retrofit2.converter.gson)
-
-    //glide
-    implementation(libs.glide)
-    ksp(libs.glide.ksp)
-    implementation(libs.glide.okhttp3.integration)
-
-    //epoxy
-    implementation(libs.epoxy)
-    kapt(libs.epoxy.processor)
 
     //kotpref
     implementation(libs.kotpref)
