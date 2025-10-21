@@ -69,6 +69,8 @@ dependencies {
     //okhttp
     implementation(libs.okhttp)
     implementation(libs.okhttp.loggingInterceptor)
+    implementation(libs.okhttp.cookiejar)
+
 
     //retrofit
     implementation(libs.retrofit2)

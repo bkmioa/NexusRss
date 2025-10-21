@@ -14,10 +14,10 @@ import io.github.bkmioa.nexusrss.db.AppDao
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.repository.GithubService
-import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
 import io.github.bkmioa.nexusrss.repository.MtService
 import io.github.bkmioa.nexusrss.repository.UserAgentInterceptor
 import okhttp3.OkHttpClient
+import okhttp3.java.net.cookiejar.JavaNetCookieJar
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

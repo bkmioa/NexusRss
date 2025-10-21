@@ -1,11 +1,11 @@
 package io.github.bkmioa.nexusrss.download
 
 import androidx.annotation.Keep
-import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
 import io.reactivex.Single
 import kotlinx.android.parcel.Parcelize
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
+import okhttp3.java.net.cookiejar.JavaNetCookieJar
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit

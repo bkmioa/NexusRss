@@ -1,6 +1,5 @@
 package io.github.bkmioa.nexusrss.download
 
-import io.github.bkmioa.nexusrss.repository.JavaNetCookieJar
 import io.reactivex.Single
 import kotlinx.android.parcel.Parcelize
 import okhttp3.MultipartBody
@@ -8,6 +7,7 @@ import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
+import okhttp3.java.net.cookiejar.JavaNetCookieJar
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.http.*
