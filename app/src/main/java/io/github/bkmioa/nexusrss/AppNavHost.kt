@@ -18,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import io.github.bkmioa.nexusrss.detail.DetailScreen
+import io.github.bkmioa.nexusrss.download.list.DownloadSettingsScreen
+import io.github.bkmioa.nexusrss.download.edit.EditDownloadNodeScreen
 import io.github.bkmioa.nexusrss.home.HomeScreen
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.search.SearchScreen
@@ -50,6 +52,15 @@ sealed class Router(val route: String) {
     }
 
     object Settings : Router("settings")
+    object DownloadSettings : Router("download_settings")
+    object EditDownloadNode : Router("edit_download_node/{id}") {
+        fun navigate(navController: NavHostController, id: String? = null) {
+            val args = Bundle().apply {
+                putString("id", id)
+            }
+            navigate(navController, args)
+        }
+    }
 }
 
 @Composable
@@ -93,6 +104,21 @@ fun AppNavHost(
             }
             composable(Router.Settings.route) {
                 SettingsScreen()
+            }
+            composable(Router.DownloadSettings.route) {
+                DownloadSettingsScreen()
+            }
+            composable(
+                route = Router.EditDownloadNode.route,
+                arguments = listOf(
+                    navArgument(name = "id") {
+                        type = NavType.StringType
+                        nullable = true
+                    }
+                )
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                EditDownloadNodeScreen(id)
             }
         }
     }

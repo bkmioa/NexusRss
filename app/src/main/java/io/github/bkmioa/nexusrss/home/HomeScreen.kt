@@ -91,6 +91,14 @@ fun HomeScreen() {
                             },
                             modifier = Modifier.defaultMinSize(150.dp)
                         )
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(id = R.string.download_settings)) },
+                            onClick = {
+                                navController.navigate2(Router.DownloadSettings)
+                                showMoreMenu = false
+                            },
+                            modifier = Modifier.defaultMinSize(150.dp)
+                        )
                     }
                 },
             )

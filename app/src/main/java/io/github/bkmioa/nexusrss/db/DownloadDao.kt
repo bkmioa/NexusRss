@@ -14,6 +14,9 @@ interface DownloadDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addOrUpdateNode(node: DownloadNodeModel)
 
+    @Query("select * from download_node where id = :id")
+    suspend fun getOne(id: Long): DownloadNodeModel
+
     @Query("select * from download_node")
     fun getAll(): List<DownloadNodeModel>
 
