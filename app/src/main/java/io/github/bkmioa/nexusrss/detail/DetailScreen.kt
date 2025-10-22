@@ -4,7 +4,6 @@ package io.github.bkmioa.nexusrss.detail
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.widget.Toast
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -70,6 +69,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.Navigator
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -77,7 +77,9 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import io.github.bkmioa.nexusrss.LocalNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.comment.CommentList
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
@@ -88,9 +90,12 @@ import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.widget.Empty
 import kotlinx.coroutines.launch
 
+@Destination<RootGraph>
 @Composable
-fun DetailScreen(args: Bundle) {
-    val navController = LocalNavController.current
+fun DetailScreen(
+    navigator: DestinationsNavigator,
+    args: DetailArgs
+) {
     val viewModel: DetailViewModel = mavericksViewModel(argsFactory = { args })
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -104,7 +109,7 @@ fun DetailScreen(args: Bundle) {
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.popBackStack()
+                            navigator.popBackStack()
                         }
                     ) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
@@ -135,7 +140,8 @@ fun DetailScreen(args: Bundle) {
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "more")
                     }
 
-                    DownLoadList(showDownload, uiState.downloadNodes,
+                    DownLoadList(
+                        showDownload, uiState.downloadNodes,
                         getTorrentUrl = {
                             viewModel.getDownloadLink()
                         },
@@ -143,7 +149,8 @@ fun DetailScreen(args: Bundle) {
                             showDownload = false
                         })
 
-                    MoreMenus(showMoreMenu,
+                    MoreMenus(
+                        showMoreMenu,
                         link = item?.link ?: "",
                         getTorrentUrl = {
                             viewModel.getDownloadLink()
@@ -440,7 +447,8 @@ fun DownLoadList(
     val composableScope = rememberCoroutineScope()
 
     DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
-        DropdownMenuItem(enabled = false,
+        DropdownMenuItem(
+            enabled = false,
             modifier = Modifier.defaultMinSize(160.dp),
             text = { Text(text = stringResource(id = R.string.remote_download)) },
             onClick = { }

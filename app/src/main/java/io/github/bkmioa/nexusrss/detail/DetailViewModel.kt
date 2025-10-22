@@ -1,6 +1,5 @@
 package io.github.bkmioa.nexusrss.detail
 
-import android.os.Bundle
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
@@ -14,7 +13,6 @@ import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.repository.MtService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -29,9 +27,9 @@ data class UiState(
     val fileList: Async<List<FileItem>> = Uninitialized
 ) : MavericksState {
 
-    constructor(args: Bundle) : this(
-        id = args.getString("id")!!,
-        data = args.getParcelable<Item>("data")?.let { Success(it) } ?: Uninitialized,
+    constructor(args: DetailArgs) : this(
+        id = args.id,
+        data = args.data?.let { Success(it) } ?: Uninitialized,
     )
 }
 

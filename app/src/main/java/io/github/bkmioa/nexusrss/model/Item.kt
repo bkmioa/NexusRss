@@ -12,53 +12,61 @@ import java.util.Date
 import java.util.Locale
 
 @Parcelize
-class Item : Comparable<Item>, Parcelable {
-    var id: String = ""
+class Item(
+    var id: String = "",
 
-    var createdDate: String = ""
+    var name: String = "",
 
-    var lastModifiedDate: String = ""
+    var createdDate: String = "",
 
-    var name: String = ""
+    var lastModifiedDate: String = "",
 
-    var smallDescr: String? = null
+    var smallDescr: String? = null,
 
-    var category: String? = null
+    var category: String? = null,
 
-    var source: String? = null
+    var source: String? = null,
 
-    var medium: String? = null
+    var medium: String? = null,
 
-    var standard: String? = null
+    var standard: String? = null,
 
-    var videoCodec: String? = null
+    var videoCodec: String? = null,
 
-    var audioCodec: String? = null
+    var audioCodec: String? = null,
 
-    var team: String? = null
+    var team: String? = null,
 
-    var processing: String? = null
+    var processing: String? = null,
 
-    var imdb: String = ""
+    var imdb: String? = null,
 
-    var imdbRating: String = ""
+    var imdbRating: String? = null,
 
-    var douban: String = ""
+    var douban: String? = null,
 
-    var doubanRating: String = ""
+    var doubanRating: String? = null,
 
-    var anonymous: Boolean = false
+    var anonymous: Boolean = false,
 
-    var author: String? = null
+    var author: String? = null,
 
-    var size: Long = 0
+    var size: Long = 0,
 
-    var status: Status = Status.DEFAULT
+    var status: Status = Status.DEFAULT,
 
+    var imageList: List<String> = emptyList(),
+
+    var torrentUrl: String? = null,
+
+    var descr: String? = null,
+
+    var originFileName: String? = null,
+
+    var mediainfo: String? = null,
+) : Comparable<Item>, Parcelable {
     val sizeText: String
         get() = Formatter.formatShortFileSize(App.instance, size)
-
-    var imageList: List<String> = emptyList()
 
     val title: String
         get() = smallDescr?.takeIf { it.isNotBlank() } ?: name
@@ -78,13 +86,6 @@ class Item : Comparable<Item>, Parcelable {
     val imageUrl: String?
         get() = imageList.firstOrNull()
 
-    var torrentUrl: String? = null
-
-    var descr: String? = null
-
-    var originFileName: String? = null
-
-    var mediainfo: String? = null
 
     override fun compareTo(other: Item): Int {
         val date1 = pubDate ?: return -1

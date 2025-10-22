@@ -2,6 +2,7 @@
 
 package io.github.bkmioa.nexusrss.search
 
+//import io.github.bkmioa.nexusrss.LocalNavController
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
@@ -67,15 +68,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import io.github.bkmioa.nexusrss.LocalNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.Category
 import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.widget.SearchBar
 
+@Destination<RootGraph>
 @Composable
-fun SearchScreen() {
+fun SearchScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val viewModel: SearchViewModel = mavericksViewModel()
@@ -83,8 +87,6 @@ fun SearchScreen() {
     val uiState by viewModel.collectAsState()
 
     var showFilter by remember { mutableStateOf(false) }
-
-    val navController = LocalNavController.current
 
     Scaffold(
         topBar = {
@@ -100,7 +102,7 @@ fun SearchScreen() {
                                 } else if (uiState.requestData != null && uiState.active) {
                                     viewModel.setActive(false)
                                 } else {
-                                    navController.popBackStack()
+                                    navigator.popBackStack()
                                 }
                             },
                             placeholderText = stringResource(id = R.string.action_search),

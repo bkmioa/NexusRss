@@ -1,27 +1,20 @@
 package io.github.bkmioa.nexusrss.repository
 
-import io.github.bkmioa.nexusrss.model.*
-import io.reactivex.Observable
-import okhttp3.ResponseBody
-import retrofit2.Response
-import retrofit2.http.*
+import io.github.bkmioa.nexusrss.model.Comment
+import io.github.bkmioa.nexusrss.model.CommentRequestBody
+import io.github.bkmioa.nexusrss.model.FileItem
+import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.model.ItemList
+import io.github.bkmioa.nexusrss.model.MemberInfo
+import io.github.bkmioa.nexusrss.model.MemberRequestBody
+import io.github.bkmioa.nexusrss.model.RequestData
+import io.github.bkmioa.nexusrss.model.Result
+import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.POST
 
 interface MtService {
-    //@GET("/{path}")
-    //fun queryList(
-    //    @Path("path") path: String,
-    //    @QueryMap queryMap: Map<String, String>,
-    //    @Query("keyword", encoded = true) queryText: String? = null,
-    //    @Query("pageNumber") page: Int?
-    //): Observable<Response<ThreadList>>
-
-    @POST
-    @FormUrlEncoded
-    fun remoteDownload(@Url remoteUrl: String, @Field("url") torrentUrl: String)
-            : Observable<ResponseBody>
-
-    @POST("api/torrent/search")
-    fun queryList(@Body requestData: RequestData): Observable<Response<Result<ItemList<Item>>>>
 
     @POST("api/torrent/search")
     suspend fun search(@Body requestData: RequestData): Result<ItemList<Item>>

@@ -68,9 +68,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ramcosta.composedestinations.generated.destinations.DetailScreenDestination
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
+import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
-import io.github.bkmioa.nexusrss.Router
+import io.github.bkmioa.nexusrss.detail.DetailArgs
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.widget.Empty
@@ -357,7 +360,9 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
             .aspectRatio(3 / 4f),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            Router.Detail.navigate(navController, item.id, item)
+            navController.toDestinationsNavigator().navigate(
+                DetailScreenDestination(DetailArgs(item.id, item))
+            )
         },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -384,7 +389,7 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
         else -> MaterialTheme.colorScheme.tertiaryContainer
     }
 
-    val navController = LocalNavController.current
+    val navigator = LocalNavController.current.rememberDestinationsNavigator()
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -392,7 +397,7 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            Router.Detail.navigate(navController, item.id, item)
+            navigator.navigate(DetailScreenDestination(DetailArgs(item.id, item)))
         },
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -446,13 +451,13 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
 @Composable
 fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modifier) {
     item ?: return
-    val navController = LocalNavController.current
+    val navigator = LocalNavController.current.rememberDestinationsNavigator()
     Card(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(aspectRatio),
         onClick = {
-            Router.Detail.navigate(navController, item.id, item)
+            navigator.navigate(DetailScreenDestination(DetailArgs(item.id, item)))
         }, elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Box(Modifier.fillMaxWidth()) {

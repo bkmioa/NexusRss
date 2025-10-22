@@ -39,22 +39,28 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import io.github.bkmioa.nexusrss.LocalNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+//import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import kotlinx.coroutines.launch
 
+@Destination<RootGraph>
 @Composable
-fun EditDownloadNodeScreen(id: String?) {
+fun EditDownloadNodeScreen(
+    id: String? = null,
+    navigator: DestinationsNavigator,
+) {
     val viewModel: EditDownloadNodeViewModel = mavericksViewModel(argsFactory = { id ?: "" })
     val uiState by viewModel.collectAsState()
-    val navController = LocalNavController.current
 
     Scaffold(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
                     }
                 },
@@ -67,7 +73,7 @@ fun EditDownloadNodeScreen(id: String?) {
                         onClick = {
                             scope.launch {
                                 viewModel.save()
-                                navController.popBackStack()
+                                navigator.popBackStack()
                             }
                         }
                     ) {

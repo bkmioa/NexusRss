@@ -18,14 +18,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import io.github.bkmioa.nexusrss.LocalNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 
+@Destination<RootGraph>
 @Composable
-fun TabsScreen() {
+fun TabsScreen(navigator: DestinationsNavigator) {
     val viewModel: TabsViewModel = mavericksViewModel()
     val uiState by viewModel.collectAsState()
-    val navController = LocalNavController.current
 
     Scaffold(
         topBar = {

@@ -1,65 +1,40 @@
 package io.github.bkmioa.nexusrss
 
-import android.os.Bundle
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.IntOffset
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.NavType
-import androidx.navigation.Navigator
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import io.github.bkmioa.nexusrss.detail.DetailScreen
-import io.github.bkmioa.nexusrss.download.list.DownloadSettingsScreen
-import io.github.bkmioa.nexusrss.download.edit.EditDownloadNodeScreen
-import io.github.bkmioa.nexusrss.home.HomeScreen
-import io.github.bkmioa.nexusrss.model.Item
-import io.github.bkmioa.nexusrss.search.SearchScreen
-import io.github.bkmioa.nexusrss.settings.SettingsScreen
-import io.github.bkmioa.nexusrss.tabs.TabsScreen
+import com.ramcosta.composedestinations.DestinationsNavHost
+import com.ramcosta.composedestinations.animations.NavHostAnimatedDestinationStyle
+import com.ramcosta.composedestinations.generated.NavGraphs
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> { error("shouldn't happen") }
 
-sealed class Router(val route: String) {
-    fun navigate(
-        navController: NavHostController,
-        args: Bundle? = null,
-        navOptions: NavOptions? = null,
-        navigatorExtras: Navigator.Extras? = null
-    ) {
-        navController.navigate2(this, args, navOptions, navigatorExtras)
+object DefaultTransitions : NavHostAnimatedDestinationStyle() {
+    override val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+        fadeIn(animationSpec = tween())
     }
 
-    object Home : Router("home")
-    object Search : Router("search")
-    object Tabs : Router("tabs")
-    object Detail : Router("detail/{id}") {
-        fun navigate(navController: NavHostController, id: String, item: Item? = null) {
-            val args = Bundle().apply {
-                putString("id", id)
-                item?.let { putParcelable("data", it) }
-            }
-            navigate(navController, args)
-        }
-    }
-
-    object Settings : Router("settings")
-    object DownloadSettings : Router("download_settings")
-    object EditDownloadNode : Router("edit_download_node/{id}") {
-        fun navigate(navController: NavHostController, id: String? = null) {
-            val args = Bundle().apply {
-                putString("id", id)
-            }
-            navigate(navController, args)
-        }
+    override val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+        fadeOut(animationSpec = tween())
     }
 }
 
@@ -67,84 +42,13 @@ sealed class Router(val route: String) {
 fun AppNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Router.Home.route,
 ) {
     CompositionLocalProvider(LocalNavController provides navController) {
-        NavHost(
+        DestinationsNavHost(
             modifier = modifier,
+            navGraph = NavGraphs.root,
             navController = navController,
-            startDestination = startDestination,
-            enterTransition = { fadeIn(animationSpec = tween()) },
-            exitTransition = { fadeOut(animationSpec = tween()) },
-        ) {
-            composable(Router.Home.route) {
-                HomeScreen()
-            }
-            composable(Router.Search.route) {
-                SearchScreen()
-            }
-            composable(Router.Tabs.route) {
-                TabsScreen()
-            }
-            composable(
-                route = Router.Detail.route,
-                arguments = listOf(
-                    navArgument("id") {
-                        type = NavType.StringType
-                        nullable = false
-                    },
-                    navArgument("data") {
-                        type = NavType.ParcelableType(Item::class.java)
-                        nullable = true
-                    },
-                ),
-            ) { backStackEntry ->
-                val args = checkNotNull(backStackEntry.arguments)
-                DetailScreen(args)
-            }
-            composable(Router.Settings.route) {
-                SettingsScreen()
-            }
-            composable(Router.DownloadSettings.route) {
-                DownloadSettingsScreen()
-            }
-            composable(
-                route = Router.EditDownloadNode.route,
-                arguments = listOf(
-                    navArgument(name = "id") {
-                        type = NavType.StringType
-                        nullable = true
-                    }
-                )
-            ) { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")
-                EditDownloadNodeScreen(id)
-            }
-        }
-    }
-}
-
-fun NavController.navigate2(
-    route: String,
-    args: Bundle,
-    navOptions: NavOptions? = null,
-    navigatorExtras: Navigator.Extras? = null
-) {
-    val nodeId = graph.findNode(route = route)?.id
-    if (nodeId != null) {
-        navigate(nodeId, args, navOptions, navigatorExtras)
-    }
-}
-
-fun NavHostController.navigate2(
-    route: Router,
-    args: Bundle? = null,
-    navOptions: NavOptions? = null,
-    navigatorExtras: Navigator.Extras? = null
-) {
-    if (args != null) {
-        navigate2(route.route, args, navOptions, navigatorExtras)
-    } else {
-        navigate(route.route, navOptions, navigatorExtras)
+            defaultTransitions = DefaultTransitions
+        )
     }
 }

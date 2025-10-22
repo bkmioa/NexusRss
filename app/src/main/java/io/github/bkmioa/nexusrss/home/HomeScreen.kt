@@ -41,21 +41,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import io.github.bkmioa.nexusrss.LocalNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DownloadSettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SearchScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TabsScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
-import io.github.bkmioa.nexusrss.Router
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
-import io.github.bkmioa.nexusrss.navigate2
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
+@Destination<RootGraph>(start = true)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navigator: DestinationsNavigator
+) {
     val homeViewModel: HomeViewModel = mavericksViewModel()
     val uiState by homeViewModel.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val navController = LocalNavController.current
     Scaffold(
         topBar = {
             val defaultColors = TopAppBarDefaults.topAppBarColors()
@@ -68,7 +74,7 @@ fun HomeScreen() {
                 actions = {
                     var showMoreMenu by remember { mutableStateOf(false) }
 
-                    IconButton(onClick = { navController.navigate2(Router.Search) }) {
+                    IconButton(onClick = { navigator.navigate(SearchScreenDestination) }) {
                         Icon(imageVector = Icons.Filled.Search, contentDescription = "search")
                     }
                     IconButton(onClick = { showMoreMenu = true }) {
@@ -78,7 +84,7 @@ fun HomeScreen() {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.action_tabs)) },
                             onClick = {
-                                navController.navigate2(Router.Tabs)
+                                navigator.navigate(TabsScreenDestination)
                                 showMoreMenu = false
                             },
                             modifier = Modifier.defaultMinSize(150.dp)
@@ -86,7 +92,7 @@ fun HomeScreen() {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.action_settings)) },
                             onClick = {
-                                navController.navigate2(Router.Settings)
+                                navigator.navigate(SettingsScreenDestination)
                                 showMoreMenu = false
                             },
                             modifier = Modifier.defaultMinSize(150.dp)
@@ -94,7 +100,7 @@ fun HomeScreen() {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(id = R.string.download_settings)) },
                             onClick = {
-                                navController.navigate2(Router.DownloadSettings)
+                                navigator.navigate(DownloadSettingsScreenDestination)
                                 showMoreMenu = false
                             },
                             modifier = Modifier.defaultMinSize(150.dp)

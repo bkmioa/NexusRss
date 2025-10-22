@@ -36,15 +36,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.EditDownloadNodeScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
-import io.github.bkmioa.nexusrss.Router
 
+@Destination<RootGraph>
 @Composable
-fun DownloadSettingsScreen() {
+fun DownloadSettingsScreen(navigator: DestinationsNavigator) {
     val viewModel: DownloadSettingsViewModel = mavericksViewModel()
     val uiState by viewModel.collectAsState()
-    val navController = LocalNavController.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -67,13 +71,15 @@ fun DownloadSettingsScreen() {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navigator.popBackStack() }) {
                         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
                     }
                 },
                 title = { Text(stringResource(R.string.download_settings)) },
                 actions = {
-                    IconButton(onClick = { Router.EditDownloadNode.navigate(navController) }) {
+                    IconButton(onClick = {
+                        navigator.navigate(EditDownloadNodeScreenDestination())
+                    }) {
                         Icon(imageVector = Icons.Default.Add, contentDescription = "add")
                     }
                 }
@@ -89,15 +95,14 @@ fun DownloadSettingsScreen() {
 
 @Composable
 private fun NodeList(viewModel: DownloadSettingsViewModel, uiState: UiState) {
-    val navController = LocalNavController.current
-
+    val navigator = LocalNavController.current.rememberDestinationsNavigator()
     LazyColumn() {
         items(uiState.downloadNodes) {
             ListItem(
                 modifier = Modifier.clickable(
                     enabled = true,
                     onClick = {
-                        Router.EditDownloadNode.navigate(navController, it.id?.toString())
+                        navigator.navigate(EditDownloadNodeScreenDestination(it.id?.toString()))
                     }
                 ),
                 headlineContent = { Text(it.name) },

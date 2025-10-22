@@ -4,20 +4,20 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class Status : Parcelable {
+class Status(
+    var id: String = "",
+
+    var toppingLevel: Int = 0,
+
+    var toppingEndTime: String? = null,
+
+    var seeders: String = "",
+
+    var leechers: String = "",
+
+    var comments: String = "",
+) : Parcelable {
     companion object {
         val DEFAULT = Status()
     }
-
-    var id: String = ""
-
-    var toppingLevel: Int = 0
-
-    var toppingEndTime: String? = null
-
-    var seeders: String = ""
-
-    var leechers: String = ""
-
-    var comments: String = ""
 }
