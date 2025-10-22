@@ -18,41 +18,35 @@ data class RequestData(
     /**
      * 類別
      */
-    val categories: List<String> = emptyList(),
+    val categories: Set<String> = emptySet(),
 
     /**
      * 解析度
      */
-    val standards: List<String>? = null,
+    val standards: Set<String>? = null,
 
     /**
      * 視頻編碼
      */
-    val videoCodecs: List<String>? = null,
+    val videoCodecs: Set<String>? = null,
 
     /**
      * 音頻編碼
      */
-    val audioCodecs: List<String>? = null,
+    val audioCodecs: Set<String>? = null,
 
     /**
      * 地區
      */
-    val processings: List<String>? = null,
+    val processings: Set<String>? = null,
 
     /**
      * 製作組
      */
-    val teams: List<String>? = null,
+    val teams: Set<String>? = null,
 
 
-    /**
-     * 標記
-     * DIY 1
-     * 国配 2
-     * 中字 4
-     */
-    val labels: Int? = null,
+    val labelsNew: Set<String>? = null,
 
     /**
      * 促銷
@@ -75,16 +69,18 @@ data class RequestData(
     companion object {
         fun from(tab: Tab): RequestData {
             return RequestData(
-                mode = tab.path,
-                categories = resolveCategories(tab.options),
-                standards = resolveStandards(tab.options),
+                mode = tab.mode,
+                categories = tab.categories,
+                standards = tab.standards,
+                videoCodecs = tab.videoCodecs,
+                audioCodecs = tab.audioCodecs,
+                processings = tab.processings,
+                teams = tab.teams,
+                labelsNew = tab.labels,
+                discount = tab.discount,
+                visible = tab.visible
             )
         }
 
-        private fun resolveStandards(options: Array<String>?): List<String>? {
-            return options?.filter { it.startsWith("standard_") }?.map { it.split("_")[1] }
-        }
-
-        private fun resolveCategories(options: Array<String>?) = (options ?: emptyArray()).filter { it.startsWith("cat_") }.map { it.split("_")[1] }
     }
 }

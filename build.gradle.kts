@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.room) apply false
     alias(libs.plugins.lsplugin.jgit)
     alias(libs.plugins.lsplugin.apksign) apply false
     alias(libs.plugins.kotlinx.parcelize) apply false

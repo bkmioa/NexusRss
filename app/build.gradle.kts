@@ -3,8 +3,13 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
     alias(libs.plugins.lsplugin.apksign)
     alias(libs.plugins.kotlinx.parcelize)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {

@@ -180,13 +180,13 @@ class SearchViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
         return RequestData(
             mode = state.category.path,
             keyword = state.keyword,
-            standards = state.standards.map { it.value }.takeIf { it.isNotEmpty() },
-            categories = state.categories.map { it.value },
-            videoCodecs = state.videoCodecs.map { it.value }.takeIf { it.isNotEmpty() },
-            audioCodecs = state.audioCodecs.map { it.value }.takeIf { it.isNotEmpty() },
-            processings = state.processings.map { it.value }.takeIf { it.isNotEmpty() },
-            teams = state.teams.map { it.value }.takeIf { it.isNotEmpty() },
-            labels = state.labels.map { it.value }.fold(0) { acc, value -> acc or value.toInt() },
+            standards = state.standards.map { it.value }.toSet().takeIf { it.isNotEmpty() },
+            categories = state.categories.map { it.value }.toSet(),
+            videoCodecs = state.videoCodecs.map { it.value }.toSet().takeIf { it.isNotEmpty() },
+            audioCodecs = state.audioCodecs.map { it.value }.toSet().takeIf { it.isNotEmpty() },
+            processings = state.processings.map { it.value }.toSet().takeIf { it.isNotEmpty() },
+            teams = state.teams.map { it.value }.toSet().takeIf { it.isNotEmpty() },
+            labelsNew = state.labels.map { it.value }.toSet().takeIf { it.isNotEmpty() },
             discount = state.discount?.takeIf { it.value.isNotEmpty() }?.value
 
         )
