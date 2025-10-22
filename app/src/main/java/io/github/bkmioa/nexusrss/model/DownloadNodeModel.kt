@@ -7,7 +7,7 @@ import io.github.bkmioa.nexusrss.download.DownloadNode
 import io.github.bkmioa.nexusrss.download.QBittorrentNode
 import io.github.bkmioa.nexusrss.download.TransmissionNode
 import io.github.bkmioa.nexusrss.download.UTorrentNode
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "download_node")
 @Parcelize

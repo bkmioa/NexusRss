@@ -2,7 +2,7 @@ package io.github.bkmioa.nexusrss.download
 
 import androidx.annotation.Keep
 import io.reactivex.Single
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.java.net.cookiejar.JavaNetCookieJar
