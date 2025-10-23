@@ -8,12 +8,12 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 data class UiState(
-    val tabs: Array<Tab> = emptyArray()
+    val tabs: List<Tab> = emptyList()
 ) : MavericksState
 
 class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initialState), KoinComponent {
     companion object {
-         const val TAG = "TabsViewModel"
+        const val TAG = "TabsViewModel"
     }
 
     private val appDateBase: AppDatabase by inject()
@@ -26,15 +26,11 @@ class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
         }
     }
 
-    fun addTab(tab: Tab) {
-        appDao.addTab(tab)
-    }
-
     fun removeTab(tab: Tab) {
         appDao.deleteTab(tab)
     }
 
-    fun update(vararg tabs: Tab) {
-        appDao.updateTab(*tabs)
+    fun update(tab: Tab) {
+        appDao.updateTab(tab)
     }
 }

@@ -23,7 +23,7 @@ interface AppDao {
     @Query("SELECT * FROM tab where isShow = 1 order by `order`")
     fun getActivateTabs(): Flow<List<Tab>>
 
-    @Query("SELECT * FROM tab")
-    fun getAllTabFlow(): Flow<Array<Tab>>
+    @Query("SELECT * FROM tab order by `order`")
+    fun getAllTabFlow(): Flow<List<Tab>>
 
 }
