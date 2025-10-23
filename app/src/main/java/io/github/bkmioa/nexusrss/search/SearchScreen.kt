@@ -73,8 +73,11 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.list.ThreadList
-import io.github.bkmioa.nexusrss.model.Category
+import io.github.bkmioa.nexusrss.model.Mode
 import io.github.bkmioa.nexusrss.model.Option
+import io.github.bkmioa.nexusrss.option.OptionUiState
+import io.github.bkmioa.nexusrss.option.OptionViewModel
+import io.github.bkmioa.nexusrss.option.OptionsUI
 import io.github.bkmioa.nexusrss.widget.SearchBar
 
 @Destination<RootGraph>
@@ -82,11 +85,27 @@ import io.github.bkmioa.nexusrss.widget.SearchBar
 fun SearchScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    val viewModel: SearchViewModel = mavericksViewModel()
+    val searchViewModel: SearchViewModel = mavericksViewModel()
+    val optionViewModel: OptionViewModel = mavericksViewModel()
 
-    val uiState by viewModel.collectAsState()
+    val searchUiState by searchViewModel.collectAsState()
+    val optionUiState by optionViewModel.collectAsState()
 
     var showFilter by remember { mutableStateOf(false) }
+
+    fun submit() {
+        searchViewModel.submit(
+            optionUiState.mode,
+            optionUiState.categories,
+            optionUiState.standards,
+            optionUiState.videoCodecs,
+            optionUiState.audioCodecs,
+            optionUiState.processings,
+            optionUiState.teams,
+            optionUiState.labels,
+            optionUiState.discount
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -99,27 +118,27 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                             onNavigateBack = {
                                 if (showFilter) {
                                     showFilter = false
-                                } else if (uiState.requestData != null && uiState.active) {
-                                    viewModel.setActive(false)
+                                } else if (searchUiState.requestData != null && searchUiState.active) {
+                                    searchViewModel.setActive(false)
                                 } else {
                                     navigator.popBackStack()
                                 }
                             },
                             placeholderText = stringResource(id = R.string.action_search),
-                            searchText = uiState.keyword,
-                            active = uiState.active,
-                            onActiveChange = { viewModel.setActive(it) },
-                            onQueryChange = { viewModel.setKeywords(it) },
+                            searchText = searchUiState.keyword,
+                            active = searchUiState.active,
+                            onActiveChange = { searchViewModel.setActive(it) },
+                            onQueryChange = { searchViewModel.setKeywords(it) },
                             onSearch = {
-                                viewModel.setKeywords(it)
-                                viewModel.submit()
+                                searchViewModel.setKeywords(it)
+                                submit()
                                 showFilter = false
                             }
                         )
                     }
                     IconButton(
                         onClick = {
-                            viewModel.submit()
+                            submit()
                             showFilter = false
                         }
                     ) {
@@ -143,15 +162,15 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
-                        FilterStatus(uiState, viewModel)
+                        FilterStatus(optionUiState, searchViewModel, optionViewModel)
                     }
                     IconButton(
                         onClick = {
                             showFilter = !showFilter
                             if (!showFilter) {
-                                viewModel.submit()
+                                submit()
                             }
-                            viewModel.setActive(false)
+                            searchViewModel.setActive(false)
                         }
                     ) {
                         if (showFilter) {
@@ -164,25 +183,30 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.surfaceColorAtElevation(3.0.dp), thickness = 1.dp)
                 Box {
-                    val requestData = uiState.requestData
+                    val requestData = searchUiState.requestData
                     if (requestData != null) {
                         Box(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)) {
                             ThreadList(requestData = requestData)
                         }
                     }
                     this@Column.AnimatedVisibility(
-                        visible = uiState.active,
+                        visible = searchUiState.active,
                         enter = expandVertically(),
                         exit = shrinkVertically(),
                     ) {
-                        HistoryList(uiState, viewModel)
+                        HistoryList(searchUiState.filteredList, onRemove = { searchViewModel.removeHistory(it) }, onSelected = { keywords, performSearch ->
+                            searchViewModel.setKeywords(keywords)
+                            if (performSearch) {
+                                submit()
+                            }
+                        })
                     }
                     this@Column.AnimatedVisibility(
                         visible = showFilter,
                         enter = slideInVertically() + fadeIn(),
                         exit = slideOutVertically() + fadeOut()
                     ) {
-                        FilterPanel(uiState, viewModel)
+                        FilterPanel(optionViewModel)
                     }
 
                 }
@@ -192,7 +216,7 @@ fun SearchScreen(navigator: DestinationsNavigator) {
 }
 
 @Composable
-private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
+private fun FilterStatus(optionUiState: OptionUiState, searchViewModel: SearchViewModel, optionViewModel: OptionViewModel) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -200,15 +224,15 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item(key = "category") {
-            var showCategoryList by remember { mutableStateOf(false) }
+            var showModeList by remember { mutableStateOf(false) }
             Box(modifier = Modifier.animateItem()) {
                 InputChip(
                     onClick = {
-                        showCategoryList = true
+                        showModeList = true
                     },
                     label = {
                         Text(
-                            text = uiState.category.des,
+                            text = optionUiState.mode.des,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                         )
@@ -226,14 +250,13 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
                         .width(96.dp)
                 )
                 DropdownMenu(
-                    expanded = showCategoryList,
-                    onDismissRequest = { showCategoryList = false }
+                    expanded = showModeList,
+                    onDismissRequest = { showModeList = false }
                 ) {
-                    Category.ALL_CATEGORY.forEach { cat ->
-                        DropdownMenuItem(text = { Text(text = cat.des) }, onClick = {
-                            showCategoryList = false
-                            viewModel.setCategory(cat)
-                            viewModel.submit()
+                    Mode.ALL.forEach { mode ->
+                        DropdownMenuItem(text = { Text(text = mode.des) }, onClick = {
+                            showModeList = false
+                            optionViewModel.setMode(mode)
                         })
                     }
                 }
@@ -250,7 +273,7 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.Clear,
-                            contentDescription = "remove ${item.des}",
+                            contentDescription = "remove ${item}",
                             modifier = Modifier.size(16.dp)
                         )
                     },
@@ -258,20 +281,20 @@ private fun FilterStatus(uiState: UiState, viewModel: SearchViewModel) {
                 )
             }
         }
-        repeatItems(uiState.categories) { viewModel.selectCategory(it, false) }
-        repeatItems(uiState.standards) { viewModel.selectStandard(it, false) }
-        repeatItems(uiState.videoCodecs) { viewModel.selectVideoCodec(it, false) }
-        repeatItems(uiState.audioCodecs) { viewModel.selectAudioCodec(it, false) }
-        repeatItems(uiState.processings) { viewModel.selectProcessing(it, false) }
-        repeatItems(uiState.teams) { viewModel.selectTeam(it, false) }
-        repeatItems(uiState.labels) { viewModel.selectLabel(it, false) }
-        repeatItems(setOfNotNull(uiState.discount)) { viewModel.setDiscount(null) }
+        repeatItems(optionUiState.categories) { optionViewModel.selectCategory(it, false) }
+        repeatItems(optionUiState.standards) { optionViewModel.selectStandard(it, false) }
+        repeatItems(optionUiState.videoCodecs) { optionViewModel.selectVideoCodec(it, false) }
+        repeatItems(optionUiState.audioCodecs) { optionViewModel.selectAudioCodec(it, false) }
+        repeatItems(optionUiState.processings) { optionViewModel.selectProcessing(it, false) }
+        repeatItems(optionUiState.teams) { optionViewModel.selectTeam(it, false) }
+        repeatItems(optionUiState.labels) { optionViewModel.selectLabel(it, false) }
+        repeatItems(setOfNotNull(optionUiState.discount)) { optionViewModel.setDiscount(null, false) }
 
     }
 }
 
 @Composable
-private fun FilterPanel(uiState: UiState, viewModel: SearchViewModel) {
+private fun FilterPanel(optionViewModel: OptionViewModel) {
     Card(
         modifier = Modifier
             .fillMaxSize()
@@ -283,55 +306,22 @@ private fun FilterPanel(uiState: UiState, viewModel: SearchViewModel) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         OptionsUI(
-            category = uiState.category,
-            onMainCategoryChange = viewModel::setCategory,
-            selectedCategories = uiState.categories,
-            onSelectCategory = { option, selected ->
-                viewModel.selectCategory(option, selected)
-            },
-            selectedStandards = uiState.standards,
-            onSelectStandard = { option, selected ->
-                viewModel.selectStandard(option, selected)
-            },
-            selectedVideoCodecs = uiState.videoCodecs,
-            onSelectVideoCodec = { option, selected ->
-                viewModel.selectVideoCodec(option, selected)
-            },
-            selectedAudioCodecs = uiState.audioCodecs,
-            onSelectAudioCodec = { option, selected ->
-                viewModel.selectAudioCodec(option, selected)
-            },
-            selectedProcessings = uiState.processings,
-            onSelectProcessing = { option, selected ->
-                viewModel.selectProcessing(option, selected)
-            },
-            selectedTeams = uiState.teams,
-            onSelectTeam = { option, selected ->
-                viewModel.selectTeam(option, selected)
-            },
-            selectedLabels = uiState.labels,
-            onSelectLabel = { option, selected ->
-                viewModel.selectLabel(option, selected)
-            },
-            selectedDiscount = uiState.discount,
-            onSelectDiscount = { option, selected ->
-                viewModel.setDiscount(option)
-            },
+            viewModel = optionViewModel
         )
     }
 }
 
 @Composable
-private fun HistoryList(uiState: UiState, viewModel: SearchViewModel) {
+private fun HistoryList(list: List<String>, onRemove: (String) -> Unit, onSelected: (keywords: String, performSearch: Boolean) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        items(uiState.filteredList, key = { it }) { item ->
+        items(list, key = { it }) { item ->
             val dismissBoxState = rememberSwipeToDismissBoxState(confirmValueChange = {
                 if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
-                    viewModel.removeHistory(item)
+                    onRemove(item)
                     true
                 } else {
                     false
@@ -345,8 +335,7 @@ private fun HistoryList(uiState: UiState, viewModel: SearchViewModel) {
                 ListItem(
                     modifier = Modifier
                         .clickable {
-                            viewModel.setKeywords(item)
-                            viewModel.submit()
+                            onSelected(item, true)
                         },
                     headlineContent = { Text(text = item) },
                     leadingContent = {
@@ -356,7 +345,7 @@ private fun HistoryList(uiState: UiState, viewModel: SearchViewModel) {
                         )
                     },
                     trailingContent = {
-                        IconButton(onClick = { viewModel.setKeywords(item) }) {
+                        IconButton(onClick = { onSelected(item, false) }) {
                             Icon(
                                 imageVector = Icons.Default.NorthWest,
                                 contentDescription = "",

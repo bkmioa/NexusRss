@@ -69,7 +69,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.Navigator
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -322,7 +321,7 @@ fun BasicInfo(item: Item?) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 InfoLabel("大小", item.sizeText)
-                InfoLabel("類別", Option.ALL.find { it.value == item.category }?.des)
+                InfoLabel("類別", Option.NORMAL.find { it.value == item.category }?.des)
                 InfoLabel("視頻編碼", Option.VIDEOCODECS.find { it.value == item.videoCodec }?.des)
                 InfoLabel("音頻編碼", Option.AUDIOCODECS.find { it.value == item.audioCodec }?.des)
                 InfoLabel("解析度", Option.STANDARDS.find { it.value == item.standard }?.des)

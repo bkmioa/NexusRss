@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalLayoutApi::class)
 
-package io.github.bkmioa.nexusrss.search
+package io.github.bkmioa.nexusrss.option
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -19,6 +19,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -27,33 +28,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.Settings
-import io.github.bkmioa.nexusrss.model.Category
+import io.github.bkmioa.nexusrss.model.Mode
 import io.github.bkmioa.nexusrss.model.Option
 
 
 @Composable
 fun OptionsUI(
     modifier: Modifier = Modifier,
-    category: Category,
-    onMainCategoryChange: (Category) -> Unit,
-    selectedCategories: Set<Option> = emptySet(),
-    onSelectCategory: (Option, Boolean) -> Unit,
-    selectedStandards: Set<Option> = emptySet(),
-    onSelectStandard: (Option, Boolean) -> Unit,
-    selectedVideoCodecs: Set<Option> = emptySet(),
-    onSelectVideoCodec: (Option, Boolean) -> Unit,
-    selectedAudioCodecs: Set<Option> = emptySet(),
-    onSelectAudioCodec: (Option, Boolean) -> Unit,
-    selectedProcessings: Set<Option> = emptySet(),
-    onSelectProcessing: (Option, Boolean) -> Unit,
-    selectedTeams: Set<Option> = emptySet(),
-    onSelectTeam: (Option, Boolean) -> Unit,
-    selectedLabels: Set<Option> = emptySet(),
-    onSelectLabel: (Option, Boolean) -> Unit,
-    selectedDiscount: Option? = null,
-    onSelectDiscount: (Option, Boolean) -> Unit,
+    viewModel: OptionViewModel = mavericksViewModel(),
+    header: (@Composable () -> Unit)? = null,
 ) {
+
+    val uiState by viewModel.collectAsState()
 
     LazyVerticalGrid(
         modifier = modifier
@@ -63,16 +52,21 @@ fun OptionsUI(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (header != null) {
+            item(span = { GridItemSpan(maxLineSpan) }, key = "header") {
+                header()
+            }
+        }
         item(span = { GridItemSpan(maxLineSpan) }, key = "category_label") {
             Text(text = "類別", style = MaterialTheme.typography.headlineSmall)
         }
         item(span = { GridItemSpan(maxLineSpan) }, key = "category") {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Category.ALL_CATEGORY.forEach {
+                Mode.ALL.forEach {
                     FilterChip(
-                        selected = category == it,
+                        selected = uiState.mode == it,
                         onClick = {
-                            onMainCategoryChange(it)
+                            viewModel.setMode(it)
                         },
                         label = { Text(text = it.des) },
                         shape = CircleShape
@@ -80,11 +74,11 @@ fun OptionsUI(
                 }
             }
         }
-        items(category.options, key = { it.id }) { option ->
-            val selected = selectedCategories.contains(option)
+        items(uiState.mode.options, key = { it.id }) { option ->
+            val selected = uiState.categories.contains(option)
             FilterChip(
                 selected = selected,
-                onClick = { onSelectCategory(option, !selected) },
+                onClick = { viewModel.selectCategory(option, !selected) },
                 leadingIcon = {
                     AsyncImage(
                         model = Settings.BASE_URL + option.img,
@@ -117,7 +111,7 @@ fun OptionsUI(
             }
         }
 
-        fun repeatOptions(options: List<Option>, selected: Set<Option?>, onSelect: (Option, Boolean) -> Unit) {
+        fun repeatOptions(options: List<Option>, selected: Set<Option?>, onSelect: (option: Option, selected: Boolean) -> Unit) {
             items(options, key = { it.id }) { option ->
                 val selected = selected.contains(option)
                 FilterChip(
@@ -136,24 +130,24 @@ fun OptionsUI(
         }
 
         headLine("解析度")
-        repeatOptions(Option.STANDARDS, selectedStandards, onSelectStandard)
+        repeatOptions(Option.STANDARDS, uiState.standards, viewModel::selectStandard)
 
         headLine("視頻編碼")
-        repeatOptions(Option.VIDEOCODECS, selectedVideoCodecs, onSelectVideoCodec)
+        repeatOptions(Option.VIDEOCODECS, uiState.videoCodecs, viewModel::selectVideoCodec)
 
         headLine("音頻編碼")
-        repeatOptions(Option.AUDIOCODECS, selectedAudioCodecs, onSelectAudioCodec)
+        repeatOptions(Option.AUDIOCODECS, uiState.audioCodecs, viewModel::selectAudioCodec)
 
         headLine("地區")
-        repeatOptions(Option.PROCESSINGS, selectedProcessings, onSelectProcessing)
+        repeatOptions(Option.PROCESSINGS, uiState.processings, viewModel::selectProcessing)
 
         headLine("製作組")
-        repeatOptions(Option.TEAMS, selectedTeams, onSelectTeam)
+        repeatOptions(Option.TEAMS, uiState.teams, viewModel::selectTeam)
 
         headLine("標記")
-        repeatOptions(Option.LABELS, selectedLabels, onSelectLabel)
+        repeatOptions(Option.LABELS, uiState.labels, viewModel::selectLabel)
 
         headLine("促銷")
-        repeatOptions(Option.DISCOUNTS, setOf(selectedDiscount), onSelectDiscount)
+        repeatOptions(Option.DISCOUNTS, setOf(uiState.discount), viewModel::setDiscount)
     }
 }

@@ -5,15 +5,26 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Category(val path: String, val des: String, val options: List<Option> = emptyList()) : Parcelable {
+data class Mode(val mode: String, val des: String, val options: List<Option> = emptyList()) : Parcelable {
     companion object {
-        val NORMAL = Category("normal", "Normal", Option.ALL)
-        val MOVIE = Category("movie", "Movie", Option.MOVIES)
-        val TV = Category("tvshow", "TV", Option.TV)
-        val MUSIC = Category("music", "Music", Option.MUSIC)
-        val ADULT = Category("adult", "Adult", Option.ADULT)
+        val NORMAL = Mode("normal", "Normal", Option.NORMAL)
+        val MOVIE = Mode("movie", "Movie", Option.MOVIES)
+        val TV = Mode("tvshow", "TV", Option.TV)
+        val MUSIC = Mode("music", "Music", Option.MUSIC)
+        val ADULT = Mode("adult", "Adult", Option.ADULT)
 
-        val ALL_CATEGORY = listOf(NORMAL, MOVIE, TV, MUSIC, ADULT)
+        val ALL = listOf(NORMAL, MOVIE, TV, MUSIC, ADULT)
+
+        fun fromMode(mode: String): Mode {
+            return when (mode) {
+                "normal" -> NORMAL
+                "movie" -> MOVIE
+                "tvshow" -> TV
+                "music" -> MUSIC
+                "adult" -> ADULT
+                else -> NORMAL
+            }
+        }
     }
 
 }
@@ -78,21 +89,20 @@ data class Option(
             Option("cat", "427", "電子書", "/static/cate/ebook.png"),
         )
 
-        val ALL = MOVIES + TV + MUSIC + OTHERS
+        val NORMAL = MOVIES + TV + MUSIC + OTHERS
 
-        @Deprecated("Use STANDARDS instead")
-        val RESOLUTION = listOf(
+        val ALL_CATEGORY = MOVIES + TV + MUSIC + OTHERS + ADULT
+
+        val STANDARDS = listOf(
             Option("standard", "1", "1080p"),
             Option("standard", "2", "1080i"),
             Option("standard", "3", "720p"),
             Option("standard", "5", "SD"),
             Option("standard", "6", "4K"),
+            Option("standard", "7", "8K"),
         )
 
-        val STANDARDS = RESOLUTION
-
-        @Deprecated("Use PROCESSINGS instead")
-        val PROCESS = listOf(
+        val PROCESSINGS = listOf(
             Option("processing", "1", "陆剧"),
             Option("processing", "2", "美剧"),
             Option("processing", "3", "港台剧"),
@@ -101,26 +111,33 @@ data class Option(
             Option("processing", "6", "纪录片")
         )
 
-        val PROCESSINGS = PROCESS
 
         val VIDEOCODECS = listOf(
             Option("videoCodec", "1", "H.264"),
             Option("videoCodec", "16", "H.265"),
             Option("videoCodec", "2", "VC-1"),
-            Option("videoCodec", "19", "AV1"),
             Option("videoCodec", "4", "MPEG-2"),
-            Option("videoCodec", "15", "MPEG-4"),
             Option("videoCodec", "3", "Xvid"),
-            )
+            Option("videoCodec", "19", "AV1"),
+            Option("videoCodec", "21", "VP8/9"),
+            Option("videoCodec", "22", "AVS"),
+        )
 
         val AUDIOCODECS = listOf(
+            Option("audioCodec", "6", "AAC"),
             Option("audioCodec", "8", "AC3"),
+            Option("audioCodec", "3", "DTS"),
+            Option("audioCodec", "11", "DTS-HD MA"),
+            Option("audioCodec", "12", "E-AC3(DDP)"),
+            Option("audioCodec", "13", "E-AC3 Atoms(DDP Atoms)"),
+            Option("audioCodec", "9", "TrueHD"),
+            Option("audioCodec", "10", "TrueHD Atmos"),
+            Option("audioCodec", "14", "LPCM/PCM"),
+            Option("audioCodec", "15", "WAV"),
             Option("audioCodec", "1", "FLAC"),
             Option("audioCodec", "2", "APE"),
-            Option("audioCodec", "3", "DTS"),
-            Option("audioCodec", "4", "MP3"),
+            Option("audioCodec", "4", "MP2/3"),
             Option("audioCodec", "5", "OGG"),
-            Option("audioCodec", "6", "AAC"),
             Option("audioCodec", "7", "Other"),
         )
 
@@ -144,9 +161,16 @@ data class Option(
         )
 
         val LABELS = listOf(
-            Option("label", "diy", "DIY"),
-            Option("label", "dub", "国配"),
-            Option("label", "sub", "中字"),
+            Option("label", "4k", "4K"),
+            Option("label", "8k", "8K"),
+            Option("label", "hdr", "HDR"),
+            Option("label", "hdr10", "HDR10"),
+            Option("label", "hdr10+", "HDR10+"),
+            Option("label", "hlg", "HLG"),
+            Option("label", "DoVi", "DOVI"),
+            Option("label", "HDRVi", "HDRVI"),
+            Option("label", "中字", "中字"),
+            Option("label", "中配", "中配"),
         )
 
         val DISCOUNTS = listOf(
