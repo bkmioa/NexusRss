@@ -46,9 +46,7 @@ class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
             val newList = mutable.mapIndexed { index, tab -> tab.copy(order = index) }
             copy(tabs = newList)
         }
-        withContext(Dispatchers.IO) {
-            appDao.updateTab(* awaitState().tabs.toTypedArray())
-        }
+        appDao.updateTab(* awaitState().tabs.toTypedArray())
     }
 
     suspend fun performUndoDelete() {
