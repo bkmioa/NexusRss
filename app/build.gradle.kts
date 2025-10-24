@@ -99,4 +99,5 @@ dependencies {
 
     implementation(libs.reorderable)
 
+    implementation(libs.versioncompare)
 }

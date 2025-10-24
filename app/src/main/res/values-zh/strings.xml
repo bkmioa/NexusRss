@@ -45,4 +45,6 @@
     <string name="downloading">正在下载…</string>
     <string name="checking_version">正在检查新版本…</string>
     <string name="no_new_version">没有新版本</string>
+    <string name="new_version">有新版本可更新</string>
+    <string name="download_new_version">去下载</string>
 </resources>

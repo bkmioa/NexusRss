@@ -45,4 +45,6 @@
     <string name="downloading">Downloading...</string>
     <string name="checking_version">Checking new version…</string>
     <string name="no_new_version">No new version found</string>
+    <string name="new_version">There is a new version can upgrade</string>
+    <string name="download_new_version">Download</string>
 </resources>
