@@ -21,7 +21,7 @@ plugins {
     alias(libs.plugins.kotlinx.parcelize) apply false
 }
 val repo = jgit.repo()
-val commitCount = (repo?.commitCount("refs/remotes/origin/main") ?: 1)
+val commitCount = (repo?.commitCount("refs/remotes/origin/master") ?: 1)
 val latestTag = repo?.latestTag?.removePrefix("v") ?: "0.0"
 
 val appNamespace by extra("io.github.bkmioa.nexusrss")
@@ -68,8 +68,11 @@ subprojects {
                 targetCompatibility = androidTargetCompatibility
             }
         }
-    }
 
+        extensions.configure(BasePluginExtension::class.java){
+            archivesName = "MT-v${appVersionName}-${appVersionCode}"
+        }
+    }
     plugins.withType(JavaPlugin::class.java) {
         extensions.configure(JavaPluginExtension::class.java) {
             sourceCompatibility = androidSourceCompatibility
