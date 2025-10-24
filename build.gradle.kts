@@ -79,10 +79,10 @@ subprojects {
 
     plugins.withType(ApksignPlugin::class.java) {
         extensions.configure(ApksignExtension::class.java) {
-            storeFileProperty = "androidStoreFile"
-            storePasswordProperty = "androidStorePassword"
-            keyAliasProperty = "androidKeyAlias"
-            keyPasswordProperty = "androidKeyPassword"
+            storeFileProperty = "mtStoreFile"
+            storePasswordProperty = "mtStorePassword"
+            keyAliasProperty = "mtKeyAlias"
+            keyPasswordProperty = "mtKeyPassword"
         }
     }
 }

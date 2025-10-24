@@ -3,6 +3,8 @@ name: Android CI
 on:
   push:
     branches: [ "master" ]
+    tags:
+      - '*'
   pull_request:
     branches: [ "master" ]
 
@@ -13,6 +15,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: set up JDK
       uses: actions/setup-java@v5
       with:
@@ -20,13 +25,25 @@ jobs:
         distribution: 'adopt'
         cache: gradle
 
+    - name: Write key
+      if: ${{ ( github.event_name != 'pull_request' && github.ref == 'refs/heads/master' ) || github.ref_type == 'tag' }}
+      run: |
+        if [ ! -z "${{ secrets.KEY_STORE }}" ]; then
+          echo >> gradle.properties
+          echo mtStorePassword='${{ secrets.KEY_STORE_PASSWORD }}' >> gradle.properties
+          echo mtKeyAlias='${{ secrets.KEY_ALIAS }}' >> gradle.properties
+          echo mtKeyPassword='${{ secrets.KEY_PASSWORD }}' >> gradle.properties
+          echo mtStoreFile='key.jks' >> gradle.properties
+          echo ${{ secrets.KEY_STORE }} | base64 --decode > key.jks
+        fi
+
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew app:assembleDebug
+      run: ./gradlew app:assemble
       
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        path: app/build/outputs/apk/debug/*.apk
+        path: app/build/outputs/apk/*/*.apk
     
