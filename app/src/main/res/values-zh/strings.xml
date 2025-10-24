@@ -65,4 +65,5 @@
     <string name="label_label">标记</string>
     <string name="label_discount">促销</string>
     <string name="label_region">地区</string>
+    <string name="api_key_guide">请先设置你的 API Key</string>
 </resources>

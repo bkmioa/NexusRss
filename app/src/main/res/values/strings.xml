@@ -65,4 +65,5 @@
     <string name="label_label">Label</string>
     <string name="label_discount">Discount</string>
     <string name="label_region">Region</string>
+    <string name="api_key_guide">Please set your API Key in Settings.</string>
 </resources>

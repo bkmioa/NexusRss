@@ -56,7 +56,10 @@ import com.ramcosta.composedestinations.generated.destinations.SearchScreenDesti
 import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.TabsScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.utils.toDestinationsNavigator
+import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.checkversion.CheckVersionViewModel
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
@@ -242,6 +245,22 @@ fun HomeScreen(
                 ) { index ->
                     tabAndPagers[index].second()
                 }
+            }
+        }
+    }
+
+    ApiKeyGuideIfNeeded(snackbarHostState)
+}
+
+@Composable
+fun ApiKeyGuideIfNeeded(snackbarHostState: SnackbarHostState) {
+    val context = LocalContext.current
+    val navigator = LocalNavController.current.toDestinationsNavigator()
+    LaunchedEffect(Settings.API_KEY) {
+        if (Settings.API_KEY.isBlank()) {
+            val result = snackbarHostState.showSnackbar(context.getString(R.string.api_key_guide), actionLabel = context.getString(R.string.action_settings))
+            if (result == SnackbarResult.ActionPerformed) {
+                navigator.navigate(SettingsScreenDestination)
             }
         }
     }
