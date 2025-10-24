@@ -46,6 +46,7 @@ import com.ramcosta.composedestinations.generated.destinations.EditTabScreenDest
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Tab
+import io.github.bkmioa.nexusrss.widget.Toaster
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -56,6 +57,7 @@ fun TabsScreen(navigator: DestinationsNavigator) {
     val uiState by viewModel.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
+
     val context = LocalContext.current
     LaunchedEffect(uiState.undoDelete) {
         if (uiState.undoDelete != null) {
@@ -63,10 +65,12 @@ fun TabsScreen(navigator: DestinationsNavigator) {
                 .showSnackbar(
                     message = context.getString(R.string.deleted),
                     actionLabel = context.getString(R.string.undo_action),
+                    withDismissAction = true,
                     duration = SnackbarDuration.Long
                 )
-            if (result == SnackbarResult.ActionPerformed) {
-                viewModel.performUndoDelete()
+            when (result) {
+                SnackbarResult.ActionPerformed -> viewModel.performUndoDelete()
+                SnackbarResult.Dismissed -> viewModel.resetUndoDelete()
             }
         }
     }

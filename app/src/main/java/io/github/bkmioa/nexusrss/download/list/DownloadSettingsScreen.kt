@@ -59,10 +59,12 @@ fun DownloadSettingsScreen(navigator: DestinationsNavigator) {
                 .showSnackbar(
                     message = context.getString(R.string.deleted),
                     actionLabel = context.getString(R.string.undo_action),
+                    withDismissAction = true,
                     duration = SnackbarDuration.Long
                 )
-            if (result == SnackbarResult.ActionPerformed) {
-                viewModel.performUndoDelete()
+            when (result) {
+                SnackbarResult.ActionPerformed -> viewModel.performUndoDelete()
+                SnackbarResult.Dismissed -> viewModel.resetUndoDelete()
             }
         }
     }

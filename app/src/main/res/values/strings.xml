@@ -13,11 +13,11 @@
     <string name="remote_username">Username</string>
     <string name="remote_password">Password</string>
     <string name="remote_path">Download Path</string>
-    <string name="edit_can_not_empty">Can not empty</string>
+    <string name="download_host_empty">Remote url can not be empty</string>
+    <string name="download_host_invalid">Remote url is invalid</string>
     <string name="add_failure">add failure</string>
     <string name="add_success">add success</string>
     <string name="need_download_setting">Download Settings not configured</string>
-    <string name="need_pass_key">Pass Key not configured</string>
     <string name="go_download_setting">Setting</string>
     <string name="action_checking_version">Checking Version</string>
     <string name="action_search">Search</string>
@@ -28,6 +28,7 @@
     <string name="tab_deleted">Deleted</string>
     <string name="tab_edit">Edit Tab</string>
     <string name="tab_title">title</string>
+    <string name="tab_title_empty">Title cannot be empty</string>
     <string name="undo_action">UNDO</string>
     <string name="list_style">List Style</string>
     <string name="download">Download</string>
@@ -52,6 +53,7 @@
     <string name="comment_list">Comment (%1$s)</string>
     <string name="edit_download_node">Download Node</string>
     <string name="download_client">Client</string>
+    <string name="download_name_empty">Name cannot be empty</string>
     <string name="retry">Retry</string>
     <string name="top_expend">Expand</string>
     <string name="top_collapse">Collapse</string>

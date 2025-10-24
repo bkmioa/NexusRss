@@ -4,6 +4,8 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.model.Tab
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -36,7 +38,7 @@ class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
         appDao.updateTab(tab)
     }
 
-    fun reorderTabs(from: Int, to: Int) {
+    suspend fun reorderTabs(from: Int, to: Int) {
         setState {
             val mutable = tabs.toMutableList()
             val remove = mutable.removeAt(from)
@@ -44,16 +46,26 @@ class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
             val newList = mutable.mapIndexed { index, tab -> tab.copy(order = index) }
             copy(tabs = newList)
         }
-        withState {
-            appDao.updateTab(*it.tabs.toTypedArray())
+        withContext(Dispatchers.IO) {
+            appDao.updateTab(* awaitState().tabs.toTypedArray())
         }
     }
 
-    fun performUndoDelete() {
+    suspend fun performUndoDelete() {
+        awaitState().undoDelete?.let {
+            withContext(Dispatchers.IO) {
+                appDao.addTab(it)
+            }
+        }
         setState {
-            undoDelete?.let { appDao.addTab(it) }
             copy(undoDelete = null)
         }
 
+    }
+
+    fun resetUndoDelete() {
+        setState {
+            copy(undoDelete = null)
+        }
     }
 }

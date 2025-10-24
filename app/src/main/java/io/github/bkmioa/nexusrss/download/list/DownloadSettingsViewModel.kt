@@ -4,6 +4,8 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import io.github.bkmioa.nexusrss.db.AppDatabase
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -34,11 +36,19 @@ class DownloadSettingsViewModel(initialState: UiState) : MavericksViewModel<UiSt
         setState { copy(undoDeleteNode = node) }
     }
 
-    fun performUndoDelete() {
-        setState {
-            undoDeleteNode?.let {
+    suspend fun performUndoDelete() {
+        awaitState().undoDeleteNode?.let {
+            withContext(Dispatchers.IO) {
                 downloadDao.addOrUpdateNode(it)
             }
+        }
+        setState {
+            copy(undoDeleteNode = null)
+        }
+    }
+
+    fun resetUndoDelete() {
+        setState {
             copy(undoDeleteNode = null)
         }
     }

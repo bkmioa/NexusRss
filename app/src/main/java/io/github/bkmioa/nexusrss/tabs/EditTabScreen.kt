@@ -3,8 +3,10 @@
 package io.github.bkmioa.nexusrss.tabs
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -12,6 +14,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -33,6 +37,8 @@ import io.github.bkmioa.nexusrss.model.Tab
 import io.github.bkmioa.nexusrss.option.OptionInitArgs
 import io.github.bkmioa.nexusrss.option.OptionViewModel
 import io.github.bkmioa.nexusrss.option.OptionsUI
+import io.github.bkmioa.nexusrss.widget.Toaster
+import kotlinx.coroutines.launch
 
 @Destination<RootGraph>
 @Composable
@@ -55,6 +61,9 @@ fun EditTabScreen(navigator: DestinationsNavigator, tab: Tab = Tab.EMPTY) {
     })
 
     val optionUiState by optionViewModel.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    Toaster(editTabUiState.toast)
 
     Scaffold(
         topBar = {
@@ -71,18 +80,22 @@ fun EditTabScreen(navigator: DestinationsNavigator, tab: Tab = Tab.EMPTY) {
                     val scope = rememberCoroutineScope()
                     IconButton(
                         onClick = {
-                            editTabViewModel.save(
-                                mode = optionUiState.mode,
-                                categories = optionUiState.categories,
-                                standards = optionUiState.standards,
-                                videoCodecs = optionUiState.videoCodecs,
-                                audioCodecs = optionUiState.audioCodecs,
-                                processings = optionUiState.processings,
-                                teams = optionUiState.teams,
-                                labels = optionUiState.labels,
-                                discount = optionUiState.discount
-                            )
-                            navigator.popBackStack()
+                            scope.launch {
+                                if (editTabViewModel.save(
+                                        mode = optionUiState.mode,
+                                        categories = optionUiState.categories,
+                                        standards = optionUiState.standards,
+                                        videoCodecs = optionUiState.videoCodecs,
+                                        audioCodecs = optionUiState.audioCodecs,
+                                        processings = optionUiState.processings,
+                                        teams = optionUiState.teams,
+                                        labels = optionUiState.labels,
+                                        discount = optionUiState.discount
+                                    )
+                                ) {
+                                    navigator.popBackStack()
+                                }
+                            }
                         }
                     ) {
                         Icon(imageVector = Icons.Default.Check, contentDescription = "save")
@@ -96,14 +109,19 @@ fun EditTabScreen(navigator: DestinationsNavigator, tab: Tab = Tab.EMPTY) {
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
+
             OptionsUI(viewModel = optionViewModel) {
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = editTabUiState.tab.title,
-                    onValueChange = { editTabViewModel.updateTitle(it) },
-                    label = { Text(stringResource(R.string.tab_title)) },
-                    singleLine = true,
-                )
+                Column {
+                    Text(text = stringResource(R.string.tab_title), style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = editTabUiState.tab.title,
+                        onValueChange = { editTabViewModel.updateTitle(it) },
+                        singleLine = true,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }

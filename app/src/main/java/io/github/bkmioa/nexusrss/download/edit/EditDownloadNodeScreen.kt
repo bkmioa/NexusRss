@@ -45,6 +45,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 //import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
+import io.github.bkmioa.nexusrss.widget.Toaster
 import kotlinx.coroutines.launch
 
 @Destination<RootGraph>
@@ -55,6 +56,8 @@ fun EditDownloadNodeScreen(
 ) {
     val viewModel: EditDownloadNodeViewModel = mavericksViewModel(argsFactory = { id ?: "" })
     val uiState by viewModel.collectAsState()
+
+    Toaster(uiState.toast)
 
     Scaffold(
         topBar = {
@@ -72,8 +75,9 @@ fun EditDownloadNodeScreen(
                     IconButton(
                         onClick = {
                             scope.launch {
-                                viewModel.save()
-                                navigator.popBackStack()
+                                if (viewModel.save()) {
+                                    navigator.popBackStack()
+                                }
                             }
                         }
                     ) {

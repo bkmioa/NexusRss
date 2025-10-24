@@ -13,11 +13,11 @@
     <string name="remote_username">用户名</string>
     <string name="remote_password">密码</string>
     <string name="remote_path">下载路径</string>
-    <string name="edit_can_not_empty">不能为空</string>
+    <string name="download_host_empty" >远程地址不能为空</string>
+    <string name="download_host_invalid">远程地址不合法</string>
     <string name="add_failure">添加失败</string>
     <string name="add_success">添加成功</string>
     <string name="need_download_setting">下载设置未配置</string>
-    <string name="need_pass_key">密匙（Pass Key）未配置</string>
     <string name="go_download_setting">去配置</string>
     <string name="action_checking_version">检查版本</string>
     <string name="action_login">登录</string>
@@ -28,6 +28,7 @@
     <string name="tab_deleted">已删除</string>
     <string name="tab_edit">编辑 Tab</string>
     <string name="tab_title">标题</string>
+    <string name="tab_title_empty">标题不能为空</string>
     <string name="undo_action">撤销</string>
     <string name="list_style">列表样式</string>
     <string name="download">下载</string>
@@ -52,6 +53,7 @@
     <string name="comment_list">评论 (%1$s)</string>
     <string name="edit_download_node">下载节点</string>
     <string name="download_client">客户端</string>
+    <string name="download_name_empty">名称不能为空</string>
     <string name="retry">重试</string>
     <string name="top_expend">展开</string>
     <string name="top_collapse">收起</string>
