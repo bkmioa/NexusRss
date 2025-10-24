@@ -26,6 +26,8 @@
     <string name="tab_options">选项</string>
     <string name="tab_label">名称</string>
     <string name="tab_deleted">已删除</string>
+    <string name="tab_edit">编辑 Tab</string>
+    <string name="tab_title">标题</string>
     <string name="undo_action">撤销</string>
     <string name="list_style">列表样式</string>
     <string name="download">下载</string>
@@ -47,4 +49,20 @@
     <string name="no_new_version">没有新版本</string>
     <string name="new_version">有新版本可更新</string>
     <string name="download_new_version">去下载</string>
+    <string name="comment_list">评论 (%1$s)</string>
+    <string name="edit_download_node">下载节点</string>
+    <string name="download_client">客户端</string>
+    <string name="retry">重试</string>
+    <string name="top_expend">展开</string>
+    <string name="top_collapse">收起</string>
+    <string name="no_more">没有更多了</string>
+    <string name="no_content">没有内容</string>
+    <string name="label_category">类别</string>
+    <string name="label_resolution">分辨率</string>
+    <string name="label_video_codec">视频编码</string>
+    <string name="label_audio_codec">音频编码</string>
+    <string name="label_team">制作组</string>
+    <string name="label_label">标记</string>
+    <string name="label_discount">促销</string>
+    <string name="label_region">地区</string>
 </resources>

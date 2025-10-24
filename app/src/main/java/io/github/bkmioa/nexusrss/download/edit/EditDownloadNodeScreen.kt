@@ -65,7 +65,7 @@ fun EditDownloadNodeScreen(
                     }
                 },
                 title = {
-                    Text("编辑")
+                    Text(stringResource(R.string.edit_download_node))
                 },
                 actions = {
                     val scope = rememberCoroutineScope()
@@ -113,7 +113,7 @@ fun EditDownloadNodeScreen(
                             .menuAnchor(MenuAnchorType.PrimaryNotEditable),
                         readOnly = true,
                         value = uiState.type,
-                        label = { Text(text = "客户端") },
+                        label = { Text(text = stringResource(R.string.download_client)) },
                         singleLine = true,
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded)

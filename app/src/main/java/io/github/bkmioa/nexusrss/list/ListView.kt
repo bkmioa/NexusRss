@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -149,7 +150,7 @@ fun ThreadList(
                             )
                         },
                         message = message,
-                        actionText = "重试"
+                        actionText = stringResource(R.string.retry)
                     ) {
                         lazyPagingItems.retry()
                     }
@@ -217,7 +218,7 @@ private fun List(
                     ) {
                         Text(
                             modifier = Modifier.align(Alignment.Center),
-                            text = "${if (collapsePinedItems) "展开" else "收起"}置顶内容",
+                            text = if (collapsePinedItems) stringResource(R.string.top_expend) else stringResource(R.string.top_collapse),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.labelLarge,
                         )
@@ -303,7 +304,7 @@ private fun List(
                         thickness = 1.dp
                     )
                     Text(
-                        text = "没有更多了",
+                        text = stringResource(R.string.no_more),
                         modifier = Modifier
                             .padding(horizontal = 16.dp),
                         style = MaterialTheme.typography.labelMedium,
@@ -333,7 +334,7 @@ private fun List(
                         tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
                     )
                 },
-                message = "没有内容"
+                message = stringResource(R.string.no_content)
             )
         }
     }

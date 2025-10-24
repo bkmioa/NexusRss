@@ -26,6 +26,8 @@
     <string name="tab_options">Options</string>
     <string name="tab_label">Label</string>
     <string name="tab_deleted">Deleted</string>
+    <string name="tab_edit">Edit Tab</string>
+    <string name="tab_title">title</string>
     <string name="undo_action">UNDO</string>
     <string name="list_style">List Style</string>
     <string name="download">Download</string>
@@ -47,4 +49,20 @@
     <string name="no_new_version">No new version found</string>
     <string name="new_version">There is a new version can upgrade</string>
     <string name="download_new_version">Download</string>
+    <string name="comment_list">Comment (%1$s)</string>
+    <string name="edit_download_node">Download Node</string>
+    <string name="download_client">Client</string>
+    <string name="retry">Retry</string>
+    <string name="top_expend">Expand</string>
+    <string name="top_collapse">Collapse</string>
+    <string name="no_more">No More Content</string>
+    <string name="no_content">Blank</string>
+    <string name="label_category">Category</string>
+    <string name="label_resolution">Resolution</string>
+    <string name="label_video_codec">Video Codec</string>
+    <string name="label_audio_codec">Audio Codec</string>
+    <string name="label_team">Team</string>
+    <string name="label_label">Label</string>
+    <string name="label_discount">Discount</string>
+    <string name="label_region">Region</string>
 </resources>

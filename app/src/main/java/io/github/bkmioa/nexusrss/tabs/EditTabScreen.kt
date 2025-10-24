@@ -20,11 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Mode
 import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.model.Tab
@@ -63,7 +65,7 @@ fun EditTabScreen(navigator: DestinationsNavigator, tab: Tab = Tab.EMPTY) {
                     }
                 },
                 title = {
-                    Text("编辑")
+                    Text(stringResource(R.string.tab_edit))
                 },
                 actions = {
                     val scope = rememberCoroutineScope()
@@ -99,7 +101,7 @@ fun EditTabScreen(navigator: DestinationsNavigator, tab: Tab = Tab.EMPTY) {
                     modifier = Modifier.fillMaxWidth(),
                     value = editTabUiState.tab.title,
                     onValueChange = { editTabViewModel.updateTitle(it) },
-                    label = { Text("标题") },
+                    label = { Text(stringResource(R.string.tab_title)) },
                     singleLine = true,
                 )
             }

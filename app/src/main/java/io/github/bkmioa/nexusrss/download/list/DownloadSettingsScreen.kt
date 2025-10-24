@@ -58,7 +58,7 @@ fun DownloadSettingsScreen(navigator: DestinationsNavigator) {
             val result = snackbarHostState
                 .showSnackbar(
                     message = context.getString(R.string.deleted),
-                    actionLabel = "撤销",
+                    actionLabel = context.getString(R.string.undo_action),
                     duration = SnackbarDuration.Long
                 )
             if (result == SnackbarResult.ActionPerformed) {

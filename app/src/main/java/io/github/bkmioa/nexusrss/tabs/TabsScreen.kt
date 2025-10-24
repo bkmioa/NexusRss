@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -63,7 +62,7 @@ fun TabsScreen(navigator: DestinationsNavigator) {
             val result = snackbarHostState
                 .showSnackbar(
                     message = context.getString(R.string.deleted),
-                    actionLabel = "撤销",
+                    actionLabel = context.getString(R.string.undo_action),
                     duration = SnackbarDuration.Long
                 )
             if (result == SnackbarResult.ActionPerformed) {

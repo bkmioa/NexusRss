@@ -24,12 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.model.Mode
 import io.github.bkmioa.nexusrss.model.Option
@@ -43,7 +46,8 @@ fun OptionsUI(
 ) {
 
     val uiState by viewModel.collectAsState()
-
+    val context = LocalContext.current
+    
     LazyVerticalGrid(
         modifier = modifier
             .fillMaxWidth()
@@ -52,13 +56,14 @@ fun OptionsUI(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        
         if (header != null) {
             item(span = { GridItemSpan(maxLineSpan) }, key = "header") {
                 header()
             }
         }
         item(span = { GridItemSpan(maxLineSpan) }, key = "category_label") {
-            Text(text = "類別", style = MaterialTheme.typography.headlineSmall)
+            Text(text = stringResource(R.string.label_category), style = MaterialTheme.typography.headlineSmall)
         }
         item(span = { GridItemSpan(maxLineSpan) }, key = "category") {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -129,25 +134,25 @@ fun OptionsUI(
             }
         }
 
-        headLine("解析度")
+        headLine(context.getString(R.string.label_resolution))
         repeatOptions(Option.STANDARDS, uiState.standards, viewModel::selectStandard)
 
-        headLine("視頻編碼")
+        headLine(context.getString(R.string.label_video_codec))
         repeatOptions(Option.VIDEOCODECS, uiState.videoCodecs, viewModel::selectVideoCodec)
 
-        headLine("音頻編碼")
+        headLine(context.getString(R.string.label_audio_codec))
         repeatOptions(Option.AUDIOCODECS, uiState.audioCodecs, viewModel::selectAudioCodec)
 
-        headLine("地區")
+        headLine(context.getString(R.string.label_region))
         repeatOptions(Option.PROCESSINGS, uiState.processings, viewModel::selectProcessing)
 
-        headLine("製作組")
+        headLine(context.getString(R.string.label_team))
         repeatOptions(Option.TEAMS, uiState.teams, viewModel::selectTeam)
 
-        headLine("標記")
+        headLine(context.getString(R.string.label_label))
         repeatOptions(Option.LABELS, uiState.labels, viewModel::selectLabel)
 
-        headLine("促銷")
+        headLine(context.getString(R.string.label_discount))
         repeatOptions(Option.DISCOUNTS, setOf(uiState.discount), viewModel::setDiscount)
     }
 }

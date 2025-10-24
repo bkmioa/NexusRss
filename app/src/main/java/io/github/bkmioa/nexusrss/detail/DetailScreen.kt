@@ -248,7 +248,7 @@ fun CommentInfo(item: Item?, onClick: () -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                text = "评论列表 (${item.status.comments})",
+                text = stringResource(R.string.comment_list, item.status.comments),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .weight(1f)
