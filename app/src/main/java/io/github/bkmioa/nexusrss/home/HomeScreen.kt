@@ -92,7 +92,7 @@ fun HomeScreen(
             when (result) {
                 SnackbarResult.ActionPerformed -> {
                     try {
-                        val htmlUrl = remoteVersion.htmlUrl
+                        val htmlUrl = remoteVersion.htmlUrl!!
                         context.startActivity(Intent(Intent.ACTION_VIEW, htmlUrl.toUri()))
                     } catch (e: Exception) {
                         e.printStackTrace()

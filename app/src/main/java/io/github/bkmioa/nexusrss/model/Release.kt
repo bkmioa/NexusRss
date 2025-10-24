@@ -1,25 +1,15 @@
 package io.github.bkmioa.nexusrss.model
 
-import java.util.*
+import java.util.Date
+
 
 class Release {
     var id: Int = 0
-    lateinit var name: String
-    lateinit var tagName: String
-    lateinit var body: String
-    lateinit var htmlUrl: String
-    lateinit var assetsUrl: String
+    var name: String? = null
+    var tagName: String? = null
+    var body: String? = null
+    var htmlUrl: String? = null
+    var assetsUrl: String? = null
     var prerelease: Boolean = false
-    lateinit var publishedAt: Date
-    lateinit var assets: Array<Asset>
-
-    class Asset {
-        companion object {
-            const val TYPE_APK = "application/vnd.android.package-archive"
-        }
-
-        lateinit var browserDownloadUrl: String
-        lateinit var contentType: String
-        var size: Int = 0
-    }
+    var publishedAt: Date? = null
 }

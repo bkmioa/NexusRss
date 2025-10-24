@@ -98,6 +98,7 @@ class ListDataSource(val mtService: MtService, val requestData: RequestData) : P
             LoadResult.Page(data = list, prevKey = null, nextKey = if (list.isEmpty()) null else page + 1)
         }
     } catch (e: Exception) {
+        e.printStackTrace()
         LoadResult.Error(e)
     }
 }
