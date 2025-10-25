@@ -41,8 +41,7 @@ class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
     suspend fun reorderTabs(from: Int, to: Int) {
         setState {
             val mutable = tabs.toMutableList()
-            val remove = mutable.removeAt(from)
-            mutable.add(to, remove)
+            mutable.add(to, mutable.removeAt(from))
             val newList = mutable.mapIndexed { index, tab -> tab.copy(order = index) }
             copy(tabs = newList)
         }
@@ -51,9 +50,9 @@ class TabsViewModel(initialState: UiState) : MavericksViewModel<UiState>(initial
 
     suspend fun performUndoDelete() {
         awaitState().undoDelete?.let {
-            withContext(Dispatchers.IO) {
-                appDao.addTab(it)
-            }
+            // Re-add the tab with a new id
+            // because of https://slack-chats.kotlinlang.org/t/28924907/hi-everyone-wave-i-m-running-into-a-frustrating-issue-with-s
+            appDao.addTab(it.copy(id = null))
         }
         setState {
             copy(undoDelete = null)

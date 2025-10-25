@@ -2,26 +2,31 @@
 
 package io.github.bkmioa.nexusrss.tabs
 
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Switch
@@ -32,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -46,7 +52,7 @@ import com.ramcosta.composedestinations.generated.destinations.EditTabScreenDest
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Tab
-import io.github.bkmioa.nexusrss.widget.Toaster
+import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -106,28 +112,63 @@ fun TabsScreen(navigator: DestinationsNavigator) {
                 viewModel.reorderTabs(from.index, to.index)
                 hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
             }
-            LazyColumn(state = lazyListState) {
+            val scope = rememberCoroutineScope()
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize()
+            ) {
                 items(uiState.tabs, key = { it.id ?: 0L }) { tab ->
-                    val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-                        confirmValueChange = {
-                            if (it != SwipeToDismissBoxValue.Settled) {
-                                viewModel.removeTab(tab)
-                                true
-                            } else {
-                                false
-                            }
+                    val dismissBoxState = rememberSwipeToDismissBoxState()
+                    if (dismissBoxState.currentValue == SwipeToDismissBoxValue.Settled) {
+                        LaunchedEffect(Unit) {
+                            dismissBoxState.reset()
                         }
-                    )
-                    SwipeToDismissBox(state = swipeToDismissBoxState, backgroundContent = {}) {
-                        ReorderableItem(reorderableLazyListState, key = tab.id ?: 0L) { isDragging ->
-                            val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
-                            Surface(shadowElevation = elevation) {
+                    }
+                    ReorderableItem(reorderableLazyListState, key = tab.id ?: 0L) {
+                        SwipeToDismissBox(
+                            state = dismissBoxState,
+                            backgroundContent = {
                                 ListItem(
                                     modifier = Modifier
-                                        .clickable(
-                                            true,
-                                            onClick = { navigator.navigate(EditTabScreenDestination(tab)) }
-                                        )
+                                        .fillMaxSize(),
+                                    colors = ListItemDefaults.colors(
+                                        containerColor = MaterialTheme.colorScheme.error,
+                                        leadingIconColor = MaterialTheme.colorScheme.onError,
+                                        trailingIconColor = MaterialTheme.colorScheme.onError
+                                    ),
+                                    leadingContent = { Icon(imageVector = Icons.Default.DeleteForever, contentDescription = "") },
+                                    trailingContent = { Icon(imageVector = Icons.Default.DeleteForever, contentDescription = "") },
+                                    headlineContent = {}
+                                )
+                            },
+                            onDismiss = { value ->
+                                if (value == SwipeToDismissBoxValue.StartToEnd || value == SwipeToDismissBoxValue.EndToStart) {
+                                    viewModel.removeTab(tab)
+                                } else {
+                                    scope.launch { dismissBoxState.reset() }
+                                }
+                            }
+                        ) {
+                            val interactionSource = remember { MutableInteractionSource() }
+                            val startDrag = dismissBoxState.dismissDirection != SwipeToDismissBoxValue.Settled
+                            val interaction = remember { DragInteraction.Start() }
+                            LaunchedEffect(startDrag) {
+                                if (startDrag) {
+                                    interactionSource.emit(interaction)
+                                } else {
+                                    interactionSource.emit(DragInteraction.Cancel(interaction))
+
+                                }
+                            }
+                            Card(
+                                interactionSource = interactionSource,
+                                shape = RoundedCornerShape(0.dp),
+                                onClick = {
+                                    navigator.navigate(EditTabScreenDestination(tab))
+                                }
+                            ) {
+                                ListItem(
+                                    modifier = Modifier
                                         .longPressDraggableHandle(
                                             onDragStarted = {
                                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
@@ -135,6 +176,7 @@ fun TabsScreen(navigator: DestinationsNavigator) {
                                             onDragStopped = {
                                                 hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
                                             },
+                                            interactionSource = interactionSource,
                                         ),
                                     headlineContent = {
                                         Text(text = tab.title)
