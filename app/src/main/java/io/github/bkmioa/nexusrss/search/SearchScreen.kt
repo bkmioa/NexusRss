@@ -2,6 +2,7 @@
 
 package io.github.bkmioa.nexusrss.search
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
@@ -69,6 +70,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.list.ThreadList
@@ -79,7 +81,11 @@ import io.github.bkmioa.nexusrss.option.OptionViewModel
 import io.github.bkmioa.nexusrss.option.OptionsUI
 import io.github.bkmioa.nexusrss.widget.SearchBar
 
-@Destination<RootGraph>
+@Destination<RootGraph>(
+    deepLinks = [
+        DeepLink(uriPattern = "nexusrss://search")
+    ]
+)
 @Composable
 fun SearchScreen(navigator: DestinationsNavigator) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()

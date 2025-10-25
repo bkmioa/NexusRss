@@ -63,6 +63,7 @@ fun SearchBar(
     fun clear() {
         textFieldValueState = TextFieldValue()
         onQueryChange("")
+        focusRequester.requestFocus()
     }
 
     fun back() {
