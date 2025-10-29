@@ -18,6 +18,10 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Fetch Tags
+      run: |
+        git fetch --tags --force
+
     - name: set up JDK
       uses: actions/setup-java@v5
       with:
@@ -47,10 +51,10 @@ jobs:
       with:
         path: app/build/outputs/apk/*/*.apk
 
-    - name: Get tag message
+    - name: Get tag annotation
       id: tag
       if: github.ref_type == 'tag'
-      run: echo "message=$(git tag -l --format='%(contents)' ${{ github.ref_name }})" >> $GITHUB_OUTPUT
+      run: echo "message=$(git tag -l ${{ github.ref_name }} --format='%(contents)')" >> $GITHUB_OUTPUT
 
     - name: Create Release
       if: github.ref_type == 'tag'
@@ -60,3 +64,4 @@ jobs:
         name: ${{ github.ref_name }}
         body: ${{ steps.tag.outputs.message }}
         files: app/build/outputs/apk/release/*.apk
+        prerelease: ${{ contains(github.ref_name, '-') }}
