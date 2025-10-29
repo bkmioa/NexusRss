@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "master" ]
     tags:
-      - '*'
+      - 'v*'
   pull_request:
     branches: [ "master" ]
 
@@ -46,4 +46,17 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: app/build/outputs/apk/*/*.apk
-    
+
+    - name: Get tag message
+      id: tag
+      if: github.ref_type == 'tag'
+      run: echo "message=$(git tag -l --format='%(contents)' ${{ github.ref_name }})" >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      if: github.ref_type == 'tag'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: ${{ github.ref_name }}
+        body: ${{ steps.tag.outputs.message }}
+        files: app/build/outputs/apk/release/*.apk
