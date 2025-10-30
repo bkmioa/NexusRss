@@ -47,7 +47,7 @@ fun OptionsUI(
 
     val uiState by viewModel.collectAsState()
     val context = LocalContext.current
-    
+
     LazyVerticalGrid(
         modifier = modifier
             .fillMaxWidth()
@@ -56,7 +56,7 @@ fun OptionsUI(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        
+
         if (header != null) {
             item(span = { GridItemSpan(maxLineSpan) }, key = "header") {
                 header()
@@ -140,6 +140,12 @@ fun OptionsUI(
         headLine(context.getString(R.string.label_video_codec))
         repeatOptions(Option.VIDEOCODECS, uiState.videoCodecs, viewModel::selectVideoCodec)
 
+        headLine(context.getString(R.string.label_label))
+        repeatOptions(Option.LABELS, uiState.labels, viewModel::selectLabel)
+
+        headLine(context.getString(R.string.label_discount))
+        repeatOptions(Option.DISCOUNTS, setOf(uiState.discount), viewModel::setDiscount)
+
         headLine(context.getString(R.string.label_audio_codec))
         repeatOptions(Option.AUDIOCODECS, uiState.audioCodecs, viewModel::selectAudioCodec)
 
@@ -148,11 +154,5 @@ fun OptionsUI(
 
         headLine(context.getString(R.string.label_team))
         repeatOptions(Option.TEAMS, uiState.teams, viewModel::selectTeam)
-
-        headLine(context.getString(R.string.label_label))
-        repeatOptions(Option.LABELS, uiState.labels, viewModel::selectLabel)
-
-        headLine(context.getString(R.string.label_discount))
-        repeatOptions(Option.DISCOUNTS, setOf(uiState.discount), viewModel::setDiscount)
     }
 }

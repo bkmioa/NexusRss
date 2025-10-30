@@ -82,7 +82,7 @@ import io.github.bkmioa.nexusrss.widget.Empty
 @Composable
 fun ThreadList(
     requestData: RequestData,
-    requestRefresh: Boolean = true,
+    requestRefresh: Boolean = false,
     onRefreshed: () -> Unit = {},
     columns: Int = 0,
     visible: Boolean = true,

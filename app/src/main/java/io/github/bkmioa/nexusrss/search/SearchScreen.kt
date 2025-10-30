@@ -2,7 +2,6 @@
 
 package io.github.bkmioa.nexusrss.search
 
-import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.expandVertically
@@ -324,18 +323,16 @@ private fun HistoryList(list: List<String>, onRemove: (String) -> Unit, onSelect
             .background(MaterialTheme.colorScheme.surface)
     ) {
         items(list, key = { it }) { item ->
-            val dismissBoxState = rememberSwipeToDismissBoxState(confirmValueChange = {
-                if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
-                    onRemove(item)
-                    true
-                } else {
-                    false
-                }
-            })
+            val dismissBoxState = rememberSwipeToDismissBoxState()
             SwipeToDismissBox(
                 state = dismissBoxState,
                 backgroundContent = {},
-                modifier = Modifier.animateItem()
+                modifier = Modifier.animateItem(),
+                onDismiss = {
+                    if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
+                        onRemove(item)
+                    }
+                }
             ) {
                 ListItem(
                     modifier = Modifier

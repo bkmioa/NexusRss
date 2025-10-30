@@ -58,11 +58,9 @@ class SearchViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
         val state = awaitState()
 
         val keyword = state.keyword
-        var active = state.active
 
         if (keyword.isNotBlank()) {
             SearchHistoryStore.put(keyword)
-            active = false
         }
 
         val requestData = RequestData(
@@ -79,7 +77,7 @@ class SearchViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
         )
 
         setState {
-            copy(active = active, requestData = requestData)
+            copy(active = false, requestData = requestData)
         }
     }
 }
