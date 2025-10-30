@@ -25,11 +25,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -37,12 +39,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -184,8 +188,9 @@ fun HomeScreen(
                 var requestRefresh by remember { mutableStateOf(false) }
                 val visibleBefore by remember { derivedStateOf { AtomicBoolean(false) } }
                 val selected = index == pagerState.currentPage
-                val createTab = @Composable {
+                val createTab: @Composable (Modifier) -> Unit = { tabModifier ->
                     Tab(
+                        modifier = tabModifier,
                         text = { Text(tab.title) },
                         selected = selected,
                         onClick = {
@@ -226,15 +231,50 @@ fun HomeScreen(
 
 
             Column {
-                ScrollableTabRow(
-                    selectedTabIndex = pagerState.currentPage.coerceAtMost(tabs.size - 1),
-                    edgePadding = 0.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                ) {
-                    tabAndPagers.forEach { (tab, _) ->
-                        tab()
+                var tabContainerWidth by remember { mutableStateOf(0) }
+                val tabCount = tabAndPagers.size
+                val tabWidths = remember(tabCount) {
+                    mutableStateListOf<Int>().apply { repeat(tabCount) { add(0) } }
+                }
+                val shouldUseScrollable by remember {
+                    derivedStateOf {
+                        tabContainerWidth == 0 ||
+                            tabWidths.isEmpty() ||
+                            tabWidths.any { it == 0 } ||
+                            tabWidths.sum() > tabContainerWidth
+                    }
+                }
+                val tabRowModifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .onSizeChanged { size -> tabContainerWidth = size.width }
+
+                val tabRowContent: @Composable () -> Unit = {
+                    tabAndPagers.forEachIndexed { index, (tab, _) ->
+                        tab(
+                            Modifier.onSizeChanged { size ->
+                                if (index < tabWidths.size) {
+                                    tabWidths[index] = size.width
+                                }
+                            }
+                        )
+                    }
+                }
+
+                if (shouldUseScrollable) {
+                    SecondaryScrollableTabRow(
+                        selectedTabIndex = pagerState.currentPage.coerceAtMost(tabs.size - 1),
+                        edgePadding = 0.dp,
+                        modifier = tabRowModifier,
+                    ) {
+                        tabRowContent()
+                    }
+                } else {
+                    SecondaryTabRow(
+                        selectedTabIndex = pagerState.currentPage.coerceAtMost(tabs.size - 1),
+                        modifier = tabRowModifier
+                    ) {
+                        tabRowContent()
                     }
                 }
 
