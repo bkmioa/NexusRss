@@ -32,6 +32,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -239,9 +240,9 @@ fun HomeScreen(
                 val shouldUseScrollable by remember {
                     derivedStateOf {
                         tabContainerWidth == 0 ||
-                            tabWidths.isEmpty() ||
-                            tabWidths.any { it == 0 } ||
-                            tabWidths.sum() > tabContainerWidth
+                                tabWidths.isEmpty() ||
+                                tabWidths.any { it == 0 } ||
+                                tabWidths.sum() > tabContainerWidth
                     }
                 }
                 val tabRowModifier = Modifier
@@ -266,13 +267,17 @@ fun HomeScreen(
                         selectedTabIndex = pagerState.currentPage.coerceAtMost(tabs.size - 1),
                         edgePadding = 0.dp,
                         modifier = tabRowModifier,
+                        containerColor = TabRowDefaults.primaryContainerColor,
+                        contentColor = TabRowDefaults.primaryContentColor,
                     ) {
                         tabRowContent()
                     }
                 } else {
                     SecondaryTabRow(
                         selectedTabIndex = pagerState.currentPage.coerceAtMost(tabs.size - 1),
-                        modifier = tabRowModifier
+                        modifier = tabRowModifier,
+                        containerColor = TabRowDefaults.primaryContainerColor,
+                        contentColor = TabRowDefaults.primaryContentColor,
                     ) {
                         tabRowContent()
                     }
