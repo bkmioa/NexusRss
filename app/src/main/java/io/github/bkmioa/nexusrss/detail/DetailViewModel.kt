@@ -8,7 +8,6 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
-import io.github.bkmioa.nexusrss.model.FileItem
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.repository.MtService
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +23,7 @@ data class UiState(
     val downloadLink: Async<String> = Uninitialized,
     val showFileList: Boolean = false,
     val showCommentList: Boolean = false,
-    val fileList: Async<List<FileItem>> = Uninitialized
+    val fileList: Async<List<FileNode>> = Uninitialized
 ) : MavericksState {
 
     constructor(args: DetailArgs) : this(
@@ -74,10 +73,10 @@ class DetailViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
 
         if (state.fileList is Loading) return@launch
 
-        if (state.fileList is Success && state.fileList() != null) return@launch
+        if (state.fileList is Success) return@launch
 
         suspend {
-            mtService.getFileList(state.id).data!!
+            mtService.getFileList(state.id).data!!.toHierarchy()
         }.execute(retainValue = UiState::fileList) {
             copy(fileList = it)
         }

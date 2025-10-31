@@ -68,4 +68,5 @@
     <string name="label_discount">促销</string>
     <string name="label_region">地区</string>
     <string name="api_key_guide">请先设置你的 API Key</string>
+    <string name="file_list">文件列表</string>
 </resources>
