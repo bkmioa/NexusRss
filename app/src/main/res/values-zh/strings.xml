@@ -69,4 +69,5 @@
     <string name="label_region">地区</string>
     <string name="api_key_guide">请先设置你的 API Key</string>
     <string name="file_list">文件列表</string>
+    <string name="alternative_versions">其他版本</string>
 </resources>

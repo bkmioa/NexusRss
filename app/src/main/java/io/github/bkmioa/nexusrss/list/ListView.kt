@@ -49,7 +49,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -58,7 +57,6 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -87,20 +85,17 @@ fun ThreadList(
     columns: Int = 0,
     visible: Boolean = true,
     keyFactory: () -> String = { "default" },
+    viewModel: ListViewModel = mavericksViewModel(argsFactory = { requestData }, keyFactory = keyFactory),
     gridState: LazyGridState = rememberLazyGridState(),
 ) {
     if (!visible) {
         return
     }
 
-    val viewModel: ListViewModel = mavericksViewModel(argsFactory = { requestData }, keyFactory = keyFactory)
     val state by viewModel.collectAsState()
     val lazyPagingItems = viewModel.pagerFlow.collectAsLazyPagingItems()
     val refreshing = lazyPagingItems.loadState.refresh is LoadState.Loading
     val refreshState = rememberPullToRefreshState()
-    val refreshScope = rememberCoroutineScope()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    Log.d("ListViewModel", "CardList() called with: requestData = ${requestData.mode}, ${lifecycle.currentState}")
     LaunchedEffect(key1 = requestData) {
         Log.d("ListViewModel", "CardList() called with:  keyFactory = ${keyFactory()}")
         viewModel.request(requestData)

@@ -5,8 +5,6 @@ package io.github.bkmioa.nexusrss.detail
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,36 +15,27 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.material.icons.outlined.Comment
 import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
@@ -56,7 +45,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -69,20 +57,13 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
-import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -94,7 +75,6 @@ import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.Option
-import io.github.bkmioa.nexusrss.widget.Empty
 import kotlinx.coroutines.launch
 
 @Destination<RootGraph>
@@ -175,9 +155,14 @@ fun DetailScreen(
             ) {
                 var showDownload by remember { mutableStateOf(false) }
                 FloatingActionButton(onClick = { showDownload = true }) {
-                    Icon(imageVector = Icons.Outlined.CloudDownload, contentDescription = "comment")
+                    Icon(imageVector = Icons.Outlined.CloudDownload, contentDescription = "download")
                     DownLoadList(expanded = showDownload, downloadNodes = uiState.downloadNodes, getTorrentUrl = { viewModel.getDownloadLink() }) {
                         showDownload = false
+                    }
+                }
+                if (item != null) {
+                    FloatingActionButton(onClick = { viewModel.showAlternative() }) {
+                        Icon(imageVector = Icons.AutoMirrored.Outlined.List, contentDescription = "alternative")
                     }
                 }
                 FloatingActionButton(onClick = { viewModel.showFileList() }) {
@@ -240,6 +225,12 @@ fun DetailScreen(
     if (uiState.showCommentList) {
         CommentListDialog(relationId = item?.id ?: "") {
             viewModel.hideCommentList()
+        }
+    }
+
+    if (item != null && uiState.showAlternative) {
+        AlternativeVersionDialog(item = item) {
+            viewModel.hideAlternative()
         }
     }
 }

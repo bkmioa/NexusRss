@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class RequestData(
-    val mode: String = "normal",
+    val mode: String? = null,
 
     /**
      * 关键字
@@ -58,13 +58,17 @@ data class RequestData(
      * 僅活躍 1
      * 僅死種 2
      */
-    val visible: Int = 1,
+    val visible: Int? = 1,
 
     val pageSize: Int = 20,
 
     @IntRange(from = 1)
     @IgnoredOnParcel
-    val pageNumber: Int = 1
+    val pageNumber: Int = 1,
+
+    val douban: String? = null,
+
+    val imdb: String? = null,
 ) : Parcelable {
     companion object {
         fun from(tab: Tab): RequestData {

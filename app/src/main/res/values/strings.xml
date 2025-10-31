@@ -69,4 +69,5 @@
     <string name="label_region">Region</string>
     <string name="api_key_guide">Please set your API Key in Settings.</string>
     <string name="file_list">File List</string>
+    <string name="alternative_versions">Alternative Versions</string>
 </resources>
