@@ -3,17 +3,16 @@ package io.github.bkmioa.nexusrss.detail
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.widget.FrameLayout
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
-import io.github.bkmioa.nexusrss.BuildConfig
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavOptions
+import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.Settings
 import io.github.bkmioa.nexusrss.html.Html
 import io.github.bkmioa.nexusrss.repository.UserAgent
@@ -32,10 +31,13 @@ fun DetailWebView(data: String?) {
         historyUrl = null
     )
     val backgroundColor = MaterialTheme.colorScheme.background.value.toInt()
+    val controller = LocalNavController.current
     WebView(
         state = webViewState,
         layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT),
-        client = InnerWebViewClient(LocalLifecycleOwner.current),
+        client = InnerWebViewClient(lifecycleOwner = LocalLifecycleOwner.current, {
+            controller.navigate(it, NavOptions.Builder().setRestoreState(true).build())
+        }),
         captureBackPresses = false,
         onCreated = {
             //https://stackoverflow.com/a/75076174
@@ -76,7 +78,7 @@ fun DetailWebView(data: String?) {
     //)
 }
 
-private class InnerWebViewClient(val lifecycleOwner: LifecycleOwner) : AccompanistWebViewClient() {
+private class InnerWebViewClient(val lifecycleOwner: LifecycleOwner, val onRequestOpenDeepLink: (Uri) -> Unit) : AccompanistWebViewClient() {
     override fun shouldOverrideUrlLoading(view: android.webkit.WebView, request: WebResourceRequest): Boolean {
         if (request.isForMainFrame) {
             handleUrl(view.context, request.url)
@@ -103,16 +105,9 @@ private class InnerWebViewClient(val lifecycleOwner: LifecycleOwner) : Accompani
     private fun handleUrl(context: Context, uri: Uri) {
         val intent = Intent(Intent.ACTION_VIEW, uri)
 
-        if (uri.path?.startsWith("/details") == true) {
-            if (uri.host?.endsWith("m-team.cc") == true) {
-                val baseUrl = uri.scheme + "://" + uri.host
-
-                if (baseUrl != Settings.BASE_URL) {
-                    val newUrl = uri.toString().replace(baseUrl, Settings.BASE_URL)
-                    intent.data = newUrl.toUri()
-                }
-                intent.setPackage(BuildConfig.APPLICATION_ID)
-            }
+        if (uri.host?.endsWith("m-team.cc") == true && uri.path?.startsWith("/detail") == true) {
+            onRequestOpenDeepLink(uri)
+            return
         }
 
         context.startActivity(intent)

@@ -357,7 +357,7 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
         shape = MaterialTheme.shapes.small,
         onClick = {
             navController.toDestinationsNavigator().navigate(
-                DetailScreenDestination(DetailArgs(item.id, item))
+                DetailScreenDestination(item.id, item)
             )
         },
         elevation = CardDefaults.cardElevation(4.dp)
@@ -393,7 +393,7 @@ fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = MaterialTheme.shapes.small,
         onClick = {
-            navigator.navigate(DetailScreenDestination(DetailArgs(item.id, item)))
+            navigator.navigate(DetailScreenDestination(item.id, item))
         },
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -453,7 +453,7 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modi
             .fillMaxWidth()
             .aspectRatio(aspectRatio),
         onClick = {
-            navigator.navigate(DetailScreenDestination(DetailArgs(item.id, item)))
+            navigator.navigate(DetailScreenDestination(item.id, item))
         }, elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Box(Modifier.fillMaxWidth()) {

@@ -68,6 +68,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.annotation.parameters.DeepLink
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.comment.CommentList
@@ -77,13 +78,19 @@ import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.Option
 import kotlinx.coroutines.launch
 
-@Destination<RootGraph>
+@Destination<RootGraph>(
+    deepLinks = [
+        DeepLink(uriPattern = "{host}/detail/{id}"),
+        DeepLink(uriPattern = "{host}/details.php?id={id}"),
+    ]
+)
 @Composable
 fun DetailScreen(
     navigator: DestinationsNavigator,
-    args: DetailArgs
+    id: String,
+    item: Item? = null,
 ) {
-    val viewModel: DetailViewModel = mavericksViewModel(argsFactory = { args })
+    val viewModel: DetailViewModel = mavericksViewModel(argsFactory = { DetailArgs(id, item) })
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     val uiState by viewModel.collectAsState()
