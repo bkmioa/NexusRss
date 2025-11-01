@@ -20,4 +20,7 @@ class Status(
     companion object {
         val DEFAULT = Status()
     }
+
+    val isTopped: Boolean
+        get() = toppingLevel != 0
 }

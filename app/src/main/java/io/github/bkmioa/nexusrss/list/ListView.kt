@@ -72,7 +72,6 @@ import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
-import io.github.bkmioa.nexusrss.detail.DetailArgs
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.widget.Empty
@@ -87,6 +86,7 @@ fun ThreadList(
     keyFactory: () -> String = { "default" },
     viewModel: ListViewModel = mavericksViewModel(argsFactory = { requestData }, keyFactory = keyFactory),
     gridState: LazyGridState = rememberLazyGridState(),
+    forceSmallCard: Boolean = false,
 ) {
     if (!visible) {
         return
@@ -120,8 +120,9 @@ fun ThreadList(
             lazyPagingItems,
             gridState,
             columns = columns,
-            collapsePinedItems = state.collapsePinedItems,
-            onCheckCollapsePinedItems = { viewModel.setCollapsePinedItems(it) }
+            isCollapsePinedItems = state.collapsePinedItems,
+            forceSmallCard = forceSmallCard,
+            onCheckCollapsePinedItems = { viewModel.setCollapsePinedItems(it) },
         )
 
         val refresh = lazyPagingItems.loadState.refresh
@@ -164,7 +165,8 @@ private fun List(
     lazyPagingItems: LazyPagingItems<Item>,
     gridState: LazyGridState,
     columns: Int = 0,
-    collapsePinedItems: Boolean,
+    isCollapsePinedItems: Boolean,
+    forceSmallCard: Boolean = false,
     onCheckCollapsePinedItems: (Boolean) -> Unit
 ) {
     if (columns == 0) {
@@ -182,21 +184,13 @@ private fun List(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
 
-        var collapseItemCount = 0
-        while (collapseItemCount < lazyPagingItems.itemCount) {
-            val item = lazyPagingItems.peek(collapseItemCount)
-            if (item?.status?.toppingLevel != 0) {
-                collapseItemCount++
-            } else {
-                break
-            }
-        }
+        val collapseItemCount = if (forceSmallCard) 0 else calculateToppedCount(lazyPagingItems)
 
         if (collapseItemCount > 0) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Card(
                     onClick = {
-                        onCheckCollapsePinedItems(!collapsePinedItems)
+                        onCheckCollapsePinedItems(!isCollapsePinedItems)
                     },
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -213,7 +207,7 @@ private fun List(
                     ) {
                         Text(
                             modifier = Modifier.align(Alignment.Center),
-                            text = if (collapsePinedItems) stringResource(R.string.top_expend) else stringResource(R.string.top_collapse),
+                            text = if (isCollapsePinedItems) stringResource(R.string.top_expend) else stringResource(R.string.top_collapse),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.labelLarge,
                         )
@@ -223,7 +217,7 @@ private fun List(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(horizontal = 8.dp)
-                                .rotate(if (collapsePinedItems) 90f else 270f)
+                                .rotate(if (isCollapsePinedItems) 90f else 270f)
                                 .size(20.dp),
                             tint = LocalContentColor.current
                         )
@@ -231,7 +225,7 @@ private fun List(
                 }
             }
         }
-        if (collapsePinedItems && collapseItemCount > 0) {
+        if (isCollapsePinedItems && collapseItemCount > 0) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -239,21 +233,20 @@ private fun List(
                         .horizontalScroll(rememberScrollState())
                 ) {
                     for (index in 0 until collapseItemCount) {
-                        val item = lazyPagingItems[index]
-                        SmallItemCard(item, modifier = Modifier.animateItem())
+                        PinnedSmallItemCard(lazyPagingItems[index], modifier = Modifier.animateItem())
                     }
                 }
             }
         }
 
-        val itemCount = if (collapsePinedItems) lazyPagingItems.itemCount - collapseItemCount else lazyPagingItems.itemCount
-        val startIndex = if (collapsePinedItems) collapseItemCount else 0
+        val normalItemCount = if (isCollapsePinedItems) lazyPagingItems.itemCount - collapseItemCount else lazyPagingItems.itemCount
+        val startIndex = if (isCollapsePinedItems) collapseItemCount else 0
 
         items(
-            count = itemCount,
+            count = normalItemCount,
             span = { index ->
-                val item = lazyPagingItems.peek(index + startIndex)
-                if (item?.status?.toppingLevel != 0) {
+                val item = lazyPagingItems.peek(index + startIndex)!!
+                if (item.status.isTopped || forceSmallCard) {
                     GridItemSpan((maxLineSpan / 2).coerceAtLeast(2))
                 } else {
                     GridItemSpan(1)
@@ -261,9 +254,9 @@ private fun List(
             },
             key = { index -> lazyPagingItems.peek(index + startIndex)!!.id }
         ) { index ->
-            val item = lazyPagingItems[index + startIndex]
-            if (item?.status?.toppingLevel != 0) {
-                TopItemCard(item, Modifier.animateItem())
+            val item = lazyPagingItems[index + startIndex]!!
+            if (item.status.isTopped || forceSmallCard) {
+                SmallItemCard(item, Modifier.animateItem())
             } else {
                 ItemCard(item, aspectRatio, Modifier.animateItem())
             }
@@ -335,6 +328,19 @@ private fun List(
     }
 }
 
+private fun calculateToppedCount(lazyPagingItems: LazyPagingItems<Item>): Int {
+    var index = 0
+    while (index < lazyPagingItems.itemCount) {
+        val item = lazyPagingItems.peek(index)!!
+        if (item.status.isTopped) {
+            index++
+        } else {
+            break
+        }
+    }
+    return index
+}
+
 @Composable
 private fun FooterLoading(modifier: Modifier = Modifier) {
     CircularProgressIndicator(
@@ -346,7 +352,7 @@ private fun FooterLoading(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
+fun PinnedSmallItemCard(item: Item?, modifier: Modifier = Modifier) {
     item ?: return
 
     val navController = LocalNavController.current
@@ -376,7 +382,7 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun TopItemCard(item: Item?, modifier: Modifier = Modifier) {
+fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
     item ?: return
 
     val containerColor = when (item.status.toppingLevel) {

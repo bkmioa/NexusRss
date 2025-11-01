@@ -60,7 +60,11 @@ fun AlternativeVersionDialog(item: Item, onDismissRequest: () -> Unit) {
                 message = stringResource(R.string.no_content)
             )
         } else {
-            ThreadList(requestData = requestData, viewModel = viewModel)
+            ThreadList(
+                requestData = requestData,
+                viewModel = viewModel,
+                forceSmallCard = true
+            )
         }
     }
 }
