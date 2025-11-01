@@ -58,6 +58,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,6 +80,7 @@ import io.github.bkmioa.nexusrss.option.OptionUiState
 import io.github.bkmioa.nexusrss.option.OptionViewModel
 import io.github.bkmioa.nexusrss.option.OptionsUI
 import io.github.bkmioa.nexusrss.widget.SearchBar
+import kotlinx.coroutines.launch
 
 @Destination<RootGraph>(
     deepLinks = [
@@ -95,19 +97,21 @@ fun SearchScreen(navigator: DestinationsNavigator) {
     val searchUiState by searchViewModel.collectAsState()
     val optionUiState by optionViewModel.collectAsState()
 
-    var showFilter by remember { mutableStateOf(false) }
+    var showOptionPanel by remember { mutableStateOf(false) }
 
-    fun submit() {
+    val scope = rememberCoroutineScope()
+    fun submit() = scope.launch {
+        val option = optionViewModel.awaitState()
         searchViewModel.submit(
-            optionUiState.mode,
-            optionUiState.categories,
-            optionUiState.standards,
-            optionUiState.videoCodecs,
-            optionUiState.audioCodecs,
-            optionUiState.processings,
-            optionUiState.teams,
-            optionUiState.labels,
-            optionUiState.discount
+            mode = option.mode,
+            categories = option.categories,
+            standards = option.standards,
+            videoCodecs = option.videoCodecs,
+            audioCodecs = option.audioCodecs,
+            processings = option.processings,
+            teams = option.teams,
+            labels = option.labels,
+            discount = option.discount
         )
     }
 
@@ -120,8 +124,8 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                     Box(modifier = Modifier.weight(1.0f)) {
                         SearchBar(
                             onNavigateBack = {
-                                if (showFilter) {
-                                    showFilter = false
+                                if (showOptionPanel) {
+                                    showOptionPanel = false
                                 } else if (searchUiState.requestData != null && searchUiState.active) {
                                     searchViewModel.setActive(false)
                                 } else {
@@ -136,14 +140,14 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                             onSearch = {
                                 searchViewModel.setKeywords(it)
                                 submit()
-                                showFilter = false
+                                showOptionPanel = false
                             }
                         )
                     }
                     IconButton(
                         onClick = {
                             submit()
-                            showFilter = false
+                            showOptionPanel = false
                         }
                     ) {
                         Icon(
@@ -160,24 +164,34 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                 .padding(it)
                 .fillMaxSize()
         ) {
+            fun switchFilterPanel() {
+                showOptionPanel = !showOptionPanel
+                searchViewModel.setActive(false)
+            }
+
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(
-                    modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            switchFilterPanel()
+                        })
+                        .padding(start = 8.dp, end = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
-                        FilterStatus(optionUiState, searchViewModel, optionViewModel)
+                        FilterStatus(optionUiState, optionViewModel = optionViewModel) {
+                            if (!showOptionPanel) {
+                                submit()
+                            }
+                        }
                     }
                     IconButton(
                         onClick = {
-                            showFilter = !showFilter
-                            if (!showFilter) {
-                                submit()
-                            }
-                            searchViewModel.setActive(false)
+                            switchFilterPanel()
+                            if (!showOptionPanel) submit()
                         }
                     ) {
-                        if (showFilter) {
+                        if (showOptionPanel) {
                             Icon(imageVector = Icons.Default.Done, contentDescription = "filter done")
                         } else {
                             Icon(imageVector = Icons.Default.FilterList, contentDescription = "filter")
@@ -206,7 +220,7 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                         })
                     }
                     this@Column.AnimatedVisibility(
-                        visible = showFilter,
+                        visible = showOptionPanel,
                         enter = slideInVertically() + fadeIn(),
                         exit = slideOutVertically() + fadeOut()
                     ) {
@@ -220,7 +234,7 @@ fun SearchScreen(navigator: DestinationsNavigator) {
 }
 
 @Composable
-private fun FilterStatus(optionUiState: OptionUiState, searchViewModel: SearchViewModel, optionViewModel: OptionViewModel) {
+private fun FilterStatus(optionUiState: OptionUiState, optionViewModel: OptionViewModel, onOptionChanged: () -> Unit) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -261,6 +275,7 @@ private fun FilterStatus(optionUiState: OptionUiState, searchViewModel: SearchVi
                         DropdownMenuItem(text = { Text(text = mode.des) }, onClick = {
                             showModeList = false
                             optionViewModel.setMode(mode)
+                            onOptionChanged()
                         })
                     }
                 }
@@ -285,14 +300,38 @@ private fun FilterStatus(optionUiState: OptionUiState, searchViewModel: SearchVi
                 )
             }
         }
-        repeatItems(optionUiState.categories) { optionViewModel.selectCategory(it, false) }
-        repeatItems(optionUiState.standards) { optionViewModel.selectStandard(it, false) }
-        repeatItems(optionUiState.videoCodecs) { optionViewModel.selectVideoCodec(it, false) }
-        repeatItems(optionUiState.audioCodecs) { optionViewModel.selectAudioCodec(it, false) }
-        repeatItems(optionUiState.processings) { optionViewModel.selectProcessing(it, false) }
-        repeatItems(optionUiState.teams) { optionViewModel.selectTeam(it, false) }
-        repeatItems(optionUiState.labels) { optionViewModel.selectLabel(it, false) }
-        repeatItems(setOfNotNull(optionUiState.discount)) { optionViewModel.setDiscount(null, false) }
+        repeatItems(optionUiState.categories) {
+            optionViewModel.selectCategory(it, false)
+            onOptionChanged()
+        }
+        repeatItems(optionUiState.standards) {
+            optionViewModel.selectStandard(it, false)
+            onOptionChanged()
+        }
+        repeatItems(optionUiState.videoCodecs) {
+            optionViewModel.selectVideoCodec(it, false)
+            onOptionChanged()
+        }
+        repeatItems(optionUiState.audioCodecs) {
+            optionViewModel.selectAudioCodec(it, false)
+            onOptionChanged()
+        }
+        repeatItems(optionUiState.processings) {
+            optionViewModel.selectProcessing(it, false)
+            onOptionChanged()
+        }
+        repeatItems(optionUiState.teams) {
+            optionViewModel.selectTeam(it, false)
+            onOptionChanged()
+        }
+        repeatItems(optionUiState.labels) {
+            optionViewModel.selectLabel(it, false)
+            onOptionChanged()
+        }
+        repeatItems(setOfNotNull(optionUiState.discount)) {
+            optionViewModel.setDiscount(null, false)
+            onOptionChanged()
+        }
 
     }
 }
@@ -301,17 +340,12 @@ private fun FilterStatus(optionUiState: OptionUiState, searchViewModel: SearchVi
 private fun FilterPanel(optionViewModel: OptionViewModel) {
     Card(
         modifier = Modifier
-            .fillMaxSize()
-        //.padding(8.dp)
-        //.requiredHeight(100.dp)
-        ,
+            .fillMaxSize(),
         shape = MaterialTheme.shapes.large.copy(topStart = CornerSize(0), topEnd = CornerSize(0)),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        OptionsUI(
-            viewModel = optionViewModel
-        )
+        OptionsUI(viewModel = optionViewModel)
     }
 }
 

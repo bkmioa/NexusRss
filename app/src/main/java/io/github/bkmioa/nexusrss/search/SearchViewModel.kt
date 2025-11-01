@@ -5,7 +5,6 @@ import com.airbnb.mvrx.MavericksViewModel
 import io.github.bkmioa.nexusrss.model.Mode
 import io.github.bkmioa.nexusrss.model.Option
 import io.github.bkmioa.nexusrss.model.RequestData
-import kotlinx.coroutines.launch
 
 data class UiState(
     val active: Boolean = true,
@@ -44,7 +43,7 @@ class SearchViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
         }
     }
 
-    fun submit(
+    suspend fun submit(
         mode: Mode,
         categories: Set<Option>,
         standards: Set<Option>,
@@ -54,7 +53,7 @@ class SearchViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
         teams: Set<Option>,
         labels: Set<Option>,
         discount: Option?
-    ) = viewModelScope.launch {
+    ) {
         val state = awaitState()
 
         val keyword = state.keyword
