@@ -64,6 +64,8 @@ class Item(
     var originFileName: String? = null,
 
     var mediainfo: String? = null,
+
+    val labelsNew: List<String>? = null,
 ) : Comparable<Item>, Parcelable {
     val sizeText: String
         get() = Formatter.formatShortFileSize(App.instance, size)

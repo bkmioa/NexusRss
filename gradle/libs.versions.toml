@@ -1,5 +1,6 @@
 [versions]
 agp = "8.13.0"
+haze = "1.6.10"
 kotlin = "2.2.21"
 kotlinx = "1.10.2"
 ksp = "2.2.20-2.0.3"
@@ -28,6 +29,8 @@ versioncompare = "1.5.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx" }
 kotlinx-coroutines-rx2 = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-rx2", version.ref = "kotlinx" }
 

@@ -101,4 +101,6 @@ dependencies {
     implementation(libs.reorderable)
 
     implementation(libs.versioncompare)
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
 }

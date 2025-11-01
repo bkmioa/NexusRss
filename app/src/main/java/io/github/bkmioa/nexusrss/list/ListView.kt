@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 
 package io.github.bkmioa.nexusrss.list
 
@@ -9,6 +9,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +29,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
 import androidx.compose.material.icons.filled.North
@@ -51,16 +53,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.AnnotatedString.Builder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -70,6 +76,12 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenDestination
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
+import dev.chrisbanes.haze.rememberHazeState
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Item
@@ -388,65 +400,67 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
     val containerColor = when (item.status.toppingLevel) {
         1 -> MaterialTheme.colorScheme.secondaryContainer
         2 -> MaterialTheme.colorScheme.primaryContainer
-        else -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.surface
     }
 
     val navigator = LocalNavController.current.rememberDestinationsNavigator()
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = MaterialTheme.shapes.small,
         onClick = {
             navigator.navigate(DetailScreenDestination(item.id, item))
         },
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(1.dp)
     ) {
-        Row {
-            AsyncImage(
-                model = item.imageUrl,
-                placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
-                error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+        val hazeState = rememberHazeState()
+        Box {
+            Surface(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(3 / 4f),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-            Box(
-                modifier = modifier
                     .fillMaxSize()
-            ) {
-                LabelBox(
+                    .hazeSource(hazeState),
+                color = containerColor,
+            ) { }
+            Row {
+                AsyncImage(
+                    model = item.imageUrl,
+                    placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+                    error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier
-                        .align(Alignment.TopEnd),
-                    shape = MaterialTheme.shapes.small.copy(topStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+                        .fillMaxHeight()
+                        .aspectRatio(3 / 4f),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    modifier = modifier
+                        .fillMaxSize()
                 ) {
-                    SeedersAndLeechers(item)
-                }
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(8.dp)
-                ) {
-                    Text(
-                        text = item.title,
-                        maxLines = 1,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "[${item.sizeText}] ${item.subTitle ?: ""}",
-                        maxLines = 1,
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    Labels(item, modifier = Modifier.align(Alignment.TopEnd), hazeState)
+
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(8.dp)
+                    ) {
+                        Text(
+                            text = item.title,
+                            maxLines = 1,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "[${item.sizeText}] ${item.subTitle ?: ""}",
+                            maxLines = 1,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
         }
-
-
     }
 }
 
@@ -463,52 +477,67 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modi
         }, elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Box(Modifier.fillMaxWidth()) {
+            val hazeState = rememberHazeState()
+
             AsyncImage(
                 model = item.imageUrl,
                 placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
                 error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .hazeSource(state = hazeState),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
-            LabelBox(
+            Labels(
+                item,
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .height(24.dp),
-                shape = MaterialTheme.shapes.medium.copy(topStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
-            ) {
-                SeedersAndLeechers(item)
-            }
-            Box(
+                    .align(Alignment.TopStart),
+                hazeState
+            )
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomStart)
+                    .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin().copy(blurRadius = 6.dp))
+                    .padding(4.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f))
+                Text(
+                    text = item.title,
+                    maxLines = 2,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                ) {
-                    Text(
-                        text = item.title,
-                        maxLines = 2,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "[${item.sizeText}] ${item.subTitle ?: ""}",
-                        maxLines = 1,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "[${item.sizeText}] ${item.subTitle ?: ""}",
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
 
+        }
+    }
+}
+
+@Composable
+fun Labels(item: Item, modifier: Modifier = Modifier, hazeState: HazeState) {
+    FlowRow(
+        modifier = modifier
+            .padding(all = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        LabelBox(hazeState) {
+            appendInlineContent("icon_seeder")
+            append(item.status.seeders)
+        }
+        LabelBox(hazeState) {
+            appendInlineContent("icon_leecher")
+            append(item.status.leechers)
+        }
+        item.labelsNew?.forEach { label ->
+            LabelBox(hazeState, label.uppercase())
         }
     }
 }
@@ -538,19 +567,50 @@ private fun SeedersAndLeechers(item: Item) {
 }
 
 @Composable
-fun LabelBox(
-    modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.extraSmall,
-    content: @Composable () -> Unit
-) {
-    Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
-        shape = shape,
-        shadowElevation = 1.dp
+fun LabelBox(hazeState: HazeState, label: String) {
+    LabelBox(hazeState) { append(label) }
+}
+
+@Composable
+fun LabelBox(hazeState: HazeState, builder: (Builder).() -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.small)
+            .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin().copy(blurRadius = 4.dp)),
     ) {
-        ProvideTextStyle(value = MaterialTheme.typography.labelSmall) {
-            content()
-        }
+        Text(
+            modifier = Modifier
+                .defaultMinSize(minWidth = 28.dp)
+                .padding(4.dp),
+            textAlign = TextAlign.Center,
+            text = buildAnnotatedString { builder() },
+            style = MaterialTheme.typography.labelSmall,
+            inlineContent = mapOf(
+                "icon_seeder" to InlineTextContent(
+                    placeholder = androidx.compose.ui.text.Placeholder(
+                        width = 1.em,
+                        height = 1.em,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.North,
+                        contentDescription = "seeders"
+                    )
+                },
+                "icon_leecher" to InlineTextContent(
+                    placeholder = androidx.compose.ui.text.Placeholder(
+                        width = 1.em,
+                        height = 1.em,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.South,
+                        contentDescription = "leecher"
+                    )
+                }
+            )
+        )
     }
 }
