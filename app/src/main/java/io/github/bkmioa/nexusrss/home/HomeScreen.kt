@@ -123,7 +123,7 @@ fun HomeScreen(
             val defaultColors = TopAppBarDefaults.topAppBarColors()
             TopAppBar(
                 title = {
-                    Text("M-Team")
+                    Text(stringResource(R.string.app_name))
                 },
                 scrollBehavior = scrollBehavior,
                 colors = defaultColors.copy(scrolledContainerColor = defaultColors.containerColor),

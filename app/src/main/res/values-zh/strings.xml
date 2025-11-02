@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">M-Team</string>
+    <string name="app_name">MT</string>
     <string name="action_settings">设置</string>
     <string name="action_tabs">首页</string>
     <string name="download_settings">下载设置</string>
