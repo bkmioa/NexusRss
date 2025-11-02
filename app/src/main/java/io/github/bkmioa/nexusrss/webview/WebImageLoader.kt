@@ -4,15 +4,15 @@ import android.net.Uri
 import android.util.Log
 import android.webkit.WebResourceResponse
 import androidx.lifecycle.Lifecycle
-import coil.annotation.ExperimentalCoilApi
-import coil.imageLoader
-import coil.request.ErrorResult
-import coil.request.ImageRequest
-import coil.request.SuccessResult
+import coil3.annotation.ExperimentalCoilApi
+import coil3.imageLoader
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.request.lifecycle
 import io.github.bkmioa.nexusrss.App
 import kotlinx.coroutines.runBlocking
 import java.io.FileInputStream
-import kotlin.math.log
 
 object WebImageLoader {
     private const val TAG = "WebImageLoader"

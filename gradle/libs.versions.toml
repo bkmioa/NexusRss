@@ -23,7 +23,7 @@ kotpref = "2.13.2"
 mavericks = "3.0.12"
 apache_commons = "1.10.0"
 paging = "3.3.6"
-coil = "2.7.0"
+coil = "3.3.0"
 compose-destinations = "2.3.0"
 versioncompare = "1.5.0"
 
@@ -72,8 +72,9 @@ compose-material-icons-extended = { group = "androidx.compose.material", name = 
 accompanist-drawablepainter = { group = "com.google.accompanist", name = "accompanist-drawablepainter", version.ref = "accompanist" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif", version.ref = "coil" }
 compose-destinations-core = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
 versioncompare = { module = "io.github.g00fy2:versioncompare", version.ref = "versioncompare" }

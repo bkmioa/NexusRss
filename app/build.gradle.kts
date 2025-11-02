@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.mavericks.compose)
     implementation(libs.paging.compose)
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.coil.gif)
 
     implementation(libs.compose.destinations.core)

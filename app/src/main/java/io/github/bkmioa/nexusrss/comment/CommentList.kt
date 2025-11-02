@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleOwner
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Comment
