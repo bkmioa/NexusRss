@@ -88,6 +88,9 @@ class Item(
     val imageUrl: String?
         get() = imageList.firstOrNull()
 
+    val labels: List<String>?
+        //"中字" seems insignificant.
+        get() = labelsNew?.filter { it != "中字" }
 
     override fun compareTo(other: Item): Int {
         val date1 = pubDate ?: return -1

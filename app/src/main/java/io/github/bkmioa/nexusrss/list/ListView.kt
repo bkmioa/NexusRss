@@ -4,7 +4,6 @@ package io.github.bkmioa.nexusrss.list
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,12 +42,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -438,7 +437,12 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
                     modifier = modifier
                         .fillMaxSize()
                 ) {
-                    Labels(item, modifier = Modifier.align(Alignment.TopEnd), hazeState)
+                    Labels(
+                        item = item,
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        hazeState = hazeState,
+                        alignEndSeederAndLeecher = true
+                    )
 
                     Column(
                         modifier = Modifier
@@ -521,48 +525,32 @@ fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modi
 }
 
 @Composable
-fun Labels(item: Item, modifier: Modifier = Modifier, hazeState: HazeState) {
+fun Labels(item: Item, modifier: Modifier = Modifier, hazeState: HazeState, alignEndSeederAndLeecher: Boolean = false) {
     FlowRow(
         modifier = modifier
             .padding(all = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        LabelBox(hazeState) {
-            appendInlineContent("icon_seeder")
-            append(item.status.seeders)
+        @Composable
+        fun seederAndLeecher() {
+            LabelBox(hazeState) {
+                appendInlineContent("icon_seeder")
+                append(item.status.seeders)
+                append(" ")
+                appendInlineContent("icon_leecher")
+                append(item.status.leechers)
+            }
         }
-        LabelBox(hazeState) {
-            appendInlineContent("icon_leecher")
-            append(item.status.leechers)
+        if (!alignEndSeederAndLeecher) {
+            seederAndLeecher()
         }
-        item.labelsNew?.forEach { label ->
+        item.labels?.forEach { label ->
             LabelBox(hazeState, label.uppercase())
         }
-    }
-}
-
-@Composable
-private fun SeedersAndLeechers(item: Item) {
-    Row(
-        modifier = Modifier
-            .defaultMinSize(32.dp)
-            .padding(4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier.size(12.dp),
-            imageVector = Icons.Filled.North,
-            contentDescription = "seeders"
-        )
-        Text(text = item.status.seeders)
-        Spacer(modifier = Modifier.width(6.dp))
-        Icon(
-            modifier = Modifier.size(12.dp),
-            imageVector = Icons.Filled.South,
-            contentDescription = "leechers"
-        )
-        Text(text = item.status.leechers)
+        if (alignEndSeederAndLeecher) {
+            seederAndLeecher()
+        }
     }
 }
 
@@ -576,41 +564,44 @@ fun LabelBox(hazeState: HazeState, builder: (Builder).() -> Unit) {
     Box(
         modifier = Modifier
             .clip(MaterialTheme.shapes.small)
-            .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin().copy(blurRadius = 4.dp)),
+            .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin(MaterialTheme.colorScheme.tertiaryContainer).copy(blurRadius = 4.dp)),
     ) {
-        Text(
-            modifier = Modifier
-                .defaultMinSize(minWidth = 28.dp)
-                .padding(4.dp),
-            textAlign = TextAlign.Center,
-            text = buildAnnotatedString { builder() },
-            style = MaterialTheme.typography.labelSmall,
-            inlineContent = mapOf(
-                "icon_seeder" to InlineTextContent(
-                    placeholder = androidx.compose.ui.text.Placeholder(
-                        width = 1.em,
-                        height = 1.em,
-                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.North,
-                        contentDescription = "seeders"
-                    )
-                },
-                "icon_leecher" to InlineTextContent(
-                    placeholder = androidx.compose.ui.text.Placeholder(
-                        width = 1.em,
-                        height = 1.em,
-                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                    )
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.South,
-                        contentDescription = "leecher"
-                    )
-                }
+        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onTertiaryContainer) {
+            Text(
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 28.dp)
+                    .padding(4.dp),
+                textAlign = TextAlign.Center,
+                text = buildAnnotatedString { builder() },
+                style = MaterialTheme.typography.labelSmall,
+                inlineContent = mapOf(
+                    "icon_seeder" to InlineTextContent(
+                        placeholder = androidx.compose.ui.text.Placeholder(
+                            width = 1.em,
+                            height = 1.em,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.North,
+                            contentDescription = "seeders"
+                        )
+                    },
+                    "icon_leecher" to InlineTextContent(
+                        placeholder = androidx.compose.ui.text.Placeholder(
+                            width = 1.em,
+                            height = 1.em,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.South,
+                            contentDescription = "leecher"
+                        )
+                    }
+                )
+
             )
-        )
+        }
     }
 }
