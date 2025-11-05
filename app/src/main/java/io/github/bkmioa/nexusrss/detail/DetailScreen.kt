@@ -75,6 +75,7 @@ import io.github.bkmioa.nexusrss.comment.CommentList
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.model.MemberInfo
 import io.github.bkmioa.nexusrss.model.Option
 import kotlinx.coroutines.launch
 
@@ -205,7 +206,7 @@ fun DetailScreen(
             ) {
                 TitleInfo(item?.title, item?.subTitle)
 
-                BasicInfo(item)
+                BasicInfo(item, uiState.author())
 
                 //CommentInfo(item) { viewModel.showCommentList() }
 
@@ -299,7 +300,7 @@ private fun TitleInfo(title: String?, subTitle: String?) {
 }
 
 @Composable
-fun BasicInfo(item: Item?) {
+fun BasicInfo(item: Item?, author: MemberInfo?) {
     if (item == null) return
     val context = LocalContext.current
     OutlinedCard(
@@ -308,12 +309,19 @@ fun BasicInfo(item: Item?) {
             .fillMaxWidth()
     ) {
         Column() {
+            val author = if (author != null) {
+                author.username
+            } else if (item.author != null) {
+                item.author
+            } else {
+                stringResource(R.string.anonymous)
+            }
             Text(
                 modifier = Modifier.padding(8.dp),
                 text = buildAnnotatedString {
                     append("由 ")
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(item.getAuthorText(context))
+                        append(author)
                     }
                     append(" 发布于 ")
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {

@@ -102,10 +102,4 @@ class Item(
         val date = pubDate ?: return ""
         return DateUtils.getRelativeTimeSpanString(date.time).toString()
     }
-
-    fun getAuthorText(context: Context): String {
-        if (anonymous) return "匿名"
-
-        return author ?: "未知用户"
-    }
 }

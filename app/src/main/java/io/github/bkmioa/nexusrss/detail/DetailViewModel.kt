@@ -9,6 +9,8 @@ import com.airbnb.mvrx.Uninitialized
 import io.github.bkmioa.nexusrss.db.DownloadDao
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.model.MemberInfo
+import io.github.bkmioa.nexusrss.model.MemberRequestBody
 import io.github.bkmioa.nexusrss.repository.MtService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +21,7 @@ import org.koin.core.component.inject
 data class UiState(
     val id: String,
     val data: Async<Item> = Uninitialized,
+    val author: Async<MemberInfo> = Uninitialized,
     val downloadNodes: List<DownloadNodeModel> = emptyList(),
     val downloadLink: Async<String> = Uninitialized,
     val showFileList: Boolean = false,
@@ -49,7 +52,28 @@ class DetailViewModel(initialState: UiState) : MavericksViewModel<UiState>(initi
                 fetchFileList()
             }
         }
+
+        onEach(UiState::data, UiState::author) { data, author ->
+            fetchAuthor(data, author)
+        }
     }
+
+    private suspend fun fetchAuthor(data: Async<Item>, author: Async<MemberInfo>) {
+        val authorId = data()?.author ?: return
+
+        if (!author.shouldLoad) return
+
+        val memberInfo = try {
+            mtService.getMemberInfos(MemberRequestBody(listOf(authorId))).data?.get(authorId) ?: return
+        } catch (e: Exception) {
+            return
+        }
+
+        setState {
+            copy(author = Success(memberInfo))
+        }
+    }
+
 
     fun fetchItem(id: String) {
         suspend {
