@@ -104,4 +104,6 @@ dependencies {
     implementation(libs.versioncompare)
     implementation(libs.haze)
     implementation(libs.haze.materials)
+    implementation(libs.constraintlayout.compose)
+
 }

@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -47,33 +48,9 @@ fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState, alig
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        @Composable
-        fun seederAndLeecher() {
-            Row {
-                LabelBox(
-                    hazeState,
-                    shape = MaterialTheme.shapes.small.copy(topEnd = ZeroCornerSize, bottomEnd = ZeroCornerSize),
-                    backgroundColor = colorResource(R.color.label_bg_up),
-                    contentColor = colorResource(R.color.label_fg_up)
-                ) {
-                    appendInlineContent("icon_seeder")
-                    append(item.status.seeders)
-                }
-                LabelBox(
-                    hazeState,
-                    shape = MaterialTheme.shapes.small.copy(topStart = ZeroCornerSize, bottomStart = ZeroCornerSize),
-                    backgroundColor = colorResource(R.color.label_bg_down),
-                    contentColor = colorResource(R.color.label_fg_down)
-                ) {
-                    appendInlineContent("icon_leecher")
-                    append(item.status.leechers)
-                }
-            }
-        }
         if (!alignEndSeederAndLeecher) {
-            seederAndLeecher()
+            SeederAndLeecher(hazeState, item)
         }
-
 
         item.labels?.forEach { label ->
             val color = when {
@@ -84,28 +61,64 @@ fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState, alig
                 label.contains("hlg", true) -> colorResource(R.color.label_bg_4k) to colorResource(R.color.label_fg_4k)
                 else -> colorResource(R.color.label_bg_default) to colorResource(R.color.label_fg_default)
             }
-            LabelBox(hazeState, backgroundColor = color.first, contentColor = color.second, label = label.uppercase())
+            LabelBox(hazeState = hazeState, backgroundColor = color.first, contentColor = color.second, label = label.uppercase())
         }
         if (alignEndSeederAndLeecher) {
-            seederAndLeecher()
+            SeederAndLeecher(hazeState, item)
         }
     }
 }
 
 @Composable
-fun LabelBox(hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, label: String) {
-    LabelBox(hazeState, shape = shape, backgroundColor = backgroundColor, contentColor = contentColor) { append(label) }
+fun SeederAndLeecher(hazeState: HazeState, item: Item) {
+    ConstraintLayout {
+        val (seeder, leecher) = createRefs()
+        LabelBox(
+            modifier = Modifier
+                .padding(end = 4.dp)
+                .constrainAs(seeder) {
+
+                },
+            hazeState = hazeState,
+            shape = MaterialTheme.shapes.small.copy(topEnd = ZeroCornerSize, bottomEnd = ZeroCornerSize),
+            backgroundColor = colorResource(R.color.label_bg_up),
+            contentColor = colorResource(R.color.label_fg_up)
+        ) {
+            appendInlineContent("icon_seeder")
+            append(item.status.seeders)
+        }
+        LabelBox(
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .constrainAs(leecher) {
+                    start.linkTo(seeder.end, margin = (-8).dp)
+                },
+            hazeState = hazeState,
+            shape = SlantedRightPartShape(slant = 8.dp, 8.dp),
+            backgroundColor = colorResource(R.color.label_bg_down),
+            contentColor = colorResource(R.color.label_fg_down)
+        ) {
+            appendInlineContent("icon_leecher")
+            append(item.status.leechers)
+        }
+    }
 }
 
 @Composable
-fun LabelBox(hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, builder: (Builder).() -> Unit) {
+fun LabelBox(modifier: Modifier = Modifier, hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, label: String) {
+    LabelBox(modifier = modifier, hazeState = hazeState, shape = shape, backgroundColor = backgroundColor, contentColor = contentColor) { append(label) }
+}
+
+@Composable
+fun LabelBox(modifier: Modifier = Modifier, hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, builder: (Builder).() -> Unit) {
     Surface(
         color = Color.Transparent,
         contentColor = contentColor,
         shape = shape,
         modifier = Modifier
             .clip(shape)
-            .hazeEffect(state = hazeState, style = HazeMaterials.regular(backgroundColor).copy(blurRadius = 4.dp)),
+            .hazeEffect(state = hazeState, style = HazeMaterials.regular(backgroundColor).copy(blurRadius = 4.dp))
+            .then(modifier),
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             Text(
@@ -154,11 +167,11 @@ fun RatingLabels(modifier: Modifier, hazeState: HazeState, item: Item) {
             .padding(all = 4.dp)
     ) {
         if (!item.doubanRating.isNullOrBlank() && item.doubanRating != "0") {
-            LabelBox(hazeState, backgroundColor = colorResource(R.color.label_bg_douban), contentColor = colorResource(R.color.label_fg_douban), label = "豆 " + item.doubanRating!!)
+            LabelBox(hazeState = hazeState, backgroundColor = colorResource(R.color.label_bg_douban), contentColor = colorResource(R.color.label_fg_douban), label = "豆 " + item.doubanRating!!)
         }
         Spacer(modifier = Modifier.width(4.dp))
         if (!item.imdbRating.isNullOrBlank() && item.imdbRating != "0") {
-            LabelBox(hazeState, backgroundColor = colorResource(R.color.label_bg_imdb), contentColor = colorResource(R.color.label_fg_imdb), label = "IMDB " + item.imdbRating!!)
+            LabelBox(hazeState = hazeState, backgroundColor = colorResource(R.color.label_bg_imdb), contentColor = colorResource(R.color.label_fg_imdb), label = "IMDB " + item.imdbRating!!)
         }
     }
 }
