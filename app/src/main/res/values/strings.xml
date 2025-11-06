@@ -51,6 +51,8 @@
     <string name="new_version">There is a new version can upgrade</string>
     <string name="download_new_version">Download</string>
     <string name="comment_list">Comment (%1$s)</string>
+    <string name="comment">Comment</string>
+    <string name="no_comment">No Comments</string>
     <string name="edit_download_node">Download Node</string>
     <string name="download_client">Client</string>
     <string name="download_name_empty">Name cannot be empty</string>

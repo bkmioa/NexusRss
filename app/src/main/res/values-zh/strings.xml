@@ -51,6 +51,8 @@
     <string name="new_version">有新版本可更新</string>
     <string name="download_new_version">去下载</string>
     <string name="comment_list">评论 (%1$s)</string>
+    <string name="comment">评论</string>
+    <string name="no_comment">暂无评论</string>
     <string name="edit_download_node">下载节点</string>
     <string name="download_client">客户端</string>
     <string name="download_name_empty">名称不能为空</string>

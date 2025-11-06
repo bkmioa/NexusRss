@@ -493,7 +493,7 @@ fun CommentListDialog(relationId: String, onDismissRequest: () -> Unit) {
             .fillMaxHeight()
     ) {
         Text(
-            text = "评论列表",
+            text = stringResource(R.string.comment),
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
         )
