@@ -91,6 +91,8 @@ class Item(
     val labels: List<String>?
         //"中字" seems insignificant.
         get() = labelsNew?.filter { it != "中字" }
+            ?.run { if (standard == "6" && !this.contains("4k")) listOf("4k") + this else this }
+            ?.run { if (standard == "7" && !this.contains("8k")) listOf("8k") + this else this }
 
     override fun compareTo(other: Item): Int {
         val date1 = pubDate ?: return -1
