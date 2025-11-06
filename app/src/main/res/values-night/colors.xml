@@ -1,0 +1,18 @@
+<resources>
+    <color name="label_bg_4k">#1565C0</color>
+    <color name="label_fg_4k">#FFFFFF</color>
+    <color name="label_bg_8k">#4527A0</color>
+    <color name="label_fg_8k">#FFFFFF</color>
+    <color name="label_bg_hdr">#FF8F00</color>
+    <color name="label_fg_hdr">#000000</color>
+    <color name="label_bg_dovi">#AD1457</color>
+    <color name="label_fg_dovi">#FFFFFF</color>
+    <color name="label_bg_hlg">#00838F</color>
+    <color name="label_fg_hlg">#FFFFFF</color>
+    <color name="label_bg_up">#43A047</color>
+    <color name="label_fg_up">#FFFFFF</color>
+    <color name="label_bg_down">#E53935</color>
+    <color name="label_fg_down">#FFFFFF</color>
+    <color name="label_bg_default">#37474F</color>
+    <color name="label_fg_default">#FFFFFF</color>
+</resources>

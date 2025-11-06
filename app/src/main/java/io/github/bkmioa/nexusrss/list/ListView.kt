@@ -8,12 +8,10 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,12 +26,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.NavigateNext
-import androidx.compose.material.icons.filled.North
-import androidx.compose.material.icons.filled.South
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -47,12 +41,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -60,12 +52,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString.Builder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -75,17 +63,15 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.generated.destinations.DetailScreenDestination
 import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import com.ramcosta.composedestinations.utils.toDestinationsNavigator
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
-import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.widget.Empty
+import io.github.bkmioa.nexusrss.widget.Labels
 
 @Composable
 fun ThreadList(
@@ -180,17 +166,13 @@ private fun List(
     forceSmallCard: Boolean = false,
     onCheckCollapsePinedItems: (Boolean) -> Unit
 ) {
-    if (columns == 0) {
-        GridCells.Adaptive(minSize = 160.dp)
-    } else {
-        GridCells.Fixed(columns)
-    }
+
     val aspectRatio = if (columns == 1) 16 / 9f else 3 / 4f
 
     LazyVerticalGrid(
         columns = if (columns == 0) GridCells.Adaptive(minSize = 160.dp) else GridCells.Fixed(columns),
         state = gridState,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -269,7 +251,7 @@ private fun List(
             if (item.status.isTopped || forceSmallCard) {
                 SmallItemCard(item, Modifier.animateItem())
             } else {
-                ItemCard(item, aspectRatio, Modifier.animateItem())
+                ItemCard(Modifier.animateItem(), item, aspectRatio)
             }
         }
 
@@ -469,139 +451,52 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ItemCard(item: Item?, aspectRatio: Float = 3 / 4f, modifier: Modifier = Modifier) {
+fun ItemCard(modifier: Modifier = Modifier, item: Item?, aspectRatio: Float = 3 / 4f) {
     item ?: return
     val navigator = LocalNavController.current.rememberDestinationsNavigator()
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(aspectRatio),
-        onClick = {
-            navigator.navigate(DetailScreenDestination(item.id, item))
-        }, elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-        Box(Modifier.fillMaxWidth()) {
-            val hazeState = rememberHazeState()
+    Column(modifier = modifier.fillMaxWidth()) {
+        Card(
+            modifier = modifier
+                .aspectRatio(aspectRatio),
+            shape = MaterialTheme.shapes.medium,
+            onClick = {
+                navigator.navigate(DetailScreenDestination(item.id, item))
+            },
+            elevation = CardDefaults.cardElevation(2.dp)
+        ) {
+            Box(Modifier.fillMaxWidth()) {
+                val hazeState = rememberHazeState()
 
-            AsyncImage(
-                model = item.imageUrl,
-                placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
-                error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .hazeSource(state = hazeState),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-            Labels(
-                item,
-                modifier = Modifier
-                    .align(Alignment.TopStart),
-                hazeState
-            )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin().copy(blurRadius = 6.dp))
-                    .padding(4.dp)
-            ) {
-                Text(
-                    text = item.title,
-                    maxLines = 2,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyMedium
+                AsyncImage(
+                    model = item.imageUrl,
+                    placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+                    error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .hazeSource(state = hazeState),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "[${item.sizeText}] ${item.subTitle ?: ""}",
-                    maxLines = 1,
-                    style = MaterialTheme.typography.bodySmall
+                Labels(
+                    modifier = Modifier
+                        .align(Alignment.TopStart),
+                    item = item,
+                    hazeState
                 )
             }
-
         }
-    }
-}
-
-@Composable
-fun Labels(item: Item, modifier: Modifier = Modifier, hazeState: HazeState, alignEndSeederAndLeecher: Boolean = false) {
-    FlowRow(
-        modifier = modifier
-            .padding(all = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        @Composable
-        fun seederAndLeecher() {
-            LabelBox(hazeState) {
-                appendInlineContent("icon_seeder")
-                append(item.status.seeders)
-                append(" ")
-                appendInlineContent("icon_leecher")
-                append(item.status.leechers)
-            }
-        }
-        if (!alignEndSeederAndLeecher) {
-            seederAndLeecher()
-        }
-        item.labels?.forEach { label ->
-            LabelBox(hazeState, label.uppercase())
-        }
-        if (alignEndSeederAndLeecher) {
-            seederAndLeecher()
-        }
-    }
-}
-
-@Composable
-fun LabelBox(hazeState: HazeState, label: String) {
-    LabelBox(hazeState) { append(label) }
-}
-
-@Composable
-fun LabelBox(hazeState: HazeState, builder: (Builder).() -> Unit) {
-    Box(
-        modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .hazeEffect(state = hazeState, style = HazeMaterials.ultraThin(MaterialTheme.colorScheme.tertiaryContainer).copy(blurRadius = 4.dp)),
-    ) {
-        CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onTertiaryContainer) {
-            Text(
-                modifier = Modifier
-                    .defaultMinSize(minWidth = 28.dp)
-                    .padding(4.dp),
-                textAlign = TextAlign.Center,
-                text = buildAnnotatedString { builder() },
-                style = MaterialTheme.typography.labelSmall,
-                inlineContent = mapOf(
-                    "icon_seeder" to InlineTextContent(
-                        placeholder = androidx.compose.ui.text.Placeholder(
-                            width = 1.em,
-                            height = 1.em,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.North,
-                            contentDescription = "seeders"
-                        )
-                    },
-                    "icon_leecher" to InlineTextContent(
-                        placeholder = androidx.compose.ui.text.Placeholder(
-                            width = 1.em,
-                            height = 1.em,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.South,
-                            contentDescription = "leecher"
-                        )
-                    }
-                )
-
-            )
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = item.title,
+            maxLines = 1,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "[${item.sizeText}] ${item.subTitle ?: ""}",
+            maxLines = 1,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
