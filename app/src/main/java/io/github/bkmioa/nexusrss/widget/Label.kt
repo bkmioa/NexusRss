@@ -31,6 +31,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.HazeMaterials
@@ -109,11 +110,11 @@ fun LabelBox(hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, ba
         CompositionLocalProvider(LocalContentColor provides contentColor) {
             Text(
                 modifier = Modifier
-                    .defaultMinSize(minWidth = 28.dp)
-                    .padding(4.dp),
+                    .defaultMinSize(minWidth = 24.dp)
+                    .padding(horizontal = 4.dp, vertical = 2.dp),
                 textAlign = TextAlign.Center,
                 text = buildAnnotatedString { builder() },
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
                 inlineContent = mapOf(
                     "icon_seeder" to InlineTextContent(
                         placeholder = androidx.compose.ui.text.Placeholder(
