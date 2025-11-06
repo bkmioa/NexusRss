@@ -3,8 +3,10 @@ package io.github.bkmioa.nexusrss.widget
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
@@ -81,7 +83,7 @@ fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState, alig
                 label.contains("hlg", true) -> colorResource(R.color.label_bg_4k) to colorResource(R.color.label_fg_4k)
                 else -> colorResource(R.color.label_bg_default) to colorResource(R.color.label_fg_default)
             }
-            LabelBox(hazeState, color.first, color.second, label.uppercase())
+            LabelBox(hazeState, backgroundColor = color.first, contentColor = color.second, label = label.uppercase())
         }
         if (alignEndSeederAndLeecher) {
             seederAndLeecher()
@@ -90,8 +92,8 @@ fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState, alig
 }
 
 @Composable
-fun LabelBox(hazeState: HazeState, backgroundColor: Color, contentColor: Color, label: String) {
-    LabelBox(hazeState, backgroundColor = backgroundColor, contentColor = contentColor) { append(label) }
+fun LabelBox(hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, label: String) {
+    LabelBox(hazeState, shape = shape, backgroundColor = backgroundColor, contentColor = contentColor) { append(label) }
 }
 
 @Composable
@@ -140,6 +142,22 @@ fun LabelBox(hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, ba
                 )
 
             )
+        }
+    }
+}
+
+@Composable
+fun RatingLabels(modifier: Modifier, hazeState: HazeState, item: Item) {
+    Row(
+        modifier = modifier
+            .padding(all = 4.dp)
+    ) {
+        if (!item.doubanRating.isNullOrBlank() && item.doubanRating != "0") {
+            LabelBox(hazeState, backgroundColor = colorResource(R.color.label_bg_douban), contentColor = colorResource(R.color.label_fg_douban), label = "豆 " + item.doubanRating!!)
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+        if (!item.imdbRating.isNullOrBlank() && item.imdbRating != "0") {
+            LabelBox(hazeState, backgroundColor = colorResource(R.color.label_bg_imdb), contentColor = colorResource(R.color.label_fg_imdb), label = "IMDB " + item.imdbRating!!)
         }
     }
 }

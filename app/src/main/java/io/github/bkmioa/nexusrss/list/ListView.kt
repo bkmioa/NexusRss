@@ -72,6 +72,7 @@ import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.widget.Empty
 import io.github.bkmioa.nexusrss.widget.Labels
+import io.github.bkmioa.nexusrss.widget.RatingLabels
 
 @Composable
 fun ThreadList(
@@ -419,6 +420,8 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
                     modifier = modifier
                         .fillMaxSize()
                 ) {
+                    RatingLabels(modifier = Modifier.align(Alignment.TopStart), hazeState = hazeState, item = item)
+
                     Labels(
                         item = item,
                         modifier = Modifier.align(Alignment.TopEnd),
@@ -483,6 +486,7 @@ fun ItemCard(modifier: Modifier = Modifier, item: Item?, aspectRatio: Float = 3 
                     item = item,
                     hazeState
                 )
+                RatingLabels(modifier = Modifier.align(Alignment.BottomStart), hazeState = hazeState, item = item)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
