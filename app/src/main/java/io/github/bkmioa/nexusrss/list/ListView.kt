@@ -241,7 +241,7 @@ private fun List(
             span = { index ->
                 val item = lazyPagingItems.peek(index + startIndex)!!
                 if (item.status.isTopped || forceSmallCard) {
-                    GridItemSpan((maxLineSpan / 2).coerceAtLeast(2))
+                    GridItemSpan((maxLineSpan / 2).coerceAtLeast(maxLineSpan))
                 } else {
                     GridItemSpan(1)
                 }
