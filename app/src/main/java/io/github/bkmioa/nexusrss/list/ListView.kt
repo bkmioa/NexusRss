@@ -38,7 +38,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -72,6 +71,7 @@ import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
 import io.github.bkmioa.nexusrss.widget.Empty
 import io.github.bkmioa.nexusrss.widget.Labels
+import io.github.bkmioa.nexusrss.widget.PullToRefreshBox
 import io.github.bkmioa.nexusrss.widget.RatingLabels
 
 @Composable
@@ -85,6 +85,7 @@ fun ThreadList(
     viewModel: ListViewModel = mavericksViewModel(argsFactory = { requestData }, keyFactory = keyFactory),
     gridState: LazyGridState = rememberLazyGridState(),
     forceSmallCard: Boolean = false,
+    enablePullToRefresh: Boolean = true,
 ) {
     if (!visible) {
         return
@@ -109,6 +110,7 @@ fun ThreadList(
 
     PullToRefreshBox(
         modifier = Modifier.fillMaxSize(),
+        enabled = enablePullToRefresh,
         state = refreshState,
         isRefreshing = refreshing, onRefresh = {
             viewModel.refresh()

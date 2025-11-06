@@ -63,7 +63,8 @@ fun AlternativeVersionDialog(item: Item, onDismissRequest: () -> Unit) {
             ThreadList(
                 requestData = requestData,
                 viewModel = viewModel,
-                forceSmallCard = true
+                forceSmallCard = true,
+                enablePullToRefresh = false,
             )
         }
     }
