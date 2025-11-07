@@ -4,7 +4,9 @@ package io.github.bkmioa.nexusrss.list
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -459,14 +462,24 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
 fun ItemCard(modifier: Modifier = Modifier, item: Item?, aspectRatio: Float = 3 / 4f) {
     item ?: return
     val navigator = LocalNavController.current.rememberDestinationsNavigator()
-    Column(modifier = modifier.fillMaxWidth()) {
+    fun onItemClicked() {
+        navigator.navigate(DetailScreenDestination(item.id, item))
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                onClick = ::onItemClicked,
+                indication = null,
+                interactionSource = null
+            )
+    ) {
         Card(
             modifier = modifier
                 .aspectRatio(aspectRatio),
             shape = MaterialTheme.shapes.medium,
-            onClick = {
-                navigator.navigate(DetailScreenDestination(item.id, item))
-            },
+            onClick = ::onItemClicked,
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Box(Modifier.fillMaxWidth()) {
