@@ -1,11 +1,11 @@
 package io.github.bkmioa.nexusrss.model
 
-import android.content.Context
 import android.os.Parcelable
 import android.text.format.DateUtils
 import android.text.format.Formatter
 import io.github.bkmioa.nexusrss.App
 import io.github.bkmioa.nexusrss.Settings
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -88,11 +88,34 @@ class Item(
     val imageUrl: String?
         get() = imageList.firstOrNull()
 
-    val labels: List<String>?
+    @IgnoredOnParcel
+    @Transient
+    var labels: List<String>? = null
+        private set
+        get() {
+            if (field == null) {
+                field = resolveLabels()
+            }
+            return field
+        }
+
+    private fun resolveLabels(): List<String> {
+        labelsNew ?: return emptyList()
+
+        val list = labelsNew.toMutableList()
         //"中字" seems insignificant.
-        get() = labelsNew?.filter { it != "中字" }
-            ?.run { if (standard == "6" && !this.contains("4k")) listOf("4k") + this else this }
-            ?.run { if (standard == "7" && !this.contains("8k")) listOf("8k") + this else this }
+        list.remove("中字")
+        if (standard == "6" && !list.contains("4k")) {
+            list.add(0, "4k")
+        }
+        if (standard == "7" && !list.contains("8k")) {
+            list.add(0, "8k")
+        }
+        if (list.find { it.contains("hdr+".toRegex()) } != null) {
+            list.remove("hdr")
+        }
+        return list.toList()
+    }
 
     override fun compareTo(other: Item): Int {
         val date1 = pubDate ?: return -1
