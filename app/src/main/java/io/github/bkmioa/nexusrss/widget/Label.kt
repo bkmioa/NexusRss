@@ -1,5 +1,6 @@
 package io.github.bkmioa.nexusrss.widget
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -14,12 +15,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.North
 import androidx.compose.material.icons.filled.South
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -38,10 +37,11 @@ import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.HazeMaterials
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Item
+import io.github.bkmioa.nexusrss.util.compose.runIf
 
 
 @Composable
-fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState, alignEndSeederAndLeecher: Boolean = false) {
+fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState? = null, alignEndSeederAndLeecher: Boolean = false) {
     FlowRow(
         modifier = modifier
             .padding(all = 4.dp),
@@ -70,7 +70,7 @@ fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState, alig
 }
 
 @Composable
-fun SeederAndLeecher(hazeState: HazeState, item: Item) {
+fun SeederAndLeecher(hazeState: HazeState? = null, item: Item) {
     ConstraintLayout {
         val (seeder, leecher) = createRefs()
         LabelBox(
@@ -105,63 +105,62 @@ fun SeederAndLeecher(hazeState: HazeState, item: Item) {
 }
 
 @Composable
-fun LabelBox(modifier: Modifier = Modifier, hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, label: String) {
+fun LabelBox(modifier: Modifier = Modifier, hazeState: HazeState? = null, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, label: String) {
     LabelBox(modifier = modifier, hazeState = hazeState, shape = shape, backgroundColor = backgroundColor, contentColor = contentColor) { append(label) }
 }
 
 @Composable
-fun LabelBox(modifier: Modifier = Modifier, hazeState: HazeState, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, builder: (Builder).() -> Unit) {
+fun LabelBox(modifier: Modifier = Modifier, hazeState: HazeState? = null, shape: Shape = MaterialTheme.shapes.small, backgroundColor: Color, contentColor: Color, builder: (Builder).() -> Unit) {
     Surface(
         color = Color.Transparent,
         contentColor = contentColor,
         shape = shape,
         modifier = Modifier
             .clip(shape)
-            .hazeEffect(state = hazeState, style = HazeMaterials.regular(backgroundColor).copy(blurRadius = 4.dp))
+            .runIf(hazeState != null) { hazeEffect(state = hazeState, style = HazeMaterials.regular(backgroundColor).copy(blurRadius = 4.dp)) }
+            .runIf(hazeState == null) { background(backgroundColor) }
             .then(modifier),
     ) {
-        CompositionLocalProvider(LocalContentColor provides contentColor) {
-            Text(
-                modifier = Modifier
-                    .defaultMinSize(minWidth = 24.dp)
-                    .padding(horizontal = 4.dp, vertical = 2.dp),
-                textAlign = TextAlign.Center,
-                text = buildAnnotatedString { builder() },
-                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                inlineContent = mapOf(
-                    "icon_seeder" to InlineTextContent(
-                        placeholder = androidx.compose.ui.text.Placeholder(
-                            width = 1.em,
-                            height = 1.em,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.North,
-                            contentDescription = "seeders"
-                        )
-                    },
-                    "icon_leecher" to InlineTextContent(
-                        placeholder = androidx.compose.ui.text.Placeholder(
-                            width = 1.em,
-                            height = 1.em,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Center
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.South,
-                            contentDescription = "leecher"
-                        )
-                    }
-                )
-
+        Text(
+            modifier = Modifier
+                .defaultMinSize(minWidth = 24.dp)
+                .padding(horizontal = 4.dp, vertical = 2.dp),
+            textAlign = TextAlign.Center,
+            text = buildAnnotatedString { builder() },
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+            inlineContent = mapOf(
+                "icon_seeder" to InlineTextContent(
+                    placeholder = androidx.compose.ui.text.Placeholder(
+                        width = 1.em,
+                        height = 1.em,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.North,
+                        contentDescription = "seeders"
+                    )
+                },
+                "icon_leecher" to InlineTextContent(
+                    placeholder = androidx.compose.ui.text.Placeholder(
+                        width = 1.em,
+                        height = 1.em,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.South,
+                        contentDescription = "leecher"
+                    )
+                }
             )
-        }
+
+        )
     }
 }
 
 @Composable
-fun RatingLabels(modifier: Modifier, hazeState: HazeState, item: Item) {
+fun RatingLabels(modifier: Modifier = Modifier, hazeState: HazeState? = null, item: Item) {
     Row(
         modifier = modifier
             .padding(all = 4.dp)
@@ -169,8 +168,8 @@ fun RatingLabels(modifier: Modifier, hazeState: HazeState, item: Item) {
         if (!item.doubanRating.isNullOrBlank() && item.doubanRating != "0") {
             LabelBox(hazeState = hazeState, backgroundColor = colorResource(R.color.label_bg_douban), contentColor = colorResource(R.color.label_fg_douban), label = "豆 " + item.doubanRating!!)
         }
-        Spacer(modifier = Modifier.width(4.dp))
         if (!item.imdbRating.isNullOrBlank() && item.imdbRating != "0") {
+            Spacer(modifier = Modifier.width(4.dp))
             LabelBox(hazeState = hazeState, backgroundColor = colorResource(R.color.label_bg_imdb), contentColor = colorResource(R.color.label_fg_imdb), label = "IMDB " + item.imdbRating!!)
         }
     }
