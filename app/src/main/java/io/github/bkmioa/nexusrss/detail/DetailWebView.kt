@@ -40,6 +40,7 @@ fun DetailWebView(data: String?) {
         }),
         captureBackPresses = false,
         onCreated = {
+            it.isVerticalScrollBarEnabled = false
             //https://stackoverflow.com/a/75076174
             it.alpha = 0.99f
             it.setBackgroundColor(backgroundColor)

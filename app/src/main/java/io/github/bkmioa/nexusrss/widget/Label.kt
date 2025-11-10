@@ -164,12 +164,13 @@ fun RatingLabels(modifier: Modifier = Modifier, hazeState: HazeState? = null, it
     Row(
         modifier = modifier
             .padding(all = 4.dp)
+        ,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (!item.doubanRating.isNullOrBlank() && item.doubanRating != "0") {
             LabelBox(hazeState = hazeState, backgroundColor = colorResource(R.color.label_bg_douban), contentColor = colorResource(R.color.label_fg_douban), label = "豆 " + item.doubanRating!!)
         }
         if (!item.imdbRating.isNullOrBlank() && item.imdbRating != "0") {
-            Spacer(modifier = Modifier.width(4.dp))
             LabelBox(hazeState = hazeState, backgroundColor = colorResource(R.color.label_bg_imdb), contentColor = colorResource(R.color.label_fg_imdb), label = "IMDB " + item.imdbRating!!)
         }
     }
