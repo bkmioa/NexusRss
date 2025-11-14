@@ -375,12 +375,12 @@ fun PinnedSmallItemCard(item: Item?, modifier: Modifier = Modifier) {
             error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
             modifier = Modifier
                 .fillMaxHeight()
-                .sharedTransitionScope { animatedVisibilityScope ->
-                    sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
-                }
+                //.sharedTransitionScope { animatedVisibilityScope ->
+                //    sharedElement(
+                //        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
+                //        animatedVisibilityScope = animatedVisibilityScope,
+                //    )
+                //}
                 .aspectRatio(3 / 4f),
             contentDescription = null,
             contentScale = ContentScale.Crop
@@ -425,12 +425,12 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
                     error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier
                         .fillMaxHeight()
-                        .sharedTransitionScope { animatedVisibilityScope ->
-                            sharedElement(
-                                sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                            )
-                        }
+                        //.sharedTransitionScope { animatedVisibilityScope ->
+                        //    sharedElement(
+                        //        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
+                        //        animatedVisibilityScope = animatedVisibilityScope,
+                        //    )
+                        //}
                         .aspectRatio(3 / 4f),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
@@ -491,12 +491,12 @@ fun ItemCard(modifier: Modifier = Modifier, item: Item?, aspectRatio: Float = 3 
     ) {
         Card(
             modifier = modifier
-                .sharedTransitionScope { animatedVisibilityScope ->
-                    sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
-                }
+                //.sharedTransitionScope { animatedVisibilityScope ->
+                //    sharedElement(
+                //        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
+                //        animatedVisibilityScope = animatedVisibilityScope,
+                //    )
+                //}
                 .aspectRatio(aspectRatio),
             shape = MaterialTheme.shapes.medium,
             onClick = ::onItemClicked,

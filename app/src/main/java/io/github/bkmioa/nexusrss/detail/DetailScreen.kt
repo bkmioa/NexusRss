@@ -2,11 +2,9 @@
 
 package io.github.bkmioa.nexusrss.detail
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -309,12 +307,12 @@ fun Header(item: Item?, author: MemberInfo?, paddingValues: PaddingValues) {
         Row {
             Card(
                 modifier = Modifier
-                    .sharedTransitionScope { animatedVisibilityScope ->
-                        sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "cover-${item?.id}"),
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                    }
+                    //.sharedTransitionScope { animatedVisibilityScope ->
+                    //    sharedElement(
+                    //        sharedContentState = rememberSharedContentState(key = "cover-${item?.id}"),
+                    //        animatedVisibilityScope = animatedVisibilityScope
+                    //    )
+                    //}
                     .padding(16.dp)
                     .width(200.dp)
                     .aspectRatio(3 / 4f)
@@ -507,7 +505,7 @@ private fun DetailInfo(detailInfo: String?) {
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
-        DetailWebView(data = detailInfo)
+        RichContent(data = detailInfo)
     }
 }
 

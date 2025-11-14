@@ -27,6 +27,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import com.airbnb.mvrx.compose.mavericksViewModel
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.bbcode.BbCodeContent
 import io.github.bkmioa.nexusrss.model.Comment
 import io.github.bkmioa.nexusrss.widget.Empty
 
@@ -137,10 +138,10 @@ fun CommentItem(comment: Comment) {
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
+                BbCodeContent(
                     text = comment.text,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyMedium
+                    //color = MaterialTheme.colorScheme.onSurface,
+                    textStyle = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(
