@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class, ExperimentalSharedTransitionApi::class)
 
 package io.github.bkmioa.nexusrss.list
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -72,6 +73,7 @@ import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.RequestData
+import io.github.bkmioa.nexusrss.sharedTransitionScope
 import io.github.bkmioa.nexusrss.widget.Empty
 import io.github.bkmioa.nexusrss.widget.Labels
 import io.github.bkmioa.nexusrss.widget.PullToRefreshBox
@@ -373,6 +375,12 @@ fun PinnedSmallItemCard(item: Item?, modifier: Modifier = Modifier) {
             error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
             modifier = Modifier
                 .fillMaxHeight()
+                .sharedTransitionScope { animatedVisibilityScope ->
+                    sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                }
                 .aspectRatio(3 / 4f),
             contentDescription = null,
             contentScale = ContentScale.Crop
@@ -417,6 +425,12 @@ fun SmallItemCard(item: Item?, modifier: Modifier = Modifier) {
                     error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier
                         .fillMaxHeight()
+                        .sharedTransitionScope { animatedVisibilityScope ->
+                            sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                        }
                         .aspectRatio(3 / 4f),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
@@ -477,6 +491,12 @@ fun ItemCard(modifier: Modifier = Modifier, item: Item?, aspectRatio: Float = 3 
     ) {
         Card(
             modifier = modifier
+                .sharedTransitionScope { animatedVisibilityScope ->
+                    sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "cover-${item.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                }
                 .aspectRatio(aspectRatio),
             shape = MaterialTheme.shapes.medium,
             onClick = ::onItemClicked,

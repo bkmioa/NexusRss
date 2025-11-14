@@ -1,10 +1,14 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalHazeMaterialsApi::class, ExperimentalHazeApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalHazeMaterialsApi::class, ExperimentalHazeApi::class, ExperimentalSharedTransitionApi::class)
 
 package io.github.bkmioa.nexusrss.detail
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -88,12 +92,14 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
 import io.github.bkmioa.nexusrss.R
+import io.github.bkmioa.nexusrss.SharedTransitionDataWrapper
 import io.github.bkmioa.nexusrss.comment.CommentList
 import io.github.bkmioa.nexusrss.download.RemoteDownloader
 import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.MemberInfo
 import io.github.bkmioa.nexusrss.model.Option
+import io.github.bkmioa.nexusrss.sharedTransitionScope
 import io.github.bkmioa.nexusrss.widget.Labels
 import io.github.bkmioa.nexusrss.widget.RatingLabels
 import kotlinx.coroutines.launch
@@ -102,7 +108,8 @@ import kotlinx.coroutines.launch
     deepLinks = [
         DeepLink(uriPattern = "{host}/detail/{id}"),
         DeepLink(uriPattern = "{host}/details.php?id={id}"),
-    ]
+    ],
+    wrappers = [SharedTransitionDataWrapper::class]
 )
 @Composable
 fun DetailScreen(
@@ -302,8 +309,14 @@ fun Header(item: Item?, author: MemberInfo?, paddingValues: PaddingValues) {
         Row {
             Card(
                 modifier = Modifier
+                    .sharedTransitionScope { animatedVisibilityScope ->
+                        sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "cover-${item?.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                    }
                     .padding(16.dp)
-                    .width(160.dp)
+                    .width(200.dp)
                     .aspectRatio(3 / 4f)
 
 
@@ -322,7 +335,6 @@ fun Header(item: Item?, author: MemberInfo?, paddingValues: PaddingValues) {
             if (item != null) {
                 Column(modifier = Modifier.padding(vertical = 16.dp)) {
                     BasicInfo(item, author)
-
                     Labels(item = item)
                     RatingLabels(item = item)
                 }
@@ -414,7 +426,9 @@ fun BasicInfo(item: Item?, author: MemberInfo?) {
             stringResource(R.string.anonymous)
         }
         Text(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .animateContentSize(),
             text = buildAnnotatedString {
                 append("由 ")
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {

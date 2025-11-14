@@ -31,7 +31,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -65,13 +64,18 @@ import com.ramcosta.composedestinations.utils.toDestinationsNavigator
 import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.Settings
+import io.github.bkmioa.nexusrss.SharedTransitionDataWrapper
 import io.github.bkmioa.nexusrss.checkversion.CheckVersionViewModel
 import io.github.bkmioa.nexusrss.list.ThreadList
 import io.github.bkmioa.nexusrss.model.RequestData
+import io.github.bkmioa.nexusrss.sharedTransitionScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Destination<RootGraph>(start = true)
+@Destination<RootGraph>(
+    start = true,
+    wrappers = [SharedTransitionDataWrapper::class]
+)
 @Composable
 fun HomeScreen(
     navigator: DestinationsNavigator

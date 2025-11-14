@@ -1,5 +1,7 @@
 package io.github.bkmioa.nexusrss.widget
 
+import androidx.compose.animation.animateBounds
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.FlowRow
@@ -76,6 +78,7 @@ fun SeederAndLeecher(hazeState: HazeState? = null, item: Item) {
         LabelBox(
             modifier = Modifier
                 .padding(end = 4.dp)
+                .animateContentSize()
                 .constrainAs(seeder) {
 
                 },
@@ -90,6 +93,7 @@ fun SeederAndLeecher(hazeState: HazeState? = null, item: Item) {
         LabelBox(
             modifier = Modifier
                 .padding(start = 4.dp)
+                .animateContentSize()
                 .constrainAs(leecher) {
                     start.linkTo(seeder.end, margin = (-8).dp)
                 },
