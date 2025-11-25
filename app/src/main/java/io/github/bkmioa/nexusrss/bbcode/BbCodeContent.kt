@@ -53,7 +53,7 @@ import coil3.request.crossfade
 fun BbCodeContent(
     text: String,
     modifier: Modifier = Modifier,
-    textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, lineHeight = TextUnit.Unspecified),
     onLinkClick: ((String) -> Boolean)? = null
 ) {
     if (text.isBlank()) return

@@ -97,12 +97,12 @@ private fun convertHeadings(text: String): String =
         val level = match.groupValues[1].length
         val headingText = match.groupValues[2].trimHeadingClosingHashes()
         val size = when (level) {
-            1 -> 30
-            2 -> 26
-            3 -> 22
-            4 -> 18
-            5 -> 16
-            else -> 14
+            1 -> 9
+            2 -> 8
+            3 -> 7
+            4 -> 6
+            5 -> 5
+            else -> 5
         }
         "[size=$size][b]$headingText[/b][/size]"
     }
