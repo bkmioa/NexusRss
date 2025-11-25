@@ -2,6 +2,7 @@ package io.github.bkmioa.nexusrss.bbcode
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,17 +49,29 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.ramcosta.composedestinations.generated.destinations.ImageViewerScreenDestination
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
+import io.github.bkmioa.nexusrss.LocalNavController
 
 @Composable
 fun BbCodeContent(
     text: String,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp, lineHeight = TextUnit.Unspecified),
-    onLinkClick: ((String) -> Boolean)? = null
+    onLinkClick: ((String) -> Boolean)? = null,
+    onImageClick: ((List<String>, Int) -> Unit)? = null
 ) {
     if (text.isBlank()) return
     val nodes = remember(text) { BbCodeParser().parse(text) }
     if (nodes.isEmpty()) return
+
+    val imageUrls = remember(nodes) { collectImageUrls(nodes) }
+    val navigator = LocalNavController.current.rememberDestinationsNavigator()
+    val resolvedImageClick = remember(onImageClick, navigator) {
+        onImageClick ?: { images: List<String>, index: Int ->
+            navigator.navigate(ImageViewerScreenDestination(images = images.toTypedArray(), initIndex = index))
+        }
+    }
 
     SelectionContainer(modifier = modifier) {
         Column(
@@ -67,7 +80,7 @@ fun BbCodeContent(
                 .animateContentSize()
         ) {
             val uriHandler = LocalUriHandler.current
-            BbNodes(nodes, textStyle, uriHandler, onLinkClick)
+            BbNodes(nodes, textStyle, uriHandler, onLinkClick, imageUrls, resolvedImageClick)
         }
     }
 }
@@ -77,7 +90,9 @@ private fun BbNodes(
     nodes: List<BbNode>,
     textStyle: TextStyle,
     uriHandler: UriHandler,
-    onLinkClick: ((String) -> Boolean)?
+    onLinkClick: ((String) -> Boolean)?,
+    imageUrls: List<String>,
+    onImageClick: ((List<String>, Int) -> Unit)?
 ) {
     if (nodes.isEmpty()) return
     val inlineBuffer = mutableListOf<BbNode>()
@@ -98,7 +113,7 @@ private fun BbNodes(
             if (!isFirstBlock) {
                 Spacer(modifier = Modifier.height(12.dp))
             }
-            BlockNode(node, textStyle, uriHandler, onLinkClick)
+            BlockNode(node, textStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
             isFirstBlock = false
         }
     }
@@ -147,12 +162,14 @@ private fun BlockNode(
     node: BbNode,
     textStyle: TextStyle,
     uriHandler: UriHandler,
-    onLinkClick: ((String) -> Boolean)?
+    onLinkClick: ((String) -> Boolean)?,
+    imageUrls: List<String>,
+    onImageClick: ((List<String>, Int) -> Unit)?
 ) {
     when (node) {
-        is BbNode.Quote -> QuoteBlock(node, textStyle, uriHandler, onLinkClick)
+        is BbNode.Quote -> QuoteBlock(node, textStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
         is BbNode.Code -> CodeBlock(node, textStyle)
-        is BbNode.Image -> ImageBlock(node.url)
+        is BbNode.Image -> ImageBlock(node.url, imageUrls, onImageClick)
         is BbNode.Alignment -> {
             val alignedStyle = textStyle.copy(
                 textAlign = when (node.alignment) {
@@ -162,11 +179,11 @@ private fun BlockNode(
                     AlignmentType.JUSTIFY -> TextAlign.Justify
                 }
             )
-            BbNodes(node.children, alignedStyle, uriHandler, onLinkClick)
+            BbNodes(node.children, alignedStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
         }
 
-        is BbNode.ListBlock -> ListBlock(node, textStyle, uriHandler, onLinkClick)
-        is BbNode.Table -> TableBlock(node, textStyle, uriHandler, onLinkClick)
+        is BbNode.ListBlock -> ListBlock(node, textStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
+        is BbNode.Table -> TableBlock(node, textStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
         BbNode.HorizontalRule -> HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
         BbNode.LineBreak -> Spacer(modifier = Modifier.height(4.dp))
         is BbNode.Text -> InlineTextBlock(listOf(node), textStyle, uriHandler, onLinkClick)
@@ -180,7 +197,9 @@ private fun QuoteBlock(
     node: BbNode.Quote,
     textStyle: TextStyle,
     uriHandler: UriHandler,
-    onLinkClick: ((String) -> Boolean)?
+    onLinkClick: ((String) -> Boolean)?,
+    imageUrls: List<String>,
+    onImageClick: ((List<String>, Int) -> Unit)?
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -200,7 +219,7 @@ private fun QuoteBlock(
                     style = textStyle.copy(fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                 )
             }
-            BbNodes(node.children, textStyle, uriHandler, onLinkClick)
+            BbNodes(node.children, textStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
         }
     }
 }
@@ -225,13 +244,28 @@ private fun CodeBlock(node: BbNode.Code, textStyle: TextStyle) {
 }
 
 @Composable
-private fun ImageBlock(url: String) {
+private fun ImageBlock(
+    url: String,
+    imageUrls: List<String>,
+    onImageClick: ((List<String>, Int) -> Unit)?
+) {
     val context = LocalContext.current
+    val trimmedUrl = remember(url) { url.trim() }
+    val index = remember(imageUrls, trimmedUrl) { imageUrls.indexOf(trimmedUrl) }
+    val clickable = onImageClick != null && index in imageUrls.indices
+    val modifier = Modifier
+        .fillMaxWidth()
+        .let { base ->
+            if (clickable) {
+                base.clickable { onImageClick?.invoke(imageUrls, index) }
+            } else {
+                base
+            }
+        }
     SubcomposeAsyncImage(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier,
         model = ImageRequest.Builder(context)
-            .data(url.trim())
+            .data(trimmedUrl)
             .crossfade(true)
             .build(),
         contentScale = ContentScale.FillWidth,
@@ -251,7 +285,9 @@ private fun ListBlock(
     node: BbNode.ListBlock,
     textStyle: TextStyle,
     uriHandler: UriHandler,
-    onLinkClick: ((String) -> Boolean)?
+    onLinkClick: ((String) -> Boolean)?,
+    imageUrls: List<String>,
+    onImageClick: ((List<String>, Int) -> Unit)?
 ) {
     if (node.items.isEmpty()) return
     Column(
@@ -269,7 +305,7 @@ private fun ListBlock(
                     style = textStyle.copy(fontWeight = FontWeight.SemiBold)
                 )
                 Column(modifier = Modifier.weight(1f, fill = true)) {
-                    BbNodes(item, textStyle, uriHandler, onLinkClick)
+                    BbNodes(item, textStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
                 }
             }
         }
@@ -281,7 +317,9 @@ private fun TableBlock(
     node: BbNode.Table,
     textStyle: TextStyle,
     uriHandler: UriHandler,
-    onLinkClick: ((String) -> Boolean)?
+    onLinkClick: ((String) -> Boolean)?,
+    imageUrls: List<String>,
+    onImageClick: ((List<String>, Int) -> Unit)?
 ) {
     if (node.rows.isEmpty()) return
     Surface(
@@ -303,7 +341,7 @@ private fun TableBlock(
                             } else {
                                 textStyle
                             }
-                            BbNodes(cell.children, cellStyle, uriHandler, onLinkClick)
+                            BbNodes(cell.children, cellStyle, uriHandler, onLinkClick, imageUrls, onImageClick)
                         }
                     }
                 }
@@ -358,6 +396,37 @@ private fun BbNode.isInline(): Boolean =
             this is BbNode.Styled ||
             this is BbNode.Link ||
             this === BbNode.LineBreak
+
+private fun collectImageUrls(nodes: List<BbNode>): List<String> {
+    if (nodes.isEmpty()) return emptyList()
+    val urls = mutableListOf<String>()
+    fun traverse(node: BbNode) {
+        when (node) {
+            is BbNode.Image -> {
+                val normalized = node.url.trim()
+                if (normalized.isNotEmpty()) {
+                    urls += normalized
+                }
+            }
+
+            is BbNode.Styled -> node.children.forEach(::traverse)
+            is BbNode.Link -> node.children.forEach(::traverse)
+            is BbNode.Quote -> node.children.forEach(::traverse)
+            is BbNode.Alignment -> node.children.forEach(::traverse)
+            is BbNode.ListBlock -> node.items.forEach { item -> item.forEach(::traverse) }
+            is BbNode.Table -> node.rows.forEach { row ->
+                row.cells.forEach { cell ->
+                    cell.children.forEach(::traverse)
+                }
+            }
+
+            is BbNode.ListItem -> node.children.forEach(::traverse)
+            else -> {}
+        }
+    }
+    nodes.forEach(::traverse)
+    return urls
+}
 
 private data class InlineStyleState(
     val bold: Boolean = false,

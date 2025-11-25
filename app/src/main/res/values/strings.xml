@@ -73,4 +73,9 @@
     <string name="file_list">File List</string>
     <string name="alternative_versions">Alternative Versions</string>
     <string name="anonymous">Anonymous</string>
+
+    <string name="action_save_image">Save</string>
+    <string name="save_image_success">Image saved to gallery</string>
+    <string name="save_image_failure">Unable to save image</string>
+    <string name="no_images_to_preview">No images to preview</string>
 </resources>

@@ -73,4 +73,9 @@
     <string name="file_list">文件列表</string>
     <string name="alternative_versions">其他版本</string>
     <string name="anonymous">匿名</string>
+
+    <string name="action_save_image">保存</string>
+    <string name="save_image_success">保存到相册</string>
+    <string name="save_image_failure">保存失败</string>
+    <string name="no_images_to_preview">没有图片</string>
 </resources>
