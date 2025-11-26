@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,13 +83,16 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.annotation.parameters.DeepLink
+import com.ramcosta.composedestinations.generated.destinations.ImageViewerScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.utils.rememberDestinationsNavigator
 import dev.chrisbanes.haze.ExperimentalHazeApi
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import dev.chrisbanes.haze.materials.HazeMaterials
 import dev.chrisbanes.haze.rememberHazeState
+import io.github.bkmioa.nexusrss.LocalNavController
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.SharedTransitionDataWrapper
 import io.github.bkmioa.nexusrss.comment.CommentList
@@ -97,7 +101,6 @@ import io.github.bkmioa.nexusrss.model.DownloadNodeModel
 import io.github.bkmioa.nexusrss.model.Item
 import io.github.bkmioa.nexusrss.model.MemberInfo
 import io.github.bkmioa.nexusrss.model.Option
-import io.github.bkmioa.nexusrss.sharedTransitionScope
 import io.github.bkmioa.nexusrss.widget.Labels
 import io.github.bkmioa.nexusrss.widget.RatingLabels
 import kotlinx.coroutines.launch
@@ -319,13 +322,21 @@ fun Header(item: Item?, author: MemberInfo?, paddingValues: PaddingValues) {
 
 
             ) {
+                val navigator = LocalNavController.current.rememberDestinationsNavigator()
+                val imageUrl = item?.imageUrl
                 AsyncImage(
-                    model = item?.imageUrl,
+                    model = imageUrl,
                     placeholder = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
                     error = ColorPainter(MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier
                         .fillMaxSize()
-                        .aspectRatio(3 / 4f),
+                        .aspectRatio(3 / 4f)
+                        .clickable(
+                            onClick = {
+                                imageUrl ?: return@clickable
+                                navigator.navigate(ImageViewerScreenDestination(arrayOf(imageUrl), 0))
+                            }
+                        ),
                     contentDescription = null,
                     contentScale = ContentScale.Crop
                 )
