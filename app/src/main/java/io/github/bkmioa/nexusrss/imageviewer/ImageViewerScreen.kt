@@ -61,6 +61,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.SharedTransitionDataWrapper
+import io.github.bkmioa.nexusrss.theme.AppTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -97,131 +98,132 @@ fun ImageViewerScreen(
     val saveSuccessMessage = stringResource(id = R.string.save_image_success)
     val saveFailureMessage = stringResource(id = R.string.save_image_failure)
 
-
-    Scaffold(
-        containerColor = Color.Black,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            AnimatedVisibility(
-                visible = topBarVisible,
-                enter = slideInVertically(animationSpec = tween(), initialOffsetY = { -it }),
-                exit = slideOutVertically(animationSpec = tween(), targetOffsetY = { -it })
-            ) {
-                TopAppBar(
-                    title = { },
-                    navigationIcon = {
-                        IconButton(onClick = { navigator.popBackStack() }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "back"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            enabled = hasImages && !saving,
-                            onClick = {
-                                if (!hasImages || saving) {
-                                    return@IconButton
-                                }
-                                val targetUrl = images[pagerState.currentPage]
-                                coroutineScope.launch {
-                                    saving = true
-                                    val success = saveImageToGallery(context, targetUrl)
-                                    saving = false
-                                    val message = if (success) {
-                                        saveSuccessMessage
-                                    } else {
-                                        saveFailureMessage
-                                    }
-                                    snackbarHostState.showSnackbar(message)
-                                }
+    AppTheme(darkTheme = true) {
+        Scaffold(
+            containerColor = Color.Black,
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            topBar = {
+                AnimatedVisibility(
+                    visible = topBarVisible,
+                    enter = slideInVertically(animationSpec = tween(), initialOffsetY = { -it }),
+                    exit = slideOutVertically(animationSpec = tween(), targetOffsetY = { -it })
+                ) {
+                    TopAppBar(
+                        title = { },
+                        navigationIcon = {
+                            IconButton(onClick = { navigator.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "back"
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.FileDownload,
-                                contentDescription = stringResource(id = R.string.action_save_image)
+                        },
+                        actions = {
+                            IconButton(
+                                enabled = hasImages && !saving,
+                                onClick = {
+                                    if (!hasImages || saving) {
+                                        return@IconButton
+                                    }
+                                    val targetUrl = images[pagerState.currentPage]
+                                    coroutineScope.launch {
+                                        saving = true
+                                        val success = saveImageToGallery(context, targetUrl)
+                                        saving = false
+                                        val message = if (success) {
+                                            saveSuccessMessage
+                                        } else {
+                                            saveFailureMessage
+                                        }
+                                        snackbarHostState.showSnackbar(message)
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.FileDownload,
+                                    contentDescription = stringResource(id = R.string.action_save_image)
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.surface.copy(0.5f),
+                        )
+                    )
+                }
+            }
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = hasImages && imageCount > 1,
+                    key = { index -> if (hasImages) images[index] else "placeholder" },
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    if (!hasImages) {
+                        return@HorizontalPager
+                    }
+                    var loading by remember { mutableStateOf(true) }
+                    val imageUrl = images[page]
+                    val zoomState = rememberCoilZoomState()
+                    val imageRequest = remember(imageUrl, context) {
+                        ImageRequest.Builder(context)
+                            .data(imageUrl)
+                            .crossfade(true)
+                            .build()
+                    }
+
+                    Box(contentAlignment = Alignment.Center) {
+                        CoilZoomAsyncImage(
+                            model = imageRequest,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            zoomState = zoomState,
+                            onLoading = {
+                                loading = true
+                            },
+                            onSuccess = {
+                                loading = false
+                            },
+                            onError = {
+                                loading = false
+                            },
+                            onTap = {
+                                topBarVisible = !topBarVisible
+                            }
+                        )
+                        if (loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp)
                             )
                         }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface.copy(0.5f),
-                    )
-                )
-            }
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = hasImages && imageCount > 1,
-                key = { index -> if (hasImages) images[index] else "placeholder" },
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                if (!hasImages) {
-                    return@HorizontalPager
-                }
-                var loading by remember { mutableStateOf(true) }
-                val imageUrl = images[page]
-                val zoomState = rememberCoilZoomState()
-                val imageRequest = remember(imageUrl, context) {
-                    ImageRequest.Builder(context)
-                        .data(imageUrl)
-                        .crossfade(true)
-                        .build()
-                }
-
-                Box(contentAlignment = Alignment.Center) {
-                    CoilZoomAsyncImage(
-                        model = imageRequest,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        zoomState = zoomState,
-                        onLoading = {
-                            loading = true
-                        },
-                        onSuccess = {
-                            loading = false
-                        },
-                        onError = {
-                            loading = false
-                        },
-                        onTap = {
-                            topBarVisible = !topBarVisible
-                        }
-                    )
-                    if (loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp)
-                        )
                     }
                 }
-            }
 
-            if (!hasImages) {
-                Text(
-                    text = stringResource(id = R.string.no_images_to_preview),
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.Center),
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                Text(
-                    text = "${pagerState.currentPage + 1}/$imageCount",
-                    color = Color.White,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp)
-                        .background(
-                            color = Color.Black.copy(alpha = 0.6f),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                )
+                if (!hasImages) {
+                    Text(
+                        text = stringResource(id = R.string.no_images_to_preview),
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.Center),
+                        textAlign = TextAlign.Center
+                    )
+                } else {
+                    Text(
+                        text = "${pagerState.currentPage + 1}/$imageCount",
+                        color = Color.White,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(16.dp)
+                            .background(
+                                color = Color.Black.copy(alpha = 0.6f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                }
             }
         }
     }
