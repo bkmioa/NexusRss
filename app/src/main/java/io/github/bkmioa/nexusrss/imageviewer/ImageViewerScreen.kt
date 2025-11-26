@@ -22,7 +22,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.FileDownload
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +62,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import io.github.bkmioa.nexusrss.R
 import io.github.bkmioa.nexusrss.SharedTransitionDataWrapper
 import io.github.bkmioa.nexusrss.theme.AppTheme
+import io.github.bkmioa.nexusrss.widget.Shadow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -112,10 +113,15 @@ fun ImageViewerScreen(
                         title = { },
                         navigationIcon = {
                             IconButton(onClick = { navigator.popBackStack() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "back"
-                                )
+                                Shadow(
+                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                    spread = 2.dp,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "back"
+                                    )
+                                }
                             }
                         },
                         actions = {
@@ -139,14 +145,20 @@ fun ImageViewerScreen(
                                     }
                                 }
                             ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.FileDownload,
-                                    contentDescription = stringResource(id = R.string.action_save_image)
-                                )
+                                Shadow(
+                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                    spread = 2.dp,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.FileDownload,
+                                        contentDescription = stringResource(id = R.string.action_save_image),
+                                    )
+                                }
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(0.5f),
+                            containerColor = Color.Transparent,
+                            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
                         )
                     )
                 }
