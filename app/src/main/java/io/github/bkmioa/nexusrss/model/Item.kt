@@ -66,6 +66,8 @@ class Item(
     var mediainfo: String? = null,
 
     val labelsNew: List<String>? = null,
+
+    val msUp: String? = null,
 ) : Comparable<Item>, Parcelable {
     val sizeText: String
         get() = Formatter.formatShortFileSize(App.instance, size)
@@ -105,6 +107,9 @@ class Item(
         val list = labelsNew.toMutableList()
         //"中字" seems insignificant.
         list.remove("中字")
+        if (msUp == "10") {
+            list.add(0, "M")
+        }
         if (standard == "6" && !list.contains("4k")) {
             list.add(0, "4k")
         }

@@ -19,4 +19,6 @@
     <color name="label_fg_douban">#FFFFFF</color>
     <color name="label_bg_imdb">#F5C518</color>
     <color name="label_fg_imdb">#000000</color>
+    <color name="label_bg_official">#3949AB</color>
+    <color name="label_fg_official">#FFFFFF</color>
 </resources>

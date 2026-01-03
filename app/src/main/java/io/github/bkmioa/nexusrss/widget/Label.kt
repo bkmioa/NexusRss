@@ -61,6 +61,7 @@ fun Labels(modifier: Modifier = Modifier, item: Item, hazeState: HazeState? = nu
                 label.contains("hdr", true) -> colorResource(R.color.label_bg_hdr) to colorResource(R.color.label_fg_hdr)
                 label.contains("dovi", true) -> colorResource(R.color.label_bg_dovi) to colorResource(R.color.label_fg_dovi)
                 label.contains("hlg", true) -> colorResource(R.color.label_bg_4k) to colorResource(R.color.label_fg_4k)
+                label.contains("M", false) -> colorResource(R.color.label_bg_official) to colorResource(R.color.label_fg_official)
                 else -> colorResource(R.color.label_bg_default) to colorResource(R.color.label_fg_default)
             }
             LabelBox(hazeState = hazeState, backgroundColor = color.first, contentColor = color.second, label = label.uppercase())
