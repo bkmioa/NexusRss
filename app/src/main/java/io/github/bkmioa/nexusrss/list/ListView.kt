@@ -275,7 +275,8 @@ private fun List(
                     Modifier
                         .animateItem()
                         .height(80.dp),
-                    message = append.error.message ?: "Unknown error"
+                    message = append.error.message ?: "Unknown error",
+                    actionText = stringResource(R.string.retry)
                 ) {
                     lazyPagingItems.retry()
                 }
